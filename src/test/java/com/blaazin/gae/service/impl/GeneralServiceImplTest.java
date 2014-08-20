@@ -12,10 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -318,5 +315,23 @@ public class GeneralServiceImplTest {
         assertEquals("value3", secondMapEntity.get("key3"));
         assertTrue(secondMapEntity.containsKey("key4"));
         assertEquals(4l, secondMapEntity.get("key4"));
+    }
+
+    @Test
+    public void testGetObject() throws Exception {
+        String kind = SimpleEntity.class.getSimpleName();
+        String name = UUID.randomUUID().toString();
+        String description = "Description for testGetObject";
+
+        SimpleEntity expected = new SimpleEntity();
+        expected.setName(name);
+        expected.setLongDescription(description);
+
+        service.save(expected);
+
+        SimpleEntity actual = service.getObject(kind, name, SimpleEntity.class);
+        assertNotNull(actual);
+        assertEquals(name, actual.getName());
+        assertEquals(description, actual.getLongDescription());
     }
 }

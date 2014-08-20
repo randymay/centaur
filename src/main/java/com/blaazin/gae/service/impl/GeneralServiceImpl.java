@@ -60,6 +60,13 @@ public class GeneralServiceImpl implements GeneralService {
     }
 
     @Override
+    public <T extends BlaazinEntity> T getObject(String kind, String name, Class<T> klass) throws BlaazinGAEException {
+        Key key = KeyFactory.createKey(kind, name);
+
+        return EntityTranslator.fromEntity(generalDAO.getByKey(key), klass);
+    }
+
+    @Override
     public <T extends BlaazinEntity> void update(T object) throws BlaazinGAEException {
         generalDAO.update(EntityTranslator.toEntity(object));
     }

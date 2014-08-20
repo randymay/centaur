@@ -18,6 +18,8 @@ public interface GeneralService {
 
     public <T extends BlaazinEntity> T getByKey(Key key, Class<T> klass) throws BlaazinGAEException;
 
+    public <T extends BlaazinEntity> T getObject(String kind, String name, Class<T> klass) throws BlaazinGAEException;
+
     @Deprecated
     public <T extends BlaazinEntity> void update(T object) throws BlaazinGAEException;
 
