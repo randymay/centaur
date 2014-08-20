@@ -8,12 +8,14 @@ import com.blaazin.gae.service.GeneralService;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 public class GeneralServiceImpl implements GeneralService {
@@ -33,6 +35,9 @@ public class GeneralServiceImpl implements GeneralService {
     @Override
     public <T extends BlaazinEntity> void create(T object) throws BlaazinGAEException {
         if (null == object.getAppEngineKey()) {
+            if (StringUtils.isEmpty(object.getName())) {
+                object.setName(UUID.randomUUID().toString());
+            }
             Key key = createKey(object);
             object.setAppEngineKey(key);
         }
