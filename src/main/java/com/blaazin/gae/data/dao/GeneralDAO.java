@@ -30,11 +30,7 @@ public class GeneralDAO {
         }
     }
 
-    public void insert(Entity entity) {
-        getDatastoreService().put(entity);
-    }
-
-    public void update(Entity entity) {
+    public void save(Entity entity) {
         getDatastoreService().put(entity);
     }
 
@@ -59,10 +55,6 @@ public class GeneralDAO {
         PreparedQuery pq = getDatastoreService().prepare(query);
 
         return pq.asSingleEntity();
-    }
-
-    public Entity getSingleEntityByUserId(String kind, String userId) throws BlaazinGAEException {
-        return getSingleEntityByPropertyValue(kind, "userId", userId);
     }
 
     public List<Entity> getChildren(String kind, Entity parent) throws BlaazinGAEException {

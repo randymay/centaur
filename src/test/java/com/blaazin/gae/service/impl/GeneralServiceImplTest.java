@@ -46,12 +46,12 @@ public class GeneralServiceImplTest {
         simpleEntity.setName(name);
         simpleEntity.setShortDescription(description);
 
-        service.create(simpleEntity);
+        service.save(simpleEntity);
 
         Key key = simpleEntity.getAppEngineKey();
         assertNotNull(key);
 
-        simpleEntity = service.getByKey(key, SimpleEntity.class);
+        simpleEntity = service.getObject(key, SimpleEntity.class);
         assertNotNull(simpleEntity);
         assertEquals(key, simpleEntity.getAppEngineKey());
         assertEquals(name, simpleEntity.getName());
@@ -59,16 +59,16 @@ public class GeneralServiceImplTest {
 
         name = "new name";
         simpleEntity.setName(name);
-        service.update(simpleEntity);
-        simpleEntity = service.getByKey(key, SimpleEntity.class);
+        service.save(simpleEntity);
+        simpleEntity = service.getObject(key, SimpleEntity.class);
         assertNotNull(simpleEntity);
         assertEquals(key, simpleEntity.getAppEngineKey());
         assertEquals(name, simpleEntity.getName());
         assertEquals(description, simpleEntity.getShortDescription());
 
-        service.delete(simpleEntity);
+        service.deleteObject(simpleEntity);
         try {
-            assertNull(service.getByKey(key, SimpleEntity.class));
+            assertNull(service.getObject(key, SimpleEntity.class));
             fail("This method should have thrown an EntityNotFoundException");
         } catch (BlaazinGAEException e) {
             assertTrue(e.getMessage().startsWith("com.google.appengine.api.datastore.EntityNotFoundException: No entity was found matching the key: "));
@@ -94,7 +94,7 @@ public class GeneralServiceImplTest {
             SimpleEntity simpleEntity = new SimpleEntity();
             simpleEntity.setName(childName + i);
             simpleEntity.setShortDescription(childDescription + i);
-            service.create(parentEntity, simpleEntity);
+            service.save(parentEntity, simpleEntity);
         }
 
         List<SimpleEntity> simpleEntities = service.getChildren(SimpleEntity.class.getSimpleName(), parentEntity, SimpleEntity.class);
@@ -117,7 +117,7 @@ public class GeneralServiceImplTest {
 
         service.save(entityWithIntegerField);
 
-        entityWithIntegerField = service.getSingleObjectByPropertyValue(EntityWithIntegerField.class.getSimpleName(), "userId", userId, EntityWithIntegerField.class);
+        entityWithIntegerField = service.getObject(EntityWithIntegerField.class.getSimpleName(), "userId", userId, EntityWithIntegerField.class);
         assertNotNull(entityWithIntegerField);
         assertNotNull(entityWithIntegerField.getUserId());
         assertEquals(userId, entityWithIntegerField.getUserId());
@@ -139,7 +139,7 @@ public class GeneralServiceImplTest {
 
         service.save(object);
 
-        object = service.getByKey(object.getAppEngineKey(), EntityWithListOfLongField.class);
+        object = service.getObject(object.getAppEngineKey(), EntityWithListOfLongField.class);
         assertNotNull(object);
         assertNotNull(object.getUserIds());
         assertEquals(8, object.getUserIds().size());
@@ -165,7 +165,7 @@ public class GeneralServiceImplTest {
 
         service.save(object);
 
-        object = service.getByKey(object.getAppEngineKey(), EntityWithListOfIntegerField.class);
+        object = service.getObject(object.getAppEngineKey(), EntityWithListOfIntegerField.class);
         assertNotNull(object);
         assertNotNull(object.getUserIds());
         assertEquals(8, object.getUserIds().size());
@@ -183,7 +183,7 @@ public class GeneralServiceImplTest {
 
         service.save(object);
 
-        object = service.getByKey(object.getAppEngineKey(), EntityWithBooleanFields.class);
+        object = service.getObject(object.getAppEngineKey(), EntityWithBooleanFields.class);
         assertNotNull(object);
         assertTrue(object.isBooleanValue1());
         assertFalse(object.getBooleanValue2());
@@ -193,7 +193,7 @@ public class GeneralServiceImplTest {
 
         service.save(object);
 
-        object = service.getByKey(object.getAppEngineKey(), EntityWithBooleanFields.class);
+        object = service.getObject(object.getAppEngineKey(), EntityWithBooleanFields.class);
         assertNotNull(object);
         assertFalse(object.isBooleanValue1());
         assertTrue(object.getBooleanValue2());
@@ -211,11 +211,11 @@ public class GeneralServiceImplTest {
                 childDescription += i;
             }
             simpleEntity.setShortDescription(childDescription);
-            service.create(simpleEntity);
+            service.save(simpleEntity);
         }
 
         List<SimpleEntity> objects =
-                service.getObjectsByPropertyValue(
+                service.getObjects(
                         SimpleEntity.class.getSimpleName(),
                         "shortDescription",
                         childDescription,
@@ -238,7 +238,7 @@ public class GeneralServiceImplTest {
                 simpleEntity.setIntValue(i);
             }
             simpleEntity.setStringValue(childDescription);
-            service.create(simpleEntity);
+            service.save(simpleEntity);
         }
 
         Map<String, Object> keyValues = new HashMap<>();
@@ -246,7 +246,7 @@ public class GeneralServiceImplTest {
         keyValues.put("stringValue", childDescription);
 
         List<EntityWithStringAndIntegerField> objects =
-                service.getObjectsByPropertyValues(
+                service.getObjects(
                         EntityWithStringAndIntegerField.class.getSimpleName(),
                         keyValues,
                         EntityWithStringAndIntegerField.class);
@@ -262,12 +262,12 @@ public class GeneralServiceImplTest {
         simpleEntity.put("key1", "value1");
         simpleEntity.put("key2", 2l);
 
-        service.create(simpleEntity);
+        service.save(simpleEntity);
 
         Key key = simpleEntity.getAppEngineKey();
         assertNotNull(key);
 
-        simpleEntity = service.getByKey(key, MapEntity.class);
+        simpleEntity = service.getObject(key, MapEntity.class);
         assertNotNull(simpleEntity);
         assertEquals(key, simpleEntity.getAppEngineKey());
         assertTrue(simpleEntity.containsKey("key1"));
@@ -284,7 +284,7 @@ public class GeneralServiceImplTest {
         firstMapEntity.put("key1", "value1");
         firstMapEntity.put("key2", 2l);
 
-        service.create(firstMapEntity);
+        service.save(firstMapEntity);
 
         Key key1 = firstMapEntity.getAppEngineKey();
         assertNotNull(key1);
@@ -295,13 +295,13 @@ public class GeneralServiceImplTest {
         secondMapEntity.put("key3", "value3");
         secondMapEntity.put("key4", 4l);
 
-        service.create(secondMapEntity);
+        service.save(secondMapEntity);
 
         Key key2 = secondMapEntity.getAppEngineKey();
         assertNotNull(key2);
 
-        firstMapEntity = service.getByKey(key1, MapEntity.class);
-        secondMapEntity = service.getByKey(key2, MapEntity.class);
+        firstMapEntity = service.getObject(key1, MapEntity.class);
+        secondMapEntity = service.getObject(key2, MapEntity.class);
         assertNotNull(firstMapEntity);
         assertEquals(key1, firstMapEntity.getAppEngineKey());
         assertTrue(firstMapEntity.containsKey("key1"));
