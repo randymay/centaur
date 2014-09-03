@@ -38,6 +38,14 @@ public class GeneralDAO {
         getDatastoreService().delete(entity.getKey());
     }
 
+    public Key save(Transaction transaction, Entity entity) {
+        return getDatastoreService().put(transaction, entity);
+    }
+
+    public void delete(Transaction transaction, Entity entity) {
+        getDatastoreService().delete(transaction, entity.getKey());
+    }
+
     public Entity refresh(Entity entity) throws BlaazinGAEException {
         try {
             return getDatastoreService().get(entity.getKey());
@@ -120,5 +128,17 @@ public class GeneralDAO {
         PreparedQuery pq = getDatastoreService().prepare(query);
 
         return pq.asList(FetchOptions.Builder.withDefaults());
+    }
+
+    public Transaction beginTransaction() {
+        return this.getDatastoreService().beginTransaction();
+    }
+
+    public void rollbackTransaction(Transaction transaction) {
+        transaction.rollback();
+    }
+
+    public void commitTransaction(Transaction transaction) {
+        transaction.commit();
     }
 }

@@ -4,7 +4,9 @@ import com.blaazin.gae.BlaazinGAEException;
 import com.blaazin.gae.data.dao.GeneralDAO;
 import com.blaazin.gae.data.dto.MapEntity;
 import com.blaazin.gae.data.util.*;
+import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import org.junit.After;
@@ -94,7 +96,7 @@ public class GeneralServiceImplTest {
             SimpleEntity simpleEntity = new SimpleEntity();
             simpleEntity.setName(childName + i);
             simpleEntity.setShortDescription(childDescription + i);
-            service.save(parentEntity, simpleEntity);
+            service.saveChild(parentEntity, simpleEntity);
         }
 
         List<SimpleEntity> simpleEntities = service.getChildren(SimpleEntity.class.getSimpleName(), parentEntity, SimpleEntity.class);
@@ -329,6 +331,54 @@ public class GeneralServiceImplTest {
         assertNotNull(key);
         assertNotNull(key.getId());
         long id = key.getId();
+
+        SimpleEntity actual = service.getObject(kind, id, SimpleEntity.class);
+        assertNotNull(actual);
+        assertEquals(id, actual.getAppEngineKey().getId());
+        assertEquals(description, actual.getLongDescription());
+    }
+
+    @Test
+    public void testTransaction() throws Exception {
+        Transaction transaction = service.beginTransaction();
+
+        String kind = SimpleEntity.class.getSimpleName();
+        String description = "Description for testGetObject";
+
+        SimpleEntity expected = new SimpleEntity();
+        expected.setLongDescription(description);
+
+        Key key = service.save(expected, transaction);
+
+        assertNotNull(key);
+        assertNotNull(key.getId());
+        long id = key.getId();
+
+        try {
+            service.getObject(kind, id, SimpleEntity.class);
+            fail("This should throw an exception");
+        } catch (BlaazinGAEException e) {
+            // This is expected behaviour
+            assertTrue(e.getCause() instanceof EntityNotFoundException);
+        }
+
+        service.rollback(transaction);
+        transaction = service.beginTransaction();
+
+        try {
+            service.getObject(kind, id, SimpleEntity.class);
+            fail("This should throw an exception");
+        } catch (BlaazinGAEException e) {
+            // This is expected behaviour
+            assertTrue(e.getCause() instanceof EntityNotFoundException);
+        }
+
+        service.save(expected, transaction);
+        service.commit(transaction);
+
+        assertNotNull(key);
+        assertNotNull(key.getId());
+        id = key.getId();
 
         SimpleEntity actual = service.getObject(kind, id, SimpleEntity.class);
         assertNotNull(actual);

@@ -8,6 +8,7 @@ import com.blaazin.gae.service.GeneralService;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.Transaction;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,7 +16,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @Service
 public class GeneralServiceImpl implements GeneralService {
@@ -25,10 +25,15 @@ public class GeneralServiceImpl implements GeneralService {
 
     @Override
     public <T extends BlaazinEntity> Key save(T object) throws BlaazinGAEException {
+        return save(object, null);
+    }
+
+    @Override
+    public <T extends BlaazinEntity> Key save(T object, Transaction transaction) throws BlaazinGAEException {
         if (null == object.getAppEngineKey()) {
             initKey(object);
         }
-        Key key = generalDAO.save(EntityTranslator.toEntity(object));
+        Key key = generalDAO.save(transaction, EntityTranslator.toEntity(object));
         if (null == object.getAppEngineKey()) {
             object.setAppEngineKey(key);
         }
@@ -38,16 +43,18 @@ public class GeneralServiceImpl implements GeneralService {
 
     private <T extends BlaazinEntity> void initKey(T object) throws BlaazinGAEException {
         if (null == object.getAppEngineKey()) {
-            /*if (StringUtils.isEmpty(object.getName())) {
-                object.setName(UUID.randomUUID().toString());
-            }*/
             Key key = createKey(object);
             object.setAppEngineKey(key);
         }
     }
 
     @Override
-    public <T extends BlaazinEntity, X extends BlaazinEntity> void save(X parent, T object) throws BlaazinGAEException {
+    public <T extends BlaazinEntity, X extends BlaazinEntity> void saveChild(X parent, T object) throws BlaazinGAEException {
+        this.saveChild(parent, object, null);
+    }
+
+    @Override
+    public <T extends BlaazinEntity, X extends BlaazinEntity> void saveChild(X parent, T object, Transaction transaction) throws BlaazinGAEException {
         if (null == parent || null == parent.getAppEngineKey()) {
             throw new BlaazinGAEException("Parent Entity is required");
         }
@@ -57,7 +64,7 @@ public class GeneralServiceImpl implements GeneralService {
             object.setAppEngineKey(key);
         }
 
-        generalDAO.save(EntityTranslator.toEntity(object));
+        generalDAO.save(transaction, EntityTranslator.toEntity(object));
     }
 
     @Override
@@ -189,5 +196,17 @@ public class GeneralServiceImpl implements GeneralService {
     public <T extends BlaazinEntity> List<T> getObjects(String kind, Map<String, Object> keyValues, Class<T> klass) throws BlaazinGAEException {
         List<Entity> entities = generalDAO.getEntitiesByPropertyValues(kind, keyValues);
         return getObjectListFromEntities(klass, entities);
+    }
+
+    public Transaction beginTransaction() {
+        return generalDAO.beginTransaction();
+    }
+
+    public void rollback(Transaction transaction) {
+        generalDAO.rollbackTransaction(transaction);
+    }
+
+    public void commit(Transaction transaction) {
+        generalDAO.commitTransaction(transaction);
     }
 }
