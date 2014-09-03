@@ -320,18 +320,19 @@ public class GeneralServiceImplTest {
     @Test
     public void testGetObject() throws Exception {
         String kind = SimpleEntity.class.getSimpleName();
-        String name = UUID.randomUUID().toString();
         String description = "Description for testGetObject";
 
         SimpleEntity expected = new SimpleEntity();
-        expected.setName(name);
         expected.setLongDescription(description);
 
-        service.save(expected);
+        Key key = service.save(expected);
+        assertNotNull(key);
+        assertNotNull(key.getId());
+        long id = key.getId();
 
-        SimpleEntity actual = service.getObject(kind, name, SimpleEntity.class);
+        SimpleEntity actual = service.getObject(kind, id, SimpleEntity.class);
         assertNotNull(actual);
-        assertEquals(name, actual.getName());
+        assertEquals(id, actual.getAppEngineKey().getId());
         assertEquals(description, actual.getLongDescription());
     }
 }

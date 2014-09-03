@@ -9,13 +9,15 @@ import java.util.Map;
 
 public interface GeneralService {
 
-    public <T extends BlaazinEntity> void save(T object) throws BlaazinGAEException;
+    public <T extends BlaazinEntity> Key save(T object) throws BlaazinGAEException;
 
     public <T extends BlaazinEntity, X extends BlaazinEntity> void save(X parent, T object) throws BlaazinGAEException;
 
     public <T extends BlaazinEntity> T getObject(Key key, Class<T> klass) throws BlaazinGAEException;
 
     public <T extends BlaazinEntity> T getObject(String kind, String name, Class<T> klass) throws BlaazinGAEException;
+
+    public <T extends BlaazinEntity> T getObject(String kind, long id, Class<T> klass) throws BlaazinGAEException;
 
     public <T extends BlaazinEntity> T getObject(String name, Class<T> klass) throws BlaazinGAEException;
 

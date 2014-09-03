@@ -108,7 +108,7 @@ public class EntityTranslator {
                 continue;
             }
             String propertyName = entry.getKey();
-            if (!"key".equals(propertyName) && !"kind".equals(propertyName)) {
+            if (!"key".equals(propertyName) && !"kind".equals(propertyName) && !"appEngineKey".equals(propertyName)) {
                 try {
                     if (log.isTraceEnabled()) {
                         log.trace("Processing property '" + propertyName + "'");

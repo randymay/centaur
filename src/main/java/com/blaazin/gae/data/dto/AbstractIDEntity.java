@@ -16,7 +16,6 @@ public abstract class AbstractIDEntity implements BlaazinEntity, Serializable {
 
     public AbstractIDEntity() {
         this.kind = this.getClass().getSimpleName();
-        //this.name = kind;
     }
 
     public Key getAppEngineKey() {

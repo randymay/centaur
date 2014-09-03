@@ -24,18 +24,23 @@ public class GeneralServiceImpl implements GeneralService {
     private GeneralDAO generalDAO;
 
     @Override
-    public <T extends BlaazinEntity> void save(T object) throws BlaazinGAEException {
+    public <T extends BlaazinEntity> Key save(T object) throws BlaazinGAEException {
         if (null == object.getAppEngineKey()) {
             initKey(object);
         }
-        generalDAO.save(EntityTranslator.toEntity(object));
+        Key key = generalDAO.save(EntityTranslator.toEntity(object));
+        if (null == object.getAppEngineKey()) {
+            object.setAppEngineKey(key);
+        }
+
+        return key;
     }
 
     private <T extends BlaazinEntity> void initKey(T object) throws BlaazinGAEException {
         if (null == object.getAppEngineKey()) {
-            if (StringUtils.isEmpty(object.getName())) {
+            /*if (StringUtils.isEmpty(object.getName())) {
                 object.setName(UUID.randomUUID().toString());
-            }
+            }*/
             Key key = createKey(object);
             object.setAppEngineKey(key);
         }
@@ -63,6 +68,13 @@ public class GeneralServiceImpl implements GeneralService {
     @Override
     public <T extends BlaazinEntity> T getObject(String kind, String name, Class<T> klass) throws BlaazinGAEException {
         Key key = KeyFactory.createKey(kind, name);
+
+        return EntityTranslator.fromEntity(generalDAO.getByKey(key), klass);
+    }
+
+    @Override
+    public <T extends BlaazinEntity> T getObject(String kind, long id, Class<T> klass) throws BlaazinGAEException {
+        Key key = KeyFactory.createKey(kind, id);
 
         return EntityTranslator.fromEntity(generalDAO.getByKey(key), klass);
     }
@@ -106,7 +118,11 @@ public class GeneralServiceImpl implements GeneralService {
 
     @Override
     public <T extends BlaazinEntity> Key createKey(T object) throws BlaazinGAEException {
-        return KeyFactory.createKey(object.getKind(), object.getName());
+        if (object != null && !StringUtils.isEmpty(object.getKind()) && !StringUtils.isEmpty(object.getName())) {
+            return KeyFactory.createKey(object.getKind(), object.getName());
+        }
+
+        return null;
     }
 
     @Override

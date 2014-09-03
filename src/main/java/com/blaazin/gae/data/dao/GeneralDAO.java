@@ -30,17 +30,17 @@ public class GeneralDAO {
         }
     }
 
-    public void save(Entity entity) {
-        getDatastoreService().put(entity);
+    public Key save(Entity entity) {
+        return getDatastoreService().put(entity);
     }
 
     public void delete(Entity entity) {
         getDatastoreService().delete(entity.getKey());
     }
 
-    public void refresh(Entity entity) throws BlaazinGAEException {
+    public Entity refresh(Entity entity) throws BlaazinGAEException {
         try {
-            getDatastoreService().get(entity.getKey());
+            return getDatastoreService().get(entity.getKey());
         } catch (EntityNotFoundException e) {
             log.error(e.getMessage(), e);
             throw new BlaazinGAEException(e);
