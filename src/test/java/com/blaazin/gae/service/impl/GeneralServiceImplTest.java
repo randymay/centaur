@@ -99,6 +99,7 @@ public class GeneralServiceImplTest {
             simpleEntity.setShortDescription(childDescription + i);
             Key key = service.saveChild(parentEntity, simpleEntity);
             assertNotNull(key);
+            assertNotNull(simpleEntity.getAppEngineKey());
         }
 
         List<SimpleEntity> simpleEntities = service.getChildren(SimpleEntity.class.getSimpleName(), parentEntity, SimpleEntity.class);
@@ -130,6 +131,7 @@ public class GeneralServiceImplTest {
             simpleEntity.setShortDescription(childDescription + i);
             Key key = service.saveChild(parentEntity, simpleEntity);
             assertNotNull(key);
+            assertNotNull(simpleEntity.getAppEngineKey());
         }
 
         List<SimpleEntity> simpleEntities = service.getChildren(SimpleEntity.class.getSimpleName(), parentEntity, SimpleEntity.class);

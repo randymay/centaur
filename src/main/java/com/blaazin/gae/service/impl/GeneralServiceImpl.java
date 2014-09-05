@@ -50,7 +50,12 @@ public class GeneralServiceImpl implements GeneralService {
 
     @Override
     public <T extends BlaazinEntity, X extends BlaazinEntity> Key saveChild(X parent, T object) throws BlaazinGAEException {
-        return this.saveChild(parent, object, null);
+        Key childKey = this.saveChild(parent, object, null);
+        if (null == object.getAppEngineKey()) {
+            object.setAppEngineKey(childKey);
+        }
+
+        return childKey;
     }
 
     @Override
