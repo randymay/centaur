@@ -14,9 +14,9 @@ public interface GeneralService {
 
     public <T extends BlaazinEntity> Key save(T object, Transaction transaction) throws BlaazinGAEException;
 
-    public <T extends BlaazinEntity, X extends BlaazinEntity> void saveChild(X parent, T object) throws BlaazinGAEException;
+    public <T extends BlaazinEntity, X extends BlaazinEntity> Key saveChild(X parent, T object) throws BlaazinGAEException;
 
-    public <T extends BlaazinEntity, X extends BlaazinEntity> void saveChild(X parent, T object, Transaction transaction) throws BlaazinGAEException;
+    public <T extends BlaazinEntity, X extends BlaazinEntity> Key saveChild(X parent, T object, Transaction transaction) throws BlaazinGAEException;
 
     public <T extends BlaazinEntity> T getObject(Key key, Class<T> klass) throws BlaazinGAEException;
 

@@ -84,7 +84,8 @@ public class GeneralServiceImplTest {
         String parentName = "parentName";
         String parentDescription = "parentDescription";
 
-        service.save(parentEntity);
+        Key parentKey = service.save(parentEntity);
+        assertNotNull(parentKey);
 
         parentEntity.setName(parentName);
         parentEntity.setShortDescription(parentDescription);
@@ -96,7 +97,8 @@ public class GeneralServiceImplTest {
             SimpleEntity simpleEntity = new SimpleEntity();
             simpleEntity.setName(childName + i);
             simpleEntity.setShortDescription(childDescription + i);
-            service.saveChild(parentEntity, simpleEntity);
+            Key key = service.saveChild(parentEntity, simpleEntity);
+            assertNotNull(key);
         }
 
         List<SimpleEntity> simpleEntities = service.getChildren(SimpleEntity.class.getSimpleName(), parentEntity, SimpleEntity.class);

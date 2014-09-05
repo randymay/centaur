@@ -49,12 +49,12 @@ public class GeneralServiceImpl implements GeneralService {
     }
 
     @Override
-    public <T extends BlaazinEntity, X extends BlaazinEntity> void saveChild(X parent, T object) throws BlaazinGAEException {
-        this.saveChild(parent, object, null);
+    public <T extends BlaazinEntity, X extends BlaazinEntity> Key saveChild(X parent, T object) throws BlaazinGAEException {
+        return this.saveChild(parent, object, null);
     }
 
     @Override
-    public <T extends BlaazinEntity, X extends BlaazinEntity> void saveChild(X parent, T object, Transaction transaction) throws BlaazinGAEException {
+    public <T extends BlaazinEntity, X extends BlaazinEntity> Key saveChild(X parent, T object, Transaction transaction) throws BlaazinGAEException {
         if (null == parent || null == parent.getAppEngineKey()) {
             throw new BlaazinGAEException("Parent Entity is required");
         }
@@ -64,7 +64,7 @@ public class GeneralServiceImpl implements GeneralService {
             object.setAppEngineKey(key);
         }
 
-        generalDAO.save(transaction, EntityTranslator.toEntity(object));
+        return generalDAO.save(transaction, EntityTranslator.toEntity(object));
     }
 
     @Override
