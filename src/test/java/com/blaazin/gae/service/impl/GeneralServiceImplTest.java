@@ -113,6 +113,36 @@ public class GeneralServiceImplTest {
     }
 
     @Test
+    public void testHeirarchicalCRUDNoNames() throws Exception {
+        ParentEntity parentEntity = new ParentEntity();
+
+        String parentDescription = "parentDescription";
+
+        Key parentKey = service.save(parentEntity);
+        assertNotNull(parentKey);
+
+        parentEntity.setShortDescription(parentDescription);
+
+        String childDescription = "description";
+
+        for (int i = 0; i < 10; i++) {
+            SimpleEntity simpleEntity = new SimpleEntity();
+            simpleEntity.setShortDescription(childDescription + i);
+            Key key = service.saveChild(parentEntity, simpleEntity);
+            assertNotNull(key);
+        }
+
+        List<SimpleEntity> simpleEntities = service.getChildren(SimpleEntity.class.getSimpleName(), parentEntity, SimpleEntity.class);
+
+        assertEquals(10, simpleEntities.size());
+        for (int i = 0; i < simpleEntities.size(); i++) {
+            SimpleEntity listEntity = simpleEntities.get(i);
+
+            assertEquals(childDescription + i, listEntity.getShortDescription());
+        }
+    }
+
+    @Test
     public void testToAndFromEntityWithIntegerProperty() throws Exception {
         final int userId = 1;
 
@@ -342,7 +372,6 @@ public class GeneralServiceImplTest {
 
     @Test
     public void testGetObjectByName() throws Exception {
-        String kind = SimpleEntity.class.getSimpleName();
         String name = UUID.randomUUID().toString();
         String description = "Description for testGetObject";
 

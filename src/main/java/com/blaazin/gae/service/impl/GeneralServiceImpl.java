@@ -62,8 +62,10 @@ public class GeneralServiceImpl implements GeneralService {
         if (null == object.getAppEngineKey()) {
             Key key = createKey(parent, object);
             object.setAppEngineKey(key);
+            if (null == key) {
+                return generalDAO.save(transaction, EntityTranslator.toEntity(object, parent.getAppEngineKey()));
+            }
         }
-
         return generalDAO.save(transaction, EntityTranslator.toEntity(object));
     }
 
@@ -134,8 +136,12 @@ public class GeneralServiceImpl implements GeneralService {
 
     @Override
     public <T extends BlaazinEntity, X extends BlaazinEntity> Key createKey(X parent, T object) throws BlaazinGAEException {
-        Entity parentEntity = EntityTranslator.toEntity(parent);
-        return KeyFactory.createKey(parentEntity.getKey(), object.getKind(), object.getName());
+        if (object != null && !StringUtils.isEmpty(object.getKind()) && !StringUtils.isEmpty(object.getName())) {
+            Entity parentEntity = EntityTranslator.toEntity(parent);
+            return KeyFactory.createKey(parentEntity.getKey(), object.getKind(), object.getName());
+        }
+
+        return null;
     }
 
     @Override

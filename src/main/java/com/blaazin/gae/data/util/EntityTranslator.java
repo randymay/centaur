@@ -3,6 +3,7 @@ package com.blaazin.gae.data.util;
 import com.blaazin.gae.data.dto.BlaazinEntity;
 import com.blaazin.gae.data.dto.MapEntity;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Key;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.util.ReflectionUtils;
@@ -17,8 +18,12 @@ import java.util.Map;
 public class EntityTranslator {
     private static final Logger log = Logger.getLogger(EntityTranslator.class);
 
-    @SuppressWarnings("unchecked")
     public static <T extends BlaazinEntity> Entity toEntity(final T object) {
+        return EntityTranslator.toEntity(object, null);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T extends BlaazinEntity> Entity toEntity(final T object, Key parentKey) {
         if (null == object) {
             return null;
         }
@@ -32,7 +37,7 @@ public class EntityTranslator {
         Entity entity;
 
         if (null == object.getAppEngineKey()) {
-            entity = new Entity(object.getKind());
+            entity = new Entity(object.getKind(), parentKey);
         } else {
             entity = new Entity(object.getAppEngineKey());
         }
