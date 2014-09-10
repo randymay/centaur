@@ -5,11 +5,36 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.blaazin</groupId>
-    <artifactId>blaazinGAE</artifactId>
+    <groupId>org.blaazinsoftware</groupId>
+    <artifactId>centaur</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <packaging>jar</packaging>
+
+    <name>Centaur</name>
+    <description>Centaur - Google App Engine integration made easy</description>
+    <url></url>
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+            <comments>A business-friendly OSS license</comments>
+        </license>
+    </licenses>
+    <scm>
+        <url></url>
+        <connection></connection>
+    </scm>
+    <developers>
+        <developer>
+            <name>Randy May</name>
+            <url>http://ca.linkedin.com/in/randymayblaazin/</url>
+            <email>randy.may@blaazinsoftware.com</email>
+            <organization>Blaazin Software Consulting, Inc.</organization>
+            <organizationUrl>www.blaazinsoftware.com</organizationUrl>
+        </developer>
+    </developers>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -42,8 +67,23 @@
                     <target>1.7</target>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.9.1</version>
+            </plugin>
         </plugins>
     </build>
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.9.1</version>
+            </plugin>
+        </plugins>
+    </reporting>
 
     <dependencies>
         <!-- App Engine -->
