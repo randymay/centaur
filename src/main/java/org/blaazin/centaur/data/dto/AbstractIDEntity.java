@@ -5,7 +5,7 @@ import com.google.appengine.api.datastore.Key;
 
 import java.io.Serializable;
 
-public abstract class AbstractIDEntity implements BlaazinEntity, Serializable {
+public abstract class AbstractIDEntity implements CentaurEntity, Serializable {
 
     @JsonIgnore
     private Key appEngineKey;

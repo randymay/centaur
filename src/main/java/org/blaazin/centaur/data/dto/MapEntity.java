@@ -4,7 +4,7 @@ import com.google.appengine.api.datastore.Key;
 
 import java.util.HashMap;
 
-public final class MapEntity extends HashMap<String, Object> implements BlaazinEntity {
+public final class MapEntity extends HashMap<String, Object> implements CentaurEntity {
 
     private Key key;
     private String kind;

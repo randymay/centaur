@@ -1,6 +1,6 @@
 package org.blaazin.centaur.data.util;
 
-import org.blaazin.centaur.data.dto.BlaazinEntity;
+import org.blaazin.centaur.data.dto.CentaurEntity;
 import org.blaazin.centaur.data.dto.MapEntity;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
@@ -18,12 +18,12 @@ import java.util.Map;
 public class EntityTranslator {
     private static final Logger log = Logger.getLogger(EntityTranslator.class);
 
-    public static <T extends BlaazinEntity> Entity toEntity(final T object) {
+    public static <T extends CentaurEntity> Entity toEntity(final T object) {
         return EntityTranslator.toEntity(object, null);
     }
 
     @SuppressWarnings("unchecked")
-    public static <T extends BlaazinEntity> Entity toEntity(final T object, Key parentKey) {
+    public static <T extends CentaurEntity> Entity toEntity(final T object, Key parentKey) {
         if (null == object) {
             return null;
         }
@@ -55,7 +55,7 @@ public class EntityTranslator {
         return entity;
     }
 
-    private static class ToEntityFieldCallback<T extends BlaazinEntity> implements ReflectionUtils.FieldCallback {
+    private static class ToEntityFieldCallback<T extends CentaurEntity> implements ReflectionUtils.FieldCallback {
 
         private T object;
         private Entity entity;
@@ -90,7 +90,7 @@ public class EntityTranslator {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T extends BlaazinEntity> T fromEntity(final Entity entity, Class<?> klass) {
+    public static <T extends CentaurEntity> T fromEntity(final Entity entity, Class<?> klass) {
         if (null == entity) {
             return null;
         }
