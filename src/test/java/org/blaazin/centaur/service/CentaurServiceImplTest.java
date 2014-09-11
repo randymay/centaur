@@ -1,36 +1,30 @@
-package org.blaazin.centaur.service.impl;
+package org.blaazin.centaur.service;
 
-import org.blaazin.centaur.BlaazinGAEException;
-import org.blaazin.centaur.data.dao.GeneralDAO;
+import org.blaazin.centaur.CentaurException;
 import org.blaazin.centaur.data.dto.MapEntity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
-import org.blaazin.centaur.service.impl.GeneralServiceImpl;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.*;
 
 import static org.junit.Assert.*;
 
-public class GeneralServiceImplTest {
+public class CentaurServiceImplTest {
 
     private final LocalServiceTestHelper helper =
             new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
 
-    private GeneralServiceImpl service = new GeneralServiceImpl();
+    private CentaurService service = CentaurServiceFactory.newInstance();
 
     @Before
     public void setUp() {
         helper.setUp();
-
-        GeneralDAO dao = new GeneralDAO();
-        ReflectionTestUtils.setField(service, "generalDAO", dao);
     }
 
     @After
@@ -72,7 +66,7 @@ public class GeneralServiceImplTest {
         try {
             assertNull(service.getObject(key, SimpleEntity.class));
             fail("This method should have thrown an EntityNotFoundException");
-        } catch (BlaazinGAEException e) {
+        } catch (CentaurException e) {
             assertTrue(e.getMessage().startsWith("com.google.appengine.api.datastore.EntityNotFoundException: No entity was found matching the key: "));
         }
     }
@@ -413,7 +407,7 @@ public class GeneralServiceImplTest {
         try {
             service.getObject(kind, id, SimpleEntity.class);
             fail("This should throw an exception");
-        } catch (BlaazinGAEException e) {
+        } catch (CentaurException e) {
             // This is expected behaviour
             assertTrue(e.getCause() instanceof EntityNotFoundException);
         }
@@ -424,7 +418,7 @@ public class GeneralServiceImplTest {
         try {
             service.getObject(kind, id, SimpleEntity.class);
             fail("This should throw an exception");
-        } catch (BlaazinGAEException e) {
+        } catch (CentaurException e) {
             // This is expected behaviour
             assertTrue(e.getCause() instanceof EntityNotFoundException);
         }

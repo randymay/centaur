@@ -1,15 +1,15 @@
 package org.blaazin.centaur;
 
-public class BlaazinGAEException extends Exception {
-    public BlaazinGAEException() {
+public class CentaurException extends Exception {
+    public CentaurException() {
 
     }
 
-    public BlaazinGAEException(String message) {
+    public CentaurException(String message) {
         super(message);
     }
 
-    public BlaazinGAEException(Exception e) {
+    public CentaurException(Exception e) {
         super(e);
     }
 

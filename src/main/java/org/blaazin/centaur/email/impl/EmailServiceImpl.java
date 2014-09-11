@@ -1,6 +1,6 @@
 package org.blaazin.centaur.email.impl;
 
-import org.blaazin.centaur.BlaazinGAEException;
+import org.blaazin.centaur.CentaurException;
 import org.blaazin.centaur.email.EmailService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ public class EmailServiceImpl implements EmailService {
     @Value("mail.from")
     private String from;
 
-    public void sendEmail(String subject, String body, String... to) throws BlaazinGAEException {
+    public void sendEmail(String subject, String body, String... to) throws CentaurException {
         try {
             Properties props = new Properties();
             Session session = Session.getDefaultInstance(props, null);
@@ -33,7 +33,7 @@ public class EmailServiceImpl implements EmailService {
             msg.setText(body);
             Transport.send(msg);
         } catch (Exception e) {
-            throw new BlaazinGAEException(e);
+            throw new CentaurException(e);
         }
     }
 }

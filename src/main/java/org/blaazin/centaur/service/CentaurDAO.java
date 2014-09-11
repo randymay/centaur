@@ -1,32 +1,30 @@
-package org.blaazin.centaur.data.dao;
+package org.blaazin.centaur.service;
 
-import org.blaazin.centaur.BlaazinGAEException;
+import org.blaazin.centaur.CentaurException;
 import org.blaazin.centaur.data.dto.SortCriteria;
 import com.google.appengine.api.datastore.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Repository
-public class GeneralDAO {
+class CentaurDAO {
 
-    private static final Logger log = Logger.getLogger(GeneralDAO.class);
+    private static final Logger log = Logger.getLogger(CentaurDAO.class);
 
     private DatastoreService getDatastoreService() {
         return DatastoreServiceFactory.getDatastoreService();
     }
 
-    public Entity getByKey(Key key) throws BlaazinGAEException {
+    public Entity getByKey(Key key) throws CentaurException {
         try {
             return getDatastoreService().get(key);
         } catch (EntityNotFoundException e) {
             log.error(e.getMessage(), e);
-            throw new BlaazinGAEException(e);
+            throw new CentaurException(e);
         }
     }
 
@@ -46,16 +44,16 @@ public class GeneralDAO {
         getDatastoreService().delete(transaction, entity.getKey());
     }
 
-    public Entity refresh(Entity entity) throws BlaazinGAEException {
+    public Entity refresh(Entity entity) throws CentaurException {
         try {
             return getDatastoreService().get(entity.getKey());
         } catch (EntityNotFoundException e) {
             log.error(e.getMessage(), e);
-            throw new BlaazinGAEException(e);
+            throw new CentaurException(e);
         }
     }
 
-    public Entity getSingleEntityByPropertyValue(String kind, String property, Object value) throws BlaazinGAEException {
+    public Entity getSingleEntityByPropertyValue(String kind, String property, Object value) throws CentaurException {
         Query.Filter filter = new Query.FilterPredicate(property, Query.FilterOperator.EQUAL, value);
 
         Query query = new Query(kind).setFilter(filter);
@@ -65,11 +63,11 @@ public class GeneralDAO {
         return pq.asSingleEntity();
     }
 
-    public List<Entity> getChildren(String kind, Entity parent) throws BlaazinGAEException {
+    public List<Entity> getChildren(String kind, Entity parent) throws CentaurException {
         return getChildren(kind, parent, FetchOptions.Builder.withDefaults());
     }
 
-    public List<Entity> getChildren(String kind, Entity parent, FetchOptions fetchOptions) throws BlaazinGAEException {
+    public List<Entity> getChildren(String kind, Entity parent, FetchOptions fetchOptions) throws CentaurException {
         refresh(parent);
         Query query = new Query(kind, parent.getKey());
         PreparedQuery pq = getDatastoreService().prepare(query);
@@ -77,22 +75,22 @@ public class GeneralDAO {
         return pq.asList(fetchOptions);
     }
 
-    public List<Entity> getEntitiesByKind(String kind) throws BlaazinGAEException {
+    public List<Entity> getEntitiesByKind(String kind) throws CentaurException {
         return getEntitiesByPropertyValue(kind, null, null);
     }
 
-    public List<Entity> getEntitiesByPropertyValue(String kind, String property, Object value) throws BlaazinGAEException {
+    public List<Entity> getEntitiesByPropertyValue(String kind, String property, Object value) throws CentaurException {
         Map<String, Object> keyValues = new HashMap<>();
         keyValues.put(property, value);
 
         return getEntitiesByPropertyValues(kind, keyValues);
     }
 
-    public List<Entity> getEntitiesByPropertyValues(String kind, Map<String, Object> keyValues) throws BlaazinGAEException {
+    public List<Entity> getEntitiesByPropertyValues(String kind, Map<String, Object> keyValues) throws CentaurException {
         return getEntitiesByPropertyValuesSorted(kind, keyValues);
     }
 
-    public List<Entity> getEntitiesByPropertyValuesSorted(String kind, Map<String, Object> keyValues, SortCriteria... sortCriteria) throws BlaazinGAEException {
+    public List<Entity> getEntitiesByPropertyValuesSorted(String kind, Map<String, Object> keyValues, SortCriteria... sortCriteria) throws CentaurException {
         Query query = new Query(kind);
 
         if (keyValues != null && !keyValues.isEmpty()) {

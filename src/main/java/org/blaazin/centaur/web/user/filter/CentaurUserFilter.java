@@ -14,7 +14,7 @@ import java.io.IOException;
 /**
  * Sets the Current User object as well as Login and Logout URLs to the Request
  */
-public class GAEUserFilter extends OncePerRequestFilter {
+public class CentaurUserFilter extends OncePerRequestFilter {
 
     private String postLoginURL = null;
     private String postLogoutURL = null;

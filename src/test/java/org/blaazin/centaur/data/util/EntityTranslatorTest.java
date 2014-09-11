@@ -3,7 +3,7 @@ package org.blaazin.centaur.data.util;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
-import org.blaazin.centaur.service.impl.SimpleEntity;
+import org.blaazin.centaur.service.SimpleEntity;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
