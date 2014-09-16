@@ -31,7 +31,7 @@ public class CentaurServiceImpl implements CentaurService {
         if (null == object.getAppEngineKey()) {
             initKey(object);
         }
-        Key key = dao.save(transaction, EntityTranslator.toEntity(object));
+        Key key = dao.save(transaction, new EntityTranslator().toEntity(object));
         if (null == object.getAppEngineKey()) {
             object.setAppEngineKey(key);
         }
@@ -66,36 +66,36 @@ public class CentaurServiceImpl implements CentaurService {
             Key key = createKey(parent, object);
             object.setAppEngineKey(key);
             if (null == key) {
-                return dao.save(transaction, EntityTranslator.toEntity(object, parent.getAppEngineKey()));
+                return dao.save(transaction, new EntityTranslator().toEntity(object, parent.getAppEngineKey()));
             }
         }
-        return dao.save(transaction, EntityTranslator.toEntity(object));
+        return dao.save(transaction, new EntityTranslator().toEntity(object));
     }
 
     @Override
     public <T extends CentaurEntity> T getObject(Key key, Class<T> klass) throws CentaurException {
-        return EntityTranslator.fromEntity(dao.getByKey(key), klass);
+        return new EntityTranslator().fromEntity(dao.getByKey(key), klass);
     }
 
     @Override
     public <T extends CentaurEntity> T getObject(String kind, String name, Class<T> klass) throws CentaurException {
         Key key = KeyFactory.createKey(kind, name);
 
-        return EntityTranslator.fromEntity(dao.getByKey(key), klass);
+        return new EntityTranslator().fromEntity(dao.getByKey(key), klass);
     }
 
     @Override
     public <T extends CentaurEntity> T getObject(String kind, long id, Class<T> klass) throws CentaurException {
         Key key = KeyFactory.createKey(kind, id);
 
-        return EntityTranslator.fromEntity(dao.getByKey(key), klass);
+        return new EntityTranslator().fromEntity(dao.getByKey(key), klass);
     }
 
     @Override
     public <T extends CentaurEntity> T getObject(String name, Class<T> klass) throws CentaurException {
         Key key = KeyFactory.createKey(klass.getSimpleName(), name);
 
-        return EntityTranslator.fromEntity(dao.getByKey(key), klass);
+        return new EntityTranslator().fromEntity(dao.getByKey(key), klass);
     }
 
     @Override
@@ -120,7 +120,7 @@ public class CentaurServiceImpl implements CentaurService {
             return null;
         }
 
-        return EntityTranslator.fromEntity(entity, klass);
+        return new EntityTranslator().fromEntity(entity, klass);
     }
 
     @Override
@@ -130,7 +130,7 @@ public class CentaurServiceImpl implements CentaurService {
 
     @Override
     public <T extends CentaurEntity> void deleteObject(T object, Transaction transaction) throws CentaurException {
-        dao.delete(transaction, EntityTranslator.toEntity(object));
+        dao.delete(transaction, new EntityTranslator().toEntity(object));
     }
 
     @Override
@@ -145,7 +145,7 @@ public class CentaurServiceImpl implements CentaurService {
     @Override
     public <T extends CentaurEntity, X extends CentaurEntity> Key createKey(X parent, T object) throws CentaurException {
         if (object != null && !StringUtils.isEmpty(object.getKind()) && !StringUtils.isEmpty(object.getName())) {
-            Entity parentEntity = EntityTranslator.toEntity(parent);
+            Entity parentEntity = new EntityTranslator().toEntity(parent);
             return KeyFactory.createKey(parentEntity.getKey(), object.getKind(), object.getName());
         }
 
@@ -154,7 +154,7 @@ public class CentaurServiceImpl implements CentaurService {
 
     @Override
     public <T extends CentaurEntity, X extends CentaurEntity> List<T> getChildren(String kind, X parent, Class<T> klass) throws CentaurException {
-        Entity parentEntity = EntityTranslator.toEntity(parent);
+        Entity parentEntity = new EntityTranslator().toEntity(parent);
         List<Entity> entities = dao.getChildren(kind, parentEntity);
 
         List<T> results = new ArrayList<>();
@@ -163,7 +163,7 @@ public class CentaurServiceImpl implements CentaurService {
         }
 
         for (Entity entity : entities) {
-            T object = EntityTranslator.fromEntity(entity, klass);
+            T object = new EntityTranslator().fromEntity(entity, klass);
             results.add(object);
         }
 
@@ -179,7 +179,7 @@ public class CentaurServiceImpl implements CentaurService {
         }
 
         for (Entity entity : entities) {
-            T object = EntityTranslator.fromEntity(entity, klass);
+            T object = new EntityTranslator().fromEntity(entity, klass);
             entityList.add(object);
         }
 
@@ -199,7 +199,7 @@ public class CentaurServiceImpl implements CentaurService {
 
         List<T> objectList = new ArrayList<>();
         for (Entity entity : entities) {
-            T object = EntityTranslator.fromEntity(entity, klass);
+            T object = new EntityTranslator().fromEntity(entity, klass);
             objectList.add(object);
         }
 

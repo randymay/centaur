@@ -1,14 +1,14 @@
 package org.blaazin.centaur.data.util;
 
-import org.blaazin.centaur.data.dto.CentaurEntity;
-import org.blaazin.centaur.data.dto.MapEntity;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.springframework.util.ReflectionUtils;
+import org.blaazin.centaur.data.dto.CentaurEntity;
+import org.blaazin.centaur.data.dto.MapEntity;
 
-import java.lang.reflect.Field;
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
@@ -18,12 +18,12 @@ import java.util.Map;
 public class EntityTranslator {
     private static final Logger log = Logger.getLogger(EntityTranslator.class);
 
-    public static <T extends CentaurEntity> Entity toEntity(final T object) {
-        return EntityTranslator.toEntity(object, null);
+    public <T extends CentaurEntity> Entity toEntity(final T object) {
+        return toEntity(object, null);
     }
 
     @SuppressWarnings("unchecked")
-    public static <T extends CentaurEntity> Entity toEntity(final T object, Key parentKey) {
+    public <T extends CentaurEntity> Entity toEntity(final T object, Key parentKey) {
         if (null == object) {
             return null;
         }
@@ -49,48 +49,35 @@ public class EntityTranslator {
                 entity.setProperty(entry.getKey(), entry.getValue());
             }
         } else {
-            ReflectionUtils.doWithFields(object.getClass(), new ToEntityFieldCallback(object, entity));
+            PropertyDescriptor[] propertyDescriptors = PropertyUtils.getPropertyDescriptors(object);
+            for (PropertyDescriptor descriptor : propertyDescriptors) {
+                String propertyName = descriptor.getName();
+                if (!"key".equals(propertyName) && !"kind".equals(propertyName)) {
+                    try {
+                        if (log.isTraceEnabled()) {
+                            log.trace("Processing property '" + propertyName + "'");
+                        }
+                        Method getterMethod = PropertyUtils.getReadMethod(descriptor);
+                        if (null == getterMethod) {
+                            log.warn("No getter method found for property '" + propertyName + "'");
+                        } else {
+                            Object value = getterMethod.invoke(object);
+                            entity.setProperty(propertyName, value);
+                        }
+                    } catch (Exception e) {
+                        log.warn(e.getMessage(), e);
+                    }
+
+                }
+
+            }
         }
 
         return entity;
     }
 
-    private static class ToEntityFieldCallback<T extends CentaurEntity> implements ReflectionUtils.FieldCallback {
-
-        private T object;
-        private Entity entity;
-
-        private ToEntityFieldCallback(T object, Entity entity) {
-            this.object = object;
-            this.entity = entity;
-        }
-
-        @Override
-        @SuppressWarnings("unchecked")
-        public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
-            String propertyName = field.getName();
-            if (!"key".equals(propertyName) && !"kind".equals(propertyName)) {
-                try {
-                    if (log.isTraceEnabled()) {
-                        log.trace("Processing property '" + propertyName + "'");
-                    }
-                    Method getterMethod = getGetterForField(object, field);
-                    if (null == getterMethod) {
-                        log.warn("No getter method found for property '" + propertyName + "'");
-                    } else {
-                        Object value = getterMethod.invoke(object, null);
-                        entity.setProperty(propertyName, value);
-                    }
-                } catch (Exception e) {
-                    log.warn(e.getMessage(), e);
-                }
-
-            }
-        }
-    }
-
     @SuppressWarnings("unchecked")
-    public static <T extends CentaurEntity> T fromEntity(final Entity entity, Class<?> klass) {
+    public <T extends CentaurEntity> T fromEntity(final Entity entity, Class<?> klass) {
         if (null == entity) {
             return null;
         }
@@ -119,25 +106,27 @@ public class EntityTranslator {
                         log.trace("Processing property '" + propertyName + "'");
                     }
                     Object value = entry.getValue();
-                    Method setterMethod = getSetterForProperty(object, propertyName);
+                    PropertyDescriptor descriptor = PropertyUtils.getPropertyDescriptor(object, propertyName);
+                    Method setterMethod = PropertyUtils.getWriteMethod(descriptor);
+                    Method getterMethod = PropertyUtils.getReadMethod(descriptor);
 
                     if (null == setterMethod) {
                         log.warn("No setter method found for property '" + propertyName + "'");
                     } else {
                         // Cast the value to the correct type for this field
-                        Field field = getField(object, propertyName);
+                        //Field field = getField(object, propertyName);
                         Object castValue = value;
                         if (value != null) {
-                            if (Integer.class.equals(field.getType()) ||
-                                    int.class.equals(field.getType())) {
+                            if (Integer.class.equals(descriptor.getPropertyType()) ||
+                                    int.class.equals(descriptor.getPropertyType())) {
                                 castValue = ((Long) value).intValue();
-                            } else if (List.class.equals(field.getType())) {
+                            } else if (List.class.equals(descriptor.getPropertyType())) {
                                 // Field is a List class.  Let's see if we have to convert the values
 
-                                if (field.getGenericType() instanceof ParameterizedType) {
-                                    ParameterizedType pType = (ParameterizedType) field.getGenericType();
+                                if (getterMethod.getGenericReturnType() instanceof ParameterizedType) {
+                                    ParameterizedType pType = (ParameterizedType) getterMethod.getGenericReturnType();
                                     if (Integer.class.equals(pType.getActualTypeArguments()[0])) {
-                                        List<Integer> integerList = new ArrayList<Integer>();
+                                        List<Integer> integerList = new ArrayList<>();
 
                                         for (Long longValue : (List<Long>) value) {
                                             integerList.add(longValue.intValue());
@@ -159,32 +148,5 @@ public class EntityTranslator {
             }
         }
         return object;
-    }
-
-    private static Method getGetterForField(Object object, Field field) throws NoSuchMethodException {
-        if (boolean.class.equals(field.getType())) {
-            String getterFieldName = "is" + StringUtils.capitalize(field.getName());
-
-            Method isMethod = ReflectionUtils.findMethod(object.getClass(), getterFieldName);
-            if (isMethod != null) {
-                return isMethod;
-            }
-        }
-
-        String getterFieldName = "get" + StringUtils.capitalize(field.getName());
-
-        return ReflectionUtils.findMethod(object.getClass(), getterFieldName);
-    }
-
-    private static Method getSetterForProperty(Object object, String propertyName) throws NoSuchMethodException {
-        Field field = getField(object, propertyName);
-
-        String setterFieldName = "set" + StringUtils.capitalize(propertyName);
-
-        return ReflectionUtils.findMethod(object.getClass(), setterFieldName, field.getType());
-    }
-
-    private static Field getField(Object object, String propertyName) {
-        return ReflectionUtils.findField(object.getClass(), propertyName);
     }
 }

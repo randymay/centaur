@@ -34,7 +34,7 @@ public class EntityTranslatorTest {
         simpleClass.setName(name);
         simpleClass.setShortDescription(description);
 
-        Entity entity = EntityTranslator.toEntity(simpleClass);
+        Entity entity = new EntityTranslator().toEntity(simpleClass);
 
         assertEquals(0, entity.getKey().getId());
         assertEquals(simpleClass.getKind(), entity.getKind());
@@ -52,7 +52,7 @@ public class EntityTranslatorTest {
         entity.setProperty("name", name);
         entity.setProperty("shortDescription", description);
 
-        SimpleEntity simpleClass = EntityTranslator.fromEntity(entity, SimpleEntity.class);
+        SimpleEntity simpleClass = new EntityTranslator().fromEntity(entity, SimpleEntity.class);
 
         assertEquals(0, entity.getKey().getId());
         assertEquals(simpleClass.getKind(), entity.getKind());
