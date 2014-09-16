@@ -28,14 +28,6 @@ class CentaurDAO {
         }
     }
 
-    public Key save(Entity entity) {
-        return getDatastoreService().put(entity);
-    }
-
-    public void delete(Entity entity) {
-        getDatastoreService().delete(entity.getKey());
-    }
-
     public Key save(Transaction transaction, Entity entity) {
         return getDatastoreService().put(transaction, entity);
     }

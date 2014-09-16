@@ -34,6 +34,8 @@ public interface CentaurService {
 
     public <T extends CentaurEntity> void deleteObject(T object) throws CentaurException;
 
+    public <T extends CentaurEntity> void deleteObject(T object, Transaction transaction) throws CentaurException;
+
     public <T extends CentaurEntity> T getObjectByUserId(String kind, String userId, Class<T> klass) throws CentaurException;
 
     public <T extends CentaurEntity> Key createKey(T object) throws CentaurException;

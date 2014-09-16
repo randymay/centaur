@@ -125,7 +125,12 @@ public class CentaurServiceImpl implements CentaurService {
 
     @Override
     public <T extends CentaurEntity> void deleteObject(T object) throws CentaurException {
-        dao.delete(EntityTranslator.toEntity(object));
+        this.deleteObject(object, null);
+    }
+
+    @Override
+    public <T extends CentaurEntity> void deleteObject(T object, Transaction transaction) throws CentaurException {
+        dao.delete(transaction, EntityTranslator.toEntity(object));
     }
 
     @Override
@@ -217,10 +222,6 @@ public class CentaurServiceImpl implements CentaurService {
 
     public void commit(Transaction transaction) {
         dao.commitTransaction(transaction);
-    }
-
-    protected boolean isDAOActive() {
-        return !(null == dao);
     }
 
     protected void setDao(CentaurDAO dao) {
