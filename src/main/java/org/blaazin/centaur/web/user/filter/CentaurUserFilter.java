@@ -3,63 +3,53 @@ package org.blaazin.centaur.web.user.filter;
 import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
-import org.springframework.web.filter.OncePerRequestFilter;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.*;
 import java.io.IOException;
 
 /**
  * Sets the Current User object as well as Login and Logout URLs to the Request
  */
-public class CentaurUserFilter extends OncePerRequestFilter {
+public class CentaurUserFilter implements Filter {
 
     private String postLoginURL = null;
     private String postLogoutURL = null;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    public void init(FilterConfig filterConfig) throws ServletException {
+        // Nothing needed here.
+    }
+
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         UserService userService = UserServiceFactory.getUserService();
         User currentUser = userService.getCurrentUser();
 
         request.setAttribute("loginURL", userService.createLoginURL(createPostLoginURL(request)));
-        request.setAttribute("logoutURL", userService.createLogoutURL(createPostLoginURL(request)));
+        request.setAttribute("logoutURL", userService.createLogoutURL(createPostLogoutURL(request)));
         request.setAttribute("currentUser", currentUser);
 
-        filterChain.doFilter(request, response);
+        chain.doFilter(request, response);
     }
 
-    public String createPostLoginURL(HttpServletRequest request) {
-        if (getPostLoginURL() == null) {
-            setPostLoginURL(request.getServletContext().getInitParameter("postLoginURL"));
+    public String createPostLoginURL(ServletRequest request) {
+        if (postLoginURL == null) {
+            postLoginURL = (request.getServletContext().getInitParameter("postLoginURL"));
         }
 
-        return getPostLoginURL();
-    }
-
-    public String createPostLogoutURL(HttpServletRequest request) {
-        if (getPostLogoutURL() == null) {
-            setPostLogoutURL(request.getServletContext().getInitParameter("postLogoutURL"));
-        }
-
-        return getPostLogoutURL();
-    }
-
-    public String getPostLoginURL() {
         return postLoginURL;
     }
 
-    public void setPostLoginURL(String postLoginURL) {
-        this.postLoginURL = postLoginURL;
-    }
+    public String createPostLogoutURL(ServletRequest request) {
+        if (postLogoutURL == null) {
+            postLogoutURL = (request.getServletContext().getInitParameter("postLogoutURL"));
+        }
 
-    public String getPostLogoutURL() {
         return postLogoutURL;
     }
 
-    public void setPostLogoutURL(String postLogoutURL) {
-        this.postLogoutURL = postLogoutURL;
+    @Override
+    public void destroy() {
+        // Nothing needed here
     }
 }

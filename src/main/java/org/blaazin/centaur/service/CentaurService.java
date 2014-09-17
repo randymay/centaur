@@ -4,12 +4,10 @@ import org.blaazin.centaur.CentaurException;
 import org.blaazin.centaur.data.dto.CentaurEntity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Transaction;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
 
-@Service
 public interface CentaurService {
 
     public <T extends CentaurEntity> Key save(T object) throws CentaurException;

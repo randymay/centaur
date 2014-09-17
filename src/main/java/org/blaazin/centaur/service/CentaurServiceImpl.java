@@ -1,24 +1,20 @@
 package org.blaazin.centaur.service;
 
-import org.blaazin.centaur.CentaurException;
-import org.blaazin.centaur.data.dto.CentaurEntity;
-import org.blaazin.centaur.data.util.EntityTranslator;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Transaction;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.blaazin.centaur.CentaurException;
+import org.blaazin.centaur.data.dto.CentaurEntity;
+import org.blaazin.centaur.data.util.EntityTranslator;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-@Service
 public class CentaurServiceImpl implements CentaurService {
 
-    @Autowired
     private CentaurDAO dao;
 
     @Override
