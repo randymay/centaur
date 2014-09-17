@@ -4,9 +4,10 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import org.blaazin.centaur.data.dto.CentaurEntity;
 import org.blaazin.centaur.data.dto.MapEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
@@ -16,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 public class EntityTranslator {
-    private static final Logger log = Logger.getLogger(EntityTranslator.class);
+    private static final Logger log = LoggerFactory.getLogger(EntityTranslator.class);
 
     public <T extends CentaurEntity> Entity toEntity(final T object) {
         return toEntity(object, null);

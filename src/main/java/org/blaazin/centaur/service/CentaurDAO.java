@@ -4,7 +4,8 @@ import org.blaazin.centaur.CentaurException;
 import org.blaazin.centaur.data.dto.SortCriteria;
 import com.google.appengine.api.datastore.*;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,7 +14,7 @@ import java.util.Map;
 
 class CentaurDAO {
 
-    private static final Logger log = Logger.getLogger(CentaurDAO.class);
+    private static final Logger log = LoggerFactory.getLogger(CentaurDAO.class);
 
     private DatastoreService getDatastoreService() {
         return DatastoreServiceFactory.getDatastoreService();
