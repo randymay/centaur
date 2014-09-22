@@ -53,7 +53,7 @@ public class EntityTranslator {
             PropertyDescriptor[] propertyDescriptors = PropertyUtils.getPropertyDescriptors(object);
             for (PropertyDescriptor descriptor : propertyDescriptors) {
                 String propertyName = descriptor.getName();
-                if (!"key".equals(propertyName) && !"kind".equals(propertyName)) {
+                if (!"appEngineKey".equals(propertyName) && !"key".equals(propertyName) && !"kind".equals(propertyName)) {
                     try {
                         if (log.isTraceEnabled()) {
                             log.trace("Processing property '" + propertyName + "'");

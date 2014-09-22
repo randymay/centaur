@@ -14,6 +14,7 @@ import org.junit.Test;
 import java.util.*;
 
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class CentaurServiceImplTest {
 
@@ -434,5 +435,48 @@ public class CentaurServiceImplTest {
         assertNotNull(actual);
         assertEquals(id, actual.getAppEngineKey().getId());
         assertEquals(description, actual.getLongDescription());
+    }
+
+
+    @Test
+    public void testUserCRUD() throws Exception {
+        UserEntity userEntity = new UserEntity();
+
+        service.save(userEntity);
+
+        Key userKey = userEntity.getAppEngineKey();
+
+        assertNotNull(userKey);
+        assertNotNull(service.getObject(userKey, SimpleEntity.class));
+        assertNull(userEntity.getFirstName());
+
+        userEntity.setFirstName("name");
+        service.save(userEntity);
+        userEntity = service.getObject(userKey, UserEntity.class);
+        assertEquals("name", userEntity.getFirstName());
+
+        service.deleteObject(userEntity);
+
+        try {
+            service.getObject(userKey, UserEntity.class);
+            fail("This should have thrown an Exception");
+        } catch (CentaurException e) {
+            // This is expected behaviour
+        }
+
+        userEntity = new UserEntity();
+
+        service.save(userEntity);
+
+        //accountService.create(account);
+        //assertNotNull(account);
+        //Key accountId = account.getId();
+        //assertNotNull(accountId);
+
+        userKey = userEntity.getAppEngineKey();
+
+        assertNotNull(userKey);
+        userEntity = service.getObject(userKey, UserEntity.class);
+        assertNotNull(userEntity);
     }
 }
