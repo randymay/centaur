@@ -12,12 +12,18 @@ import java.io.IOException;
  */
 public class CentaurUserFilter implements Filter {
 
+    public static final String LOGIN_URL_PARAMETER_NAME = "loginURL";
+    public static final String LOGOUT_URL_PARAMETER_NAME = "logoutURL";
+    public static final String CURRENT_USER_PARAMETER_NAME = "currentUser";
+
     private String postLoginURL = null;
     private String postLogoutURL = null;
 
+    private FilterConfig filterConfig = null;
+
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        // Nothing needed here.
+        this.filterConfig = filterConfig;
     }
 
     @Override
@@ -25,16 +31,16 @@ public class CentaurUserFilter implements Filter {
         UserService userService = UserServiceFactory.getUserService();
         User currentUser = userService.getCurrentUser();
 
-        request.setAttribute("loginURL", userService.createLoginURL(createPostLoginURL(request)));
-        request.setAttribute("logoutURL", userService.createLogoutURL(createPostLogoutURL(request)));
-        request.setAttribute("currentUser", currentUser);
+        request.setAttribute(LOGIN_URL_PARAMETER_NAME, userService.createLoginURL(createPostLoginURL(request)));
+        request.setAttribute(LOGOUT_URL_PARAMETER_NAME, userService.createLogoutURL(createPostLogoutURL(request)));
+        request.setAttribute(CURRENT_USER_PARAMETER_NAME, currentUser);
 
         chain.doFilter(request, response);
     }
 
     public String createPostLoginURL(ServletRequest request) {
         if (postLoginURL == null) {
-            postLoginURL = (request.getServletContext().getInitParameter("postLoginURL"));
+            postLoginURL = (filterConfig.getInitParameter("postLoginURL"));
         }
 
         return postLoginURL;
@@ -42,7 +48,7 @@ public class CentaurUserFilter implements Filter {
 
     public String createPostLogoutURL(ServletRequest request) {
         if (postLogoutURL == null) {
-            postLogoutURL = (request.getServletContext().getInitParameter("postLogoutURL"));
+            postLogoutURL = (filterConfig.getInitParameter("postLogoutURL"));
         }
 
         return postLogoutURL;
