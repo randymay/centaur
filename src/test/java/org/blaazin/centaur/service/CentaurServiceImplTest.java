@@ -462,6 +462,7 @@ public class CentaurServiceImplTest {
             fail("This should have thrown an Exception");
         } catch (CentaurException e) {
             // This is expected behaviour
+            assertTrue(e.getCause() instanceof EntityNotFoundException);
         }
 
         userEntity = new UserEntity();
