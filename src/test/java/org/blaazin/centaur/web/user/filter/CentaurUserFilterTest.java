@@ -1,17 +1,13 @@
 package org.blaazin.centaur.web.user.filter;
 
 import com.google.appengine.api.users.User;
-import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.google.appengine.tools.development.testing.LocalUserServiceTestConfig;
-import org.blaazin.centaur.service.CentaurService;
-import org.blaazin.centaur.service.CentaurServiceFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import javax.servlet.FilterChain;
@@ -79,5 +75,6 @@ public class CentaurUserFilterTest {
         verify(request, times(1)).setAttribute(CentaurUserFilter.LOGIN_URL_PARAMETER_NAME, "/_ah/login?continue=" + LOGIN_URL);
         verify(request, times(1)).setAttribute(CentaurUserFilter.LOGOUT_URL_PARAMETER_NAME, "/_ah/logout?continue=" + LOGOUT_URL);
         verify(request, times(1)).setAttribute(eq(CentaurUserFilter.CURRENT_USER_PARAMETER_NAME), argThat(new UserMatcher()));
+        verify(filterChain, times(1)).doFilter(request, response);
     }
 }

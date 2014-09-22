@@ -31,14 +31,14 @@ public class CentaurUserFilter implements Filter {
         UserService userService = UserServiceFactory.getUserService();
         User currentUser = userService.getCurrentUser();
 
-        request.setAttribute(LOGIN_URL_PARAMETER_NAME, userService.createLoginURL(createPostLoginURL(request)));
-        request.setAttribute(LOGOUT_URL_PARAMETER_NAME, userService.createLogoutURL(createPostLogoutURL(request)));
+        request.setAttribute(LOGIN_URL_PARAMETER_NAME, userService.createLoginURL(createPostLoginURL()));
+        request.setAttribute(LOGOUT_URL_PARAMETER_NAME, userService.createLogoutURL(createPostLogoutURL()));
         request.setAttribute(CURRENT_USER_PARAMETER_NAME, currentUser);
 
         chain.doFilter(request, response);
     }
 
-    public String createPostLoginURL(ServletRequest request) {
+    public String createPostLoginURL() {
         if (postLoginURL == null) {
             postLoginURL = (filterConfig.getInitParameter("postLoginURL"));
         }
@@ -46,7 +46,7 @@ public class CentaurUserFilter implements Filter {
         return postLoginURL;
     }
 
-    public String createPostLogoutURL(ServletRequest request) {
+    public String createPostLogoutURL() {
         if (postLogoutURL == null) {
             postLogoutURL = (filterConfig.getInitParameter("postLogoutURL"));
         }
