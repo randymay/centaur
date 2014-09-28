@@ -10,45 +10,41 @@ import java.util.Map;
 
 public interface CentaurService {
 
-    public <T extends CentaurEntity> Key save(T object) throws CentaurException;
+    public <T> Key save(T object) throws CentaurException;
 
-    public <T extends CentaurEntity> Key save(T object, Transaction transaction) throws CentaurException;
+    public <T> Key save(T object, Transaction transaction) throws CentaurException;
 
-    public <T extends CentaurEntity, X extends CentaurEntity> Key saveChild(X parent, T object) throws CentaurException;
+    public <T, X> Key saveChild(X parent, T object) throws CentaurException;
 
-    public <T extends CentaurEntity, X extends CentaurEntity> Key saveChild(X parent, T object, Transaction transaction) throws CentaurException;
+    public <T, X> Key saveChild(X parent, T object, Transaction transaction) throws CentaurException;
 
-    public <T extends CentaurEntity> T getObject(Key key, Class<T> klass) throws CentaurException;
+    public <T> T getObject(Key key, Class<T> klass) throws CentaurException;
 
-    public <T extends CentaurEntity> T getObject(String kind, String name, Class<T> klass) throws CentaurException;
+    public <T> T getObject(String kind, String name, Class<T> klass) throws CentaurException;
 
-    public <T extends CentaurEntity> T getObject(String kind, long id, Class<T> klass) throws CentaurException;
+    public <T> T getObject(String kind, long id, Class<T> klass) throws CentaurException;
 
-    public <T extends CentaurEntity> T getObject(String name, Class<T> klass) throws CentaurException;
+    public <T> T getObject(String name, Class<T> klass) throws CentaurException;
 
-    public <T extends CentaurEntity> T getObject(String propertyName, Object value, Class<T> klass) throws CentaurException;
+    public <T> T getObject(String propertyName, Object value, Class<T> klass) throws CentaurException;
 
-    public <T extends CentaurEntity> T getObjectByUserId(String userId, Class<T> klass) throws CentaurException;
+    public <T> T getObjectByUserId(String userId, Class<T> klass) throws CentaurException;
 
-    public <T extends CentaurEntity> void deleteObject(T object) throws CentaurException;
+    public <T> void deleteObject(T object) throws CentaurException;
 
-    public <T extends CentaurEntity> void deleteObject(T object, Transaction transaction) throws CentaurException;
+    public <T> void deleteObject(T object, Transaction transaction) throws CentaurException;
 
-    public <T extends CentaurEntity> T getObjectByUserId(String kind, String userId, Class<T> klass) throws CentaurException;
+    public <T> T getObjectByUserId(String kind, String userId, Class<T> klass) throws CentaurException;
 
-    public <T extends CentaurEntity> Key createKey(T object) throws CentaurException;
+    public <T, X> List<T> getChildren(String kind, X parent, Class<T> klass) throws CentaurException;
 
-    public <T extends CentaurEntity, X extends CentaurEntity> Key createKey(X parent, T object) throws CentaurException;
+    public <T> T getObject(String kind, String property, Object value, Class<T> klass) throws CentaurException;
 
-    public <T extends CentaurEntity, X extends CentaurEntity> List<T> getChildren(String kind, X parent, Class<T> klass) throws CentaurException;
+    public <T> List<T> getObjects(String kind, Class<T> klass) throws CentaurException;
 
-    public <T extends CentaurEntity> T getObject(String kind, String property, Object value, Class<T> klass) throws CentaurException;
+    public <T> List<T> getObjects(String kind, String propertyName, Object value, Class<T> klass) throws CentaurException;
 
-    public <T extends CentaurEntity> List<T> getObjects(String kind, Class<T> klass) throws CentaurException;
-
-    public <T extends CentaurEntity> List<T> getObjects(String kind, String propertyName, Object value, Class<T> klass) throws CentaurException;
-
-    public <T extends CentaurEntity> List<T> getObjects(String kind, Map<String, Object> keyValues, Class<T> klass) throws CentaurException;
+    public <T> List<T> getObjects(String kind, Map<String, Object> keyValues, Class<T> klass) throws CentaurException;
 
     public Transaction beginTransaction();
 

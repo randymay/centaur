@@ -1,13 +1,21 @@
 package org.blaazinsoftware.centaur.data.dto;
 
 import com.google.appengine.api.datastore.Key;
+import org.blaazinsoftware.centaur.annotation.AppEngineKey;
+import org.blaazinsoftware.centaur.annotation.AppEngineKind;
+import org.blaazinsoftware.centaur.annotation.AppEngineName;
 
 import java.util.HashMap;
 
 public final class MapEntity extends HashMap<String, Object> implements CentaurEntity {
 
+    @AppEngineKey
     private Key key;
+
+    @AppEngineKind
     private String kind;
+
+    @AppEngineName
     private String name;
 
     public MapEntity() {

@@ -288,23 +288,23 @@ public class CentaurServiceImplTest {
 
     @Test
     public void testToAndFromMapEntity() throws Exception {
-        MapEntity simpleEntity = new MapEntity();
+        MapEntity mapEntity = new MapEntity();
 
-        simpleEntity.put("key1", "value1");
-        simpleEntity.put("key2", 2l);
+        mapEntity.put("key1", "value1");
+        mapEntity.put("key2", 2l);
 
-        service.save(simpleEntity);
+        service.save(mapEntity);
 
-        Key key = simpleEntity.getAppEngineKey();
+        Key key = mapEntity.getAppEngineKey();
         assertNotNull(key);
 
-        simpleEntity = service.getObject(key, MapEntity.class);
-        assertNotNull(simpleEntity);
-        assertEquals(key, simpleEntity.getAppEngineKey());
-        assertTrue(simpleEntity.containsKey("key1"));
-        assertEquals("value1", simpleEntity.get("key1"));
-        assertTrue(simpleEntity.containsKey("key2"));
-        assertEquals(2l, simpleEntity.get("key2"));
+        mapEntity = service.getObject(key, MapEntity.class);
+        assertNotNull(mapEntity);
+        assertEquals(key, mapEntity.getAppEngineKey());
+        assertTrue(mapEntity.containsKey("key1"));
+        assertEquals("value1", mapEntity.get("key1"));
+        assertTrue(mapEntity.containsKey("key2"));
+        assertEquals(2l, mapEntity.get("key2"));
     }
 
     @Test

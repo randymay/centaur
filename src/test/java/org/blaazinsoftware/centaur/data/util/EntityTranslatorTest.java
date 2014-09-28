@@ -3,12 +3,15 @@ package org.blaazinsoftware.centaur.data.util;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
+import org.blaazinsoftware.centaur.service.EntityTranslator;
 import org.blaazinsoftware.centaur.service.SimpleEntity;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 public class EntityTranslatorTest {
 
@@ -26,7 +29,7 @@ public class EntityTranslatorTest {
     }
 
     @Test
-    public void testToEntityWithEmptyKey() {
+    public void testToEntityWithEmptyKey() throws Exception {
         SimpleEntity simpleClass = new SimpleEntity();
 
         final String name = "name";
@@ -36,14 +39,26 @@ public class EntityTranslatorTest {
 
         Entity entity = new EntityTranslator().toEntity(simpleClass);
 
-        assertEquals(0, entity.getKey().getId());
-        assertEquals(simpleClass.getKind(), entity.getKind());
-        assertEquals(simpleClass.getName(), entity.getProperty("name"));
-        assertEquals(simpleClass.getShortDescription(), entity.getProperty("shortDescription"));
+        assertNotNull(entity);
     }
 
     @Test
-    public void testFromEntityWithEmptyKey() {
+    public void testToEntityWithEmptyKeyKindName() throws Exception {
+        SimpleEntity simpleClass = new SimpleEntity();
+
+        simpleClass.setName(null);
+        simpleClass.setKind(null);
+
+        try {
+            new EntityTranslator().toEntity(simpleClass);
+            fail("Should have thrown an Exception");
+        } catch (Exception e) {
+            assertEquals(IllegalArgumentException.class, e.getClass());
+        }
+    }
+
+    @Test
+    public void testFromEntityWithEmptyKey() throws Exception {
         final String name = "name";
         final String description = "description";
 

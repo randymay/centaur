@@ -1,10 +1,10 @@
-package org.blaazinsoftware.centaur.data.util;
+package org.blaazinsoftware.centaur.service;
 
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.blaazinsoftware.centaur.data.dto.CentaurEntity;
+import org.blaazinsoftware.centaur.CentaurException;
 import org.blaazinsoftware.centaur.data.dto.MapEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,32 +19,37 @@ import java.util.Map;
 public class EntityTranslator {
     private static final Logger log = LoggerFactory.getLogger(EntityTranslator.class);
 
-    public <T extends CentaurEntity> Entity toEntity(final T object) {
+    public <T> Entity toEntity(final T object) throws CentaurException {
         return toEntity(object, null);
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends CentaurEntity> Entity toEntity(final T object, Key parentKey) {
+    public <T> Entity toEntity(final T object, Key parentKey) throws CentaurException {
         if (null == object) {
             return null;
         }
         if (log.isTraceEnabled()) {
             log.trace("Attempting to convert " + object + " to an Entity: ");
         }
-        if (StringUtils.isEmpty(object.getKind())) {
-            throw new IllegalArgumentException("Kind is missing");
-        }
 
         Entity entity;
 
-        if (null == object.getAppEngineKey()) {
-            entity = new Entity(object.getKind(), parentKey);
+        Key key = CentaurServiceUtils.getKey(object);
+
+        if (null == key) {
+            String kindValue = CentaurServiceUtils.getKindValue(object);
+
+            if (StringUtils.isEmpty(kindValue)) {
+                throw new IllegalArgumentException("Kind is missing");
+            }
+
+            entity = new Entity(kindValue, parentKey);
         } else {
-            entity = new Entity(object.getAppEngineKey());
+            entity = new Entity(key);
         }
 
-        if (object instanceof MapEntity) {
-            entity.setProperty("name", object.getName());
+        if (object instanceof Map) {
+            entity.setProperty("name", CentaurServiceUtils.getNameValue(object));
             Map<String, Object> mapValues = (Map) object;
             for (Map.Entry<String, Object> entry : mapValues.entrySet()) {
                 entity.setProperty(entry.getKey(), entry.getValue());
@@ -53,7 +58,10 @@ public class EntityTranslator {
             PropertyDescriptor[] propertyDescriptors = PropertyUtils.getPropertyDescriptors(object);
             for (PropertyDescriptor descriptor : propertyDescriptors) {
                 String propertyName = descriptor.getName();
-                if (!"appEngineKey".equals(propertyName) && !"key".equals(propertyName) && !"kind".equals(propertyName)) {
+                if (!"appEngineKey".equals(propertyName) &&
+                        !"key".equals(propertyName) &&
+                        !"kind".equals(propertyName) &&
+                        !"class".equals(propertyName)) {
                     try {
                         if (log.isTraceEnabled()) {
                             log.trace("Processing property '" + propertyName + "'");
@@ -78,7 +86,7 @@ public class EntityTranslator {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends CentaurEntity> T fromEntity(final Entity entity, Class<?> klass) {
+    public <T> T fromEntity(final Entity entity, Class<?> klass) throws CentaurException {
         if (null == entity) {
             return null;
         }
@@ -93,7 +101,7 @@ public class EntityTranslator {
             return null;
         }
 
-        object.setAppEngineKey(entity.getKey());
+        CentaurServiceUtils.setKey(object, entity.getKey());
 
         for (Map.Entry<String, Object> entry : entity.getProperties().entrySet()) {
             if (object instanceof MapEntity) {

@@ -4,10 +4,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Transaction;
-import org.apache.commons.lang3.StringUtils;
 import org.blaazinsoftware.centaur.CentaurException;
-import org.blaazinsoftware.centaur.data.dto.CentaurEntity;
-import org.blaazinsoftware.centaur.data.util.EntityTranslator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,99 +15,94 @@ public class CentaurServiceImpl implements CentaurService {
     private CentaurDAO dao;
 
     @Override
-    public <T extends CentaurEntity> Key save(T object) throws CentaurException {
+    public <T> Key save(T object) throws CentaurException {
         return save(object, null);
     }
 
     @Override
-    public <T extends CentaurEntity> Key save(T object, Transaction transaction) throws CentaurException {
-        if (null == object.getAppEngineKey()) {
-            initKey(object);
+    public <T> Key save(T object, Transaction transaction) throws CentaurException {
+
+        Key key = CentaurServiceUtils.getKey(object);
+        if (null == key) {
+            CentaurServiceUtils.initKey(object);
         }
-        Key key = dao.save(transaction, new EntityTranslator().toEntity(object));
-        if (null == object.getAppEngineKey()) {
-            object.setAppEngineKey(key);
+        key = dao.save(transaction, new EntityTranslator().toEntity(object));
+        if (null == CentaurServiceUtils.getKey(object)) {
+            CentaurServiceUtils.setKey(object, key);
         }
 
         return key;
     }
 
-    private <T extends CentaurEntity> void initKey(T object) throws CentaurException {
-        if (null == object.getAppEngineKey()) {
-            Key key = createKey(object);
-            object.setAppEngineKey(key);
-        }
-    }
-
     @Override
-    public <T extends CentaurEntity, X extends CentaurEntity> Key saveChild(X parent, T object) throws CentaurException {
+    public <T, X> Key saveChild(X parent, T object) throws CentaurException {
         Key childKey = this.saveChild(parent, object, null);
-        if (null == object.getAppEngineKey()) {
-            object.setAppEngineKey(childKey);
+        if (null == CentaurServiceUtils.getKey(object)) {
+            CentaurServiceUtils.setKey(object, childKey);
         }
 
         return childKey;
     }
 
     @Override
-    public <T extends CentaurEntity, X extends CentaurEntity> Key saveChild(X parent, T object, Transaction transaction) throws CentaurException {
-        if (null == parent || null == parent.getAppEngineKey()) {
-            throw new CentaurException("Parent Entity is required");
+    public <T, X> Key saveChild(X parent, T object, Transaction transaction) throws CentaurException {
+        if (null == parent || null == CentaurServiceUtils.getKey(parent)) {
+            throw new CentaurException("Parent is null, or no Key field found");
         }
 
-        if (null == object.getAppEngineKey()) {
-            Key key = createKey(parent, object);
-            object.setAppEngineKey(key);
+        if (null == CentaurServiceUtils.getKey(object)) {
+            Key key = CentaurServiceUtils.createKey(parent, object);
+            CentaurServiceUtils.setKey(object, key);
             if (null == key) {
-                return dao.save(transaction, new EntityTranslator().toEntity(object, parent.getAppEngineKey()));
+                return dao.save(transaction, new EntityTranslator().toEntity(object, CentaurServiceUtils.getKey(parent)));
             }
         }
         return dao.save(transaction, new EntityTranslator().toEntity(object));
     }
 
     @Override
-    public <T extends CentaurEntity> T getObject(Key key, Class<T> klass) throws CentaurException {
+    public <T> T getObject(Key key, Class<T> klass) throws CentaurException {
         return new EntityTranslator().fromEntity(dao.getByKey(key), klass);
     }
 
     @Override
-    public <T extends CentaurEntity> T getObject(String kind, String name, Class<T> klass) throws CentaurException {
+    public <T> T getObject(String kind, String name, Class<T> klass) throws CentaurException {
         Key key = KeyFactory.createKey(kind, name);
 
         return new EntityTranslator().fromEntity(dao.getByKey(key), klass);
     }
 
     @Override
-    public <T extends CentaurEntity> T getObject(String kind, long id, Class<T> klass) throws CentaurException {
+    public <T> T getObject(String kind, long id, Class<T> klass) throws CentaurException {
         Key key = KeyFactory.createKey(kind, id);
 
         return new EntityTranslator().fromEntity(dao.getByKey(key), klass);
     }
 
     @Override
-    public <T extends CentaurEntity> T getObject(String name, Class<T> klass) throws CentaurException {
+    public <T> T getObject(String name, Class<T> klass) throws CentaurException {
         Key key = KeyFactory.createKey(klass.getSimpleName(), name);
 
         return new EntityTranslator().fromEntity(dao.getByKey(key), klass);
     }
 
     @Override
-    public <T extends CentaurEntity> T getObject(String propertyName, Object value, Class<T> klass) throws CentaurException {
+    public <T> T getObject(String propertyName, Object value, Class<T> klass) throws CentaurException {
         return this.getObject(klass.getSimpleName(), propertyName, value, klass);
     }
 
     @Override
-    public <T extends CentaurEntity> T getObjectByUserId(String userId, Class<T> klass) throws CentaurException {
+    public <T> T getObjectByUserId(String userId, Class<T> klass) throws CentaurException {
         return getObject(klass.getSimpleName(), "userId", userId, klass);
     }
 
     @Override
-    public <T extends CentaurEntity> T getObjectByUserId(String kind, String userId, Class<T> klass) throws CentaurException {
+    public <T> T getObjectByUserId(String kind, String userId, Class<T> klass) throws CentaurException {
         return getObject(kind, "userId", userId, klass);
     }
 
     @Override
-    public <T extends CentaurEntity> T getObject(String kind, String propertyName, Object value, Class<T> klass) throws CentaurException {
+    public <T> T getObject(String kind, String propertyName, Object value, Class<T> klass) throws CentaurException {
         Entity entity = dao.getSingleEntityByPropertyValue(kind, propertyName, value);
         if (entity == null) {
             return null;
@@ -120,36 +112,17 @@ public class CentaurServiceImpl implements CentaurService {
     }
 
     @Override
-    public <T extends CentaurEntity> void deleteObject(T object) throws CentaurException {
+    public <T> void deleteObject(T object) throws CentaurException {
         this.deleteObject(object, null);
     }
 
     @Override
-    public <T extends CentaurEntity> void deleteObject(T object, Transaction transaction) throws CentaurException {
+    public <T> void deleteObject(T object, Transaction transaction) throws CentaurException {
         dao.delete(transaction, new EntityTranslator().toEntity(object));
     }
 
     @Override
-    public <T extends CentaurEntity> Key createKey(T object) throws CentaurException {
-        if (object != null && !StringUtils.isEmpty(object.getKind()) && !StringUtils.isEmpty(object.getName())) {
-            return KeyFactory.createKey(object.getKind(), object.getName());
-        }
-
-        return null;
-    }
-
-    @Override
-    public <T extends CentaurEntity, X extends CentaurEntity> Key createKey(X parent, T object) throws CentaurException {
-        if (object != null && !StringUtils.isEmpty(object.getKind()) && !StringUtils.isEmpty(object.getName())) {
-            Entity parentEntity = new EntityTranslator().toEntity(parent);
-            return KeyFactory.createKey(parentEntity.getKey(), object.getKind(), object.getName());
-        }
-
-        return null;
-    }
-
-    @Override
-    public <T extends CentaurEntity, X extends CentaurEntity> List<T> getChildren(String kind, X parent, Class<T> klass) throws CentaurException {
+    public <T, X> List<T> getChildren(String kind, X parent, Class<T> klass) throws CentaurException {
         Entity parentEntity = new EntityTranslator().toEntity(parent);
         List<Entity> entities = dao.getChildren(kind, parentEntity);
 
@@ -167,7 +140,7 @@ public class CentaurServiceImpl implements CentaurService {
     }
 
     @Override
-    public <T extends CentaurEntity> List<T> getObjects(String kind, Class<T> klass) throws CentaurException {
+    public <T> List<T> getObjects(String kind, Class<T> klass) throws CentaurException {
         List<T> entityList = new ArrayList<>();
         List<Entity> entities = dao.getEntitiesByKind(kind);
         if (entities == null) {
@@ -183,12 +156,12 @@ public class CentaurServiceImpl implements CentaurService {
     }
 
     @Override
-    public <T extends CentaurEntity> List<T> getObjects(String kind, String propertyName, Object value, Class<T> klass) throws CentaurException {
+    public <T> List<T> getObjects(String kind, String propertyName, Object value, Class<T> klass) throws CentaurException {
         List<Entity> entities = dao.getEntitiesByPropertyValue(kind, propertyName, value);
         return getObjectListFromEntities(klass, entities);
     }
 
-    private <T extends CentaurEntity> List<T> getObjectListFromEntities(Class<T> klass, List<Entity> entities) {
+    private <T> List<T> getObjectListFromEntities(Class<T> klass, List<Entity> entities) throws CentaurException {
         if (entities == null) {
             return null;
         }
@@ -203,7 +176,7 @@ public class CentaurServiceImpl implements CentaurService {
     }
 
     @Override
-    public <T extends CentaurEntity> List<T> getObjects(String kind, Map<String, Object> keyValues, Class<T> klass) throws CentaurException {
+    public <T> List<T> getObjects(String kind, Map<String, Object> keyValues, Class<T> klass) throws CentaurException {
         List<Entity> entities = dao.getEntitiesByPropertyValues(kind, keyValues);
         return getObjectListFromEntities(klass, entities);
     }
