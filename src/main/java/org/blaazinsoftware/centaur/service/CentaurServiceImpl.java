@@ -39,12 +39,7 @@ public class CentaurServiceImpl implements CentaurService {
 
     @Override
     public <T, X> Key saveChild(X parent, T object) throws CentaurException {
-        Key childKey = this.saveChild(parent, object, null);
-        if (null == CentaurServiceUtils.getKey(object)) {
-            CentaurServiceUtils.setKey(object, childKey);
-        }
-
-        return childKey;
+        return this.saveChild(parent, object, null);
     }
 
     @Override
@@ -53,14 +48,24 @@ public class CentaurServiceImpl implements CentaurService {
             throw new CentaurException("Parent is null, or no Key field found");
         }
 
+        Key key;
         if (null == CentaurServiceUtils.getKey(object)) {
-            Key key = CentaurServiceUtils.createKey(parent, object);
+            key = CentaurServiceUtils.createKey(parent, object);
             CentaurServiceUtils.setKey(object, key);
             if (null == key) {
-                return dao.save(transaction, entityTranslator.toEntity(object, CentaurServiceUtils.getKey(parent)));
+                key = dao.save(transaction, entityTranslator.toEntity(object, CentaurServiceUtils.getKey(parent)));
+            } else {
+                CentaurServiceUtils.setKey(object, key);
+                key = dao.save(transaction, entityTranslator.toEntity(object));
             }
+        } else {
+            key = dao.save(transaction, entityTranslator.toEntity(object));
         }
-        return dao.save(transaction, entityTranslator.toEntity(object));
+        if (null == CentaurServiceUtils.getKey(object)) {
+            CentaurServiceUtils.setKey(object, key);
+        }
+
+        return key;
     }
 
     @Override

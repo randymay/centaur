@@ -480,4 +480,45 @@ public class CentaurServiceImplTest {
         userEntity = service.getObject(userKey, UserEntity.class);
         assertNotNull(userEntity);
     }
+
+    @Test
+    public void testSaveChildrenWithNoNameWithTransaction() throws Exception {
+        Transaction transaction = service.beginTransaction();
+        try {
+            ParentEntity parentEntity = new ParentEntity();
+
+            String parentName = "parentName";
+            String parentDescription = "parentDescription";
+
+            Key parentKey = service.save(parentEntity, transaction);
+            assertNotNull(parentKey);
+
+            parentEntity.setName(parentName);
+            parentEntity.setShortDescription(parentDescription);
+
+            String childName = "name";
+            String childDescription = "description";
+
+            for (int i = 0; i < 10; i++) {
+                SimpleEntity simpleEntity = new SimpleEntity();
+                simpleEntity.setShortDescription(childDescription + i);
+                Key key = service.saveChild(parentEntity, simpleEntity, transaction);
+                assertNotNull(key);
+                assertNotNull(simpleEntity.getAppEngineKey());
+            }
+
+            List<SimpleEntity> simpleEntities = service.getChildren(SimpleEntity.class.getSimpleName(), parentEntity, SimpleEntity.class);
+
+            assertEquals(10, simpleEntities.size());
+            for (int i = 0; i < simpleEntities.size(); i++) {
+                SimpleEntity listEntity = simpleEntities.get(i);
+
+                assertEquals(childName + i, listEntity.getName());
+                assertEquals(childDescription + i, listEntity.getShortDescription());
+            }
+            service.commit(transaction);
+        } catch (Exception e) {
+            service.rollback(transaction);
+        }
+    }
 }
