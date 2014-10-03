@@ -41,6 +41,8 @@ public interface CentaurDAO {
 
     public Transaction beginTransaction();
 
+    public Transaction beginCrossGroupTransaction();
+
     public void rollbackTransaction(Transaction transaction);
 
     public void commitTransaction(Transaction transaction);

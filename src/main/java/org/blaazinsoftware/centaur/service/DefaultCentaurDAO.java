@@ -125,7 +125,17 @@ class DefaultCentaurDAO implements CentaurDAO {
     }
 
     public Transaction beginTransaction() {
-        return this.getDatastoreService().beginTransaction();
+        TransactionOptions options = TransactionOptions.Builder.withDefaults();
+        return this.beginTransaction(options);
+    }
+
+    public Transaction beginCrossGroupTransaction() {
+        TransactionOptions options = TransactionOptions.Builder.withXG(true);
+        return this.beginTransaction(options);
+    }
+
+    public Transaction beginTransaction(TransactionOptions options) {
+        return this.getDatastoreService().beginTransaction(options);
     }
 
     public void rollbackTransaction(Transaction transaction) {

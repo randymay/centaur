@@ -51,6 +51,8 @@ public interface CentaurService {
 
     public Transaction beginTransaction();
 
+    public Transaction beginCrossGroupTransaction();
+
     public void rollback(Transaction transaction);
 
     public void commit(Transaction transaction);

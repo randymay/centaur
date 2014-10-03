@@ -193,6 +193,10 @@ public class CentaurServiceImpl implements CentaurService {
         return dao.beginTransaction();
     }
 
+    public Transaction beginCrossGroupTransaction() {
+        return dao.beginCrossGroupTransaction();
+    }
+
     public void rollback(Transaction transaction) {
         dao.rollbackTransaction(transaction);
     }
