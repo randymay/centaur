@@ -93,29 +93,6 @@ final class CentaurServiceUtils {
         return fields;
     }
 
-    protected static <T> String getPropertyValue(T object, String propertyName) throws CentaurException {
-        try {
-            PropertyDescriptor descriptor = CentaurServiceUtils.getPropertyDescriptorByName(object, propertyName);
-
-            Object value = descriptor.getReadMethod().invoke(object);
-            if (value != null) {
-                return value.toString();
-            } else {
-                return null;
-            }
-        } catch (Exception e) {
-            throw new CentaurException(e);
-        }
-    }
-
-    protected static <T> PropertyDescriptor getPropertyDescriptorByName(T object, String name) throws CentaurException {
-        try {
-            return PropertyUtils.getPropertyDescriptor(object, name);
-        } catch (Exception e) {
-            throw new CentaurException(e);
-        }
-    }
-
     protected static <T> void initKey(T object) throws CentaurException {
         if (null == CentaurServiceUtils.getKey(object)) {
             Key key = createKey(object);
@@ -125,7 +102,7 @@ final class CentaurServiceUtils {
 
     protected static <T> Key createKey(T object) throws CentaurException {
         String kind = CentaurServiceUtils.getKindValue(object);
-        String name = CentaurServiceUtils.getPropertyValue(object, "name");
+        String name = CentaurServiceUtils.getNameValue(object);
         if (object != null && !StringUtils.isEmpty(kind) && !StringUtils.isEmpty(name)) {
             return KeyFactory.createKey(kind, name);
         }
@@ -134,8 +111,8 @@ final class CentaurServiceUtils {
     }
 
     protected static <T, X> Key createKey(X parent, T object) throws CentaurException {
-        String kind = CentaurServiceUtils.getPropertyValue(object, "kind");
-        String name = CentaurServiceUtils.getPropertyValue(object, "name");
+        String kind = CentaurServiceUtils.getKindValue(object);
+        String name = CentaurServiceUtils.getNameValue(object);
         if (object != null && !StringUtils.isEmpty(kind) && !StringUtils.isEmpty(name)) {
             Entity parentEntity = new DefaultEntityTranslator().toEntity(parent);
             return KeyFactory.createKey(parentEntity.getKey(), kind, name);
