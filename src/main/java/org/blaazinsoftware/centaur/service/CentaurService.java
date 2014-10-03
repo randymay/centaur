@@ -8,6 +8,9 @@ import com.google.appengine.api.datastore.Transaction;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author Randy May <a href="www.blaazinsoftware.com">Blaazin Software Consulting, Inc.</a>
+ */
 public interface CentaurService {
 
     public <T> Key save(T object) throws CentaurException;

@@ -137,7 +137,7 @@ final class CentaurServiceUtils {
         String kind = CentaurServiceUtils.getPropertyValue(object, "kind");
         String name = CentaurServiceUtils.getPropertyValue(object, "name");
         if (object != null && !StringUtils.isEmpty(kind) && !StringUtils.isEmpty(name)) {
-            Entity parentEntity = new EntityTranslator().toEntity(parent);
+            Entity parentEntity = new DefaultEntityTranslator().toEntity(parent);
             return KeyFactory.createKey(parentEntity.getKey(), kind, name);
         }
 

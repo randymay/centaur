@@ -3,6 +3,7 @@ package org.blaazinsoftware.centaur.data.util;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
+import org.blaazinsoftware.centaur.service.DefaultEntityTranslator;
 import org.blaazinsoftware.centaur.service.EntityTranslator;
 import org.blaazinsoftware.centaur.service.SimpleEntity;
 import org.junit.After;
@@ -13,7 +14,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
-public class EntityTranslatorTest {
+public class DefaultEntityTranslatorTest {
 
     private final LocalServiceTestHelper helper =
             new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
@@ -28,6 +29,8 @@ public class EntityTranslatorTest {
         helper.tearDown();
     }
 
+    private EntityTranslator entityTranslator = new DefaultEntityTranslator();
+
     @Test
     public void testToEntityWithEmptyKey() throws Exception {
         SimpleEntity simpleClass = new SimpleEntity();
@@ -37,7 +40,7 @@ public class EntityTranslatorTest {
         simpleClass.setName(name);
         simpleClass.setShortDescription(description);
 
-        Entity entity = new EntityTranslator().toEntity(simpleClass);
+        Entity entity = entityTranslator.toEntity(simpleClass);
 
         assertNotNull(entity);
     }
@@ -50,7 +53,7 @@ public class EntityTranslatorTest {
         simpleClass.setKind(null);
 
         try {
-            new EntityTranslator().toEntity(simpleClass);
+            entityTranslator.toEntity(simpleClass);
             fail("Should have thrown an Exception");
         } catch (Exception e) {
             assertEquals(IllegalArgumentException.class, e.getClass());
@@ -67,7 +70,7 @@ public class EntityTranslatorTest {
         entity.setProperty("name", name);
         entity.setProperty("shortDescription", description);
 
-        SimpleEntity simpleClass = new EntityTranslator().fromEntity(entity, SimpleEntity.class);
+        SimpleEntity simpleClass = entityTranslator.fromEntity(entity, SimpleEntity.class);
 
         assertEquals(0, entity.getKey().getId());
         assertEquals(simpleClass.getKind(), entity.getKind());

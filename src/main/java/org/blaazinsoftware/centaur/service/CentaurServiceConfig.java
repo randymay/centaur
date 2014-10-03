@@ -4,13 +4,22 @@ package org.blaazinsoftware.centaur.service;
  * @author Randy May <a href="www.blaazinsoftware.com">Blaazin Software Consulting, Inc.</a>
  */
 public class CentaurServiceConfig {
-    private String namespace;
+    private CentaurDAO centaurDAO;
+    private EntityTranslator entityTranslator;
 
-    public String getNamespace() {
-        return namespace;
+    public CentaurDAO getCentaurDAO() {
+        return centaurDAO;
     }
 
-    public void setNamespace(String namespace) {
-        this.namespace = namespace;
+    public void setCentaurDAO(CentaurDAO centaurDAO) {
+        this.centaurDAO = centaurDAO;
+    }
+
+    public EntityTranslator getEntityTranslator() {
+        return entityTranslator;
+    }
+
+    public void setEntityTranslator(EntityTranslator entityTranslator) {
+        this.entityTranslator = entityTranslator;
     }
 }
