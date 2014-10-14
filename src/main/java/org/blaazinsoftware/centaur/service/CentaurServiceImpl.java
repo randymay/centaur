@@ -95,7 +95,7 @@ public class CentaurServiceImpl implements CentaurService {
     }
 
     @Override
-    public <T> T getObject(String propertyName, Object value, Class<T> klass) throws CentaurException {
+    public <T> T getObjectByProperty(String propertyName, Object value, Class<T> klass) throws CentaurException {
         return this.getObject(klass.getSimpleName(), propertyName, value, klass);
     }
 
