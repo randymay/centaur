@@ -19,12 +19,12 @@ public class CentaurServiceImpl implements CentaurService {
     private CentaurDAO dao;
 
     @Override
-    public <T> Key save(T object) throws CentaurException {
+    public <T> String save(T object) throws CentaurException {
         return save(object, null);
     }
 
     @Override
-    public <T> Key save(T object, Transaction transaction) throws CentaurException {
+    public <T> String save(T object, Transaction transaction) throws CentaurException {
         Key key = CentaurServiceUtils.getKey(object);
         if (null == key) {
             CentaurServiceUtils.initKey(object);
@@ -34,16 +34,16 @@ public class CentaurServiceImpl implements CentaurService {
             CentaurServiceUtils.setKey(object, key);
         }
 
-        return key;
+        return KeyFactory.keyToString(key);
     }
 
     @Override
-    public <T, X> Key saveChild(X parent, T object) throws CentaurException {
+    public <T, X> String saveChild(X parent, T object) throws CentaurException {
         return this.saveChild(parent, object, null);
     }
 
     @Override
-    public <T, X> Key saveChild(X parent, T object, Transaction transaction) throws CentaurException {
+    public <T, X> String saveChild(X parent, T object, Transaction transaction) throws CentaurException {
         if (null == parent || null == CentaurServiceUtils.getKey(parent)) {
             throw new CentaurException("Parent is null, or no Key field found");
         }
@@ -65,11 +65,12 @@ public class CentaurServiceImpl implements CentaurService {
             CentaurServiceUtils.setKey(object, key);
         }
 
-        return key;
+        return KeyFactory.keyToString(key);
     }
 
     @Override
-    public <T> T getObject(Key key, Class<T> klass) throws CentaurException {
+    public <T> T getObject(String keyString, Class<T> klass) throws CentaurException {
+        Key key = KeyFactory.stringToKey(keyString);
         return entityTranslator.fromEntity(dao.getByKey(key), klass);
     }
 
@@ -83,13 +84,6 @@ public class CentaurServiceImpl implements CentaurService {
     @Override
     public <T> T getObject(String kind, long id, Class<T> klass) throws CentaurException {
         Key key = KeyFactory.createKey(kind, id);
-
-        return entityTranslator.fromEntity(dao.getByKey(key), klass);
-    }
-
-    @Override
-    public <T> T getObject(String name, Class<T> klass) throws CentaurException {
-        Key key = KeyFactory.createKey(klass.getSimpleName(), name);
 
         return entityTranslator.fromEntity(dao.getByKey(key), klass);
     }
@@ -127,6 +121,18 @@ public class CentaurServiceImpl implements CentaurService {
     @Override
     public <T> void deleteObject(T object, Transaction transaction) throws CentaurException {
         dao.delete(transaction, entityTranslator.toEntity(object));
+    }
+
+    @Override
+    public void deleteObject(String keyString) throws CentaurException {
+        deleteObject(keyString, null);
+    }
+
+    @Override
+    public void deleteObject(String keyString, Transaction transaction) throws CentaurException {
+        Key key = KeyFactory.stringToKey(keyString);
+        Entity entity = dao.getByKey(key);
+        dao.delete(transaction, entity);
     }
 
     @Override

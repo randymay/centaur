@@ -3,7 +3,6 @@ package org.blaazinsoftware.centaur.service;
 import org.blaazinsoftware.centaur.CentaurException;
 import org.blaazinsoftware.centaur.data.dto.MapEntity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
-import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
@@ -43,14 +42,11 @@ public class CentaurServiceImplTest {
         simpleEntity.setName(name);
         simpleEntity.setShortDescription(description);
 
-        service.save(simpleEntity);
-
-        Key key = simpleEntity.getAppEngineKey();
+        String key = service.save(simpleEntity);
         assertNotNull(key);
 
         simpleEntity = service.getObject(key, SimpleEntity.class);
         assertNotNull(simpleEntity);
-        assertEquals(key, simpleEntity.getAppEngineKey());
         assertEquals(name, simpleEntity.getName());
         assertEquals(description, simpleEntity.getShortDescription());
 
@@ -59,7 +55,6 @@ public class CentaurServiceImplTest {
         service.save(simpleEntity);
         simpleEntity = service.getObject(key, SimpleEntity.class);
         assertNotNull(simpleEntity);
-        assertEquals(key, simpleEntity.getAppEngineKey());
         assertEquals(name, simpleEntity.getName());
         assertEquals(description, simpleEntity.getShortDescription());
 
@@ -79,7 +74,7 @@ public class CentaurServiceImplTest {
         String parentName = "parentName";
         String parentDescription = "parentDescription";
 
-        Key parentKey = service.save(parentEntity);
+        String parentKey = service.save(parentEntity);
         assertNotNull(parentKey);
 
         parentEntity.setName(parentName);
@@ -92,7 +87,7 @@ public class CentaurServiceImplTest {
             SimpleEntity simpleEntity = new SimpleEntity();
             simpleEntity.setName(childName + i);
             simpleEntity.setShortDescription(childDescription + i);
-            Key key = service.saveChild(parentEntity, simpleEntity);
+            String key = service.saveChild(parentEntity, simpleEntity);
             assertNotNull(key);
             assertNotNull(simpleEntity.getAppEngineKey());
         }
@@ -114,7 +109,7 @@ public class CentaurServiceImplTest {
 
         String parentDescription = "parentDescription";
 
-        Key parentKey = service.save(parentEntity);
+        String parentKey = service.save(parentEntity);
         assertNotNull(parentKey);
 
         parentEntity.setShortDescription(parentDescription);
@@ -124,7 +119,7 @@ public class CentaurServiceImplTest {
         for (int i = 0; i < 10; i++) {
             SimpleEntity simpleEntity = new SimpleEntity();
             simpleEntity.setShortDescription(childDescription + i);
-            Key key = service.saveChild(parentEntity, simpleEntity);
+            String key = service.saveChild(parentEntity, simpleEntity);
             assertNotNull(key);
             assertNotNull(simpleEntity.getAppEngineKey());
         }
@@ -168,9 +163,9 @@ public class CentaurServiceImplTest {
         userIds.add(0l);
         object.setUserIds(userIds);
 
-        service.save(object);
+        String key = service.save(object);
 
-        object = service.getObject(object.getAppEngineKey(), EntityWithListOfLongField.class);
+        object = service.getObject(key, EntityWithListOfLongField.class);
         assertNotNull(object);
         assertNotNull(object.getUserIds());
         assertEquals(8, object.getUserIds().size());
@@ -194,9 +189,9 @@ public class CentaurServiceImplTest {
         userIds.add(0);
         object.setUserIds(userIds);
 
-        service.save(object);
+        String key = service.save(object);
 
-        object = service.getObject(object.getAppEngineKey(), EntityWithListOfIntegerField.class);
+        object = service.getObject(key, EntityWithListOfIntegerField.class);
         assertNotNull(object);
         assertNotNull(object.getUserIds());
         assertEquals(8, object.getUserIds().size());
@@ -212,9 +207,9 @@ public class CentaurServiceImplTest {
         object.setBooleanValue1(true);
         object.setBooleanValue2(false);
 
-        service.save(object);
+        String key = service.save(object);
 
-        object = service.getObject(object.getAppEngineKey(), EntityWithBooleanFields.class);
+        object = service.getObject(key, EntityWithBooleanFields.class);
         assertNotNull(object);
         assertTrue(object.isBooleanValue1());
         assertFalse(object.getBooleanValue2());
@@ -222,9 +217,9 @@ public class CentaurServiceImplTest {
         object.setBooleanValue1(false);
         object.setBooleanValue2(true);
 
-        service.save(object);
+        key = service.save(object);
 
-        object = service.getObject(object.getAppEngineKey(), EntityWithBooleanFields.class);
+        object = service.getObject(key, EntityWithBooleanFields.class);
         assertNotNull(object);
         assertFalse(object.isBooleanValue1());
         assertTrue(object.getBooleanValue2());
@@ -293,14 +288,11 @@ public class CentaurServiceImplTest {
         mapEntity.put("key1", "value1");
         mapEntity.put("key2", 2l);
 
-        service.save(mapEntity);
-
-        Key key = mapEntity.getAppEngineKey();
+        String key = service.save(mapEntity);
         assertNotNull(key);
 
         mapEntity = service.getObject(key, MapEntity.class);
         assertNotNull(mapEntity);
-        assertEquals(key, mapEntity.getAppEngineKey());
         assertTrue(mapEntity.containsKey("key1"));
         assertEquals("value1", mapEntity.get("key1"));
         assertTrue(mapEntity.containsKey("key2"));
@@ -315,9 +307,7 @@ public class CentaurServiceImplTest {
         firstMapEntity.put("key1", "value1");
         firstMapEntity.put("key2", 2l);
 
-        service.save(firstMapEntity);
-
-        Key key1 = firstMapEntity.getAppEngineKey();
+        String key1 = service.save(firstMapEntity);
         assertNotNull(key1);
 
         MapEntity secondMapEntity = new MapEntity();
@@ -326,22 +316,18 @@ public class CentaurServiceImplTest {
         secondMapEntity.put("key3", "value3");
         secondMapEntity.put("key4", 4l);
 
-        service.save(secondMapEntity);
-
-        Key key2 = secondMapEntity.getAppEngineKey();
+        String key2 = service.save(secondMapEntity);
         assertNotNull(key2);
 
         firstMapEntity = service.getObject(key1, MapEntity.class);
         secondMapEntity = service.getObject(key2, MapEntity.class);
         assertNotNull(firstMapEntity);
-        assertEquals(key1, firstMapEntity.getAppEngineKey());
         assertTrue(firstMapEntity.containsKey("key1"));
         assertEquals("value1", firstMapEntity.get("key1"));
         assertTrue(firstMapEntity.containsKey("key2"));
         assertEquals(2l, firstMapEntity.get("key2"));
 
         assertNotNull(secondMapEntity);
-        assertEquals(key2, secondMapEntity.getAppEngineKey());
         assertTrue(secondMapEntity.containsKey("key3"));
         assertEquals("value3", secondMapEntity.get("key3"));
         assertTrue(secondMapEntity.containsKey("key4"));
@@ -350,42 +336,16 @@ public class CentaurServiceImplTest {
 
     @Test
     public void testGetObject() throws Exception {
-        String kind = SimpleEntity.class.getSimpleName();
         String description = "Description for testGetObject";
 
         SimpleEntity expected = new SimpleEntity();
         expected.setLongDescription(description);
 
-        Key key = service.save(expected);
+        String key = service.save(expected);
         assertNotNull(key);
-        assertNotNull(key.getId());
-        long id = key.getId();
 
-        SimpleEntity actual = service.getObject(kind, id, SimpleEntity.class);
+        SimpleEntity actual = service.getObject(key, SimpleEntity.class);
         assertNotNull(actual);
-        assertEquals(id, actual.getAppEngineKey().getId());
-        assertEquals(description, actual.getLongDescription());
-    }
-
-    @Test
-    public void testGetObjectByName() throws Exception {
-        String name = UUID.randomUUID().toString();
-        String description = "Description for testGetObject";
-
-        SimpleEntity expected = new SimpleEntity();
-        expected.setName(name);
-        expected.setLongDescription(description);
-
-        Key key = service.save(expected);
-        assertNotNull(key);
-        assertNotNull(key.getId());
-        long id = key.getId();
-
-        SimpleEntity actual = service.getObject(name, SimpleEntity.class);
-        assertNotNull(actual);
-        assertEquals(id, actual.getAppEngineKey().getId());
-        assertEquals(name, actual.getName());
-        assertEquals(name, actual.getAppEngineKey().getName());
         assertEquals(description, actual.getLongDescription());
     }
 
@@ -393,20 +353,17 @@ public class CentaurServiceImplTest {
     public void testTransaction() throws Exception {
         Transaction transaction = service.beginTransaction();
 
-        String kind = SimpleEntity.class.getSimpleName();
         String description = "Description for testGetObject";
 
         SimpleEntity expected = new SimpleEntity();
         expected.setLongDescription(description);
 
-        Key key = service.save(expected, transaction);
+        String key = service.save(expected, transaction);
 
         assertNotNull(key);
-        assertNotNull(key.getId());
-        long id = key.getId();
 
         try {
-            service.getObject(kind, id, SimpleEntity.class);
+            service.getObject(key, SimpleEntity.class);
             fail("This should throw an exception");
         } catch (CentaurException e) {
             // This is expected behaviour
@@ -417,7 +374,7 @@ public class CentaurServiceImplTest {
         transaction = service.beginTransaction();
 
         try {
-            service.getObject(kind, id, SimpleEntity.class);
+            service.getObject(key, SimpleEntity.class);
             fail("This should throw an exception");
         } catch (CentaurException e) {
             // This is expected behaviour
@@ -428,12 +385,9 @@ public class CentaurServiceImplTest {
         service.commit(transaction);
 
         assertNotNull(key);
-        assertNotNull(key.getId());
-        id = key.getId();
 
-        SimpleEntity actual = service.getObject(kind, id, SimpleEntity.class);
+        SimpleEntity actual = service.getObject(key, SimpleEntity.class);
         assertNotNull(actual);
-        assertEquals(id, actual.getAppEngineKey().getId());
         assertEquals(description, actual.getLongDescription());
     }
 
@@ -442,9 +396,7 @@ public class CentaurServiceImplTest {
     public void testUserCRUD() throws Exception {
         UserEntity userEntity = new UserEntity();
 
-        service.save(userEntity);
-
-        Key userKey = userEntity.getAppEngineKey();
+        String userKey = service.save(userEntity);
 
         assertNotNull(userKey);
         assertNotNull(service.getObject(userKey, SimpleEntity.class));
@@ -467,14 +419,7 @@ public class CentaurServiceImplTest {
 
         userEntity = new UserEntity();
 
-        service.save(userEntity);
-
-        //accountService.create(account);
-        //assertNotNull(account);
-        //Key accountId = account.getId();
-        //assertNotNull(accountId);
-
-        userKey = userEntity.getAppEngineKey();
+        userKey = service.save(userEntity);
 
         assertNotNull(userKey);
         userEntity = service.getObject(userKey, UserEntity.class);
@@ -490,7 +435,7 @@ public class CentaurServiceImplTest {
             String parentName = "parentName";
             String parentDescription = "parentDescription";
 
-            Key parentKey = service.save(parentEntity, transaction);
+            String parentKey = service.save(parentEntity, transaction);
             assertNotNull(parentKey);
 
             parentEntity.setName(parentName);
@@ -502,7 +447,7 @@ public class CentaurServiceImplTest {
             for (int i = 0; i < 10; i++) {
                 SimpleEntity simpleEntity = new SimpleEntity();
                 simpleEntity.setShortDescription(childDescription + i);
-                Key key = service.saveChild(parentEntity, simpleEntity, transaction);
+                String key = service.saveChild(parentEntity, simpleEntity, transaction);
                 assertNotNull(key);
                 assertNotNull(simpleEntity.getAppEngineKey());
             }
@@ -519,6 +464,29 @@ public class CentaurServiceImplTest {
             service.commit(transaction);
         } catch (Exception e) {
             service.rollback(transaction);
+        }
+    }
+
+    @Test
+    public void testSimpleDeleteByString() throws Exception {
+        SimpleEntity simpleEntity = new SimpleEntity();
+
+        String name = "name";
+        String description = "description";
+
+        simpleEntity.setName(name);
+        simpleEntity.setShortDescription(description);
+
+        String keyString = service.save(simpleEntity);
+        assertNotNull(keyString);
+        assertNotNull(simpleEntity.getAppEngineKey());
+
+        service.deleteObject(keyString);
+        try {
+            assertNull(service.getObject(keyString, SimpleEntity.class));
+            fail("This method should have thrown an EntityNotFoundException");
+        } catch (CentaurException e) {
+            assertTrue(e.getMessage().startsWith("com.google.appengine.api.datastore.EntityNotFoundException: No entity was found matching the key: "));
         }
     }
 }

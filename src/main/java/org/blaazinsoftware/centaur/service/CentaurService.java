@@ -13,21 +13,19 @@ import java.util.Map;
  */
 public interface CentaurService {
 
-    public <T> Key save(T object) throws CentaurException;
+    public <T> String save(T object) throws CentaurException;
 
-    public <T> Key save(T object, Transaction transaction) throws CentaurException;
+    public <T> String save(T object, Transaction transaction) throws CentaurException;
 
-    public <T, X> Key saveChild(X parent, T object) throws CentaurException;
+    public <T, X> String saveChild(X parent, T object) throws CentaurException;
 
-    public <T, X> Key saveChild(X parent, T object, Transaction transaction) throws CentaurException;
+    public <T, X> String saveChild(X parent, T object, Transaction transaction) throws CentaurException;
 
-    public <T> T getObject(Key key, Class<T> klass) throws CentaurException;
+    public <T> T getObject(String keyString, Class<T> klass) throws CentaurException;
 
     public <T> T getObject(String kind, String name, Class<T> klass) throws CentaurException;
 
     public <T> T getObject(String kind, long id, Class<T> klass) throws CentaurException;
-
-    public <T> T getObject(String name, Class<T> klass) throws CentaurException;
 
     public <T> T getObjectByProperty(String propertyName, Object value, Class<T> klass) throws CentaurException;
 
@@ -36,6 +34,10 @@ public interface CentaurService {
     public <T> void deleteObject(T object) throws CentaurException;
 
     public <T> void deleteObject(T object, Transaction transaction) throws CentaurException;
+
+    public void deleteObject(String keyString) throws CentaurException;
+
+    public void deleteObject(String keyString, Transaction transaction) throws CentaurException;
 
     public <T> T getObjectByUserId(String kind, String userId, Class<T> klass) throws CentaurException;
 
