@@ -66,11 +66,11 @@ final class CentaurServiceUtils {
         return null;
     }
 
-    protected static <T> List<Field> getFieldsByAnnotation(T object, Class<? extends Annotation> annotation)
+    protected static List<Field> getFieldsByAnnotation(Class<?> klass, Class<? extends Annotation> annotation)
             throws CentaurException {
 
         List<Field> fields = new ArrayList<>();
-        for (Field field : getAllFieldsInClassAndSuperClass(object.getClass())) {
+        for (Field field : getAllFieldsInClassAndSuperClass(klass)) {
             // Using isAnnotationPresent method from Field class.
             if (field.isAnnotationPresent(annotation)) {
                 fields.add(field);
@@ -142,7 +142,11 @@ final class CentaurServiceUtils {
     }
 
     private static <T> Field getSingleFieldByAnnotation(T object, Class<? extends Annotation> annotation) throws CentaurException {
-        List<Field> fields = CentaurServiceUtils.getFieldsByAnnotation(object, annotation);
+        return CentaurServiceUtils.getSingleFieldByAnnotation(object.getClass(), annotation);
+    }
+
+    private static Field getSingleFieldByAnnotation(Class<?> klass, Class<? extends Annotation> annotation) throws CentaurException {
+        List<Field> fields = CentaurServiceUtils.getFieldsByAnnotation(klass, annotation);
         if (fields.size() == 0) {
             throw new IllegalArgumentException(annotation.getSimpleName() + " is missing");
         } else if (fields.size() > 1) {
