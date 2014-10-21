@@ -489,4 +489,28 @@ public class CentaurServiceImplTest {
             assertTrue(e.getMessage().startsWith("com.google.appengine.api.datastore.EntityNotFoundException: No entity was found matching the key: "));
         }
     }
+
+    @Test
+    public void testGetObjectsByKind() throws Exception {
+        String childName = "name";
+        String childDescription = "description";
+
+        for (int i = 0; i < 20; i++) {
+            SimpleEntity simpleEntity = new SimpleEntity();
+            simpleEntity.setName(childName + i);
+            if (i <= 10) {
+                childDescription += i;
+            }
+            simpleEntity.setShortDescription(childDescription);
+            service.save(simpleEntity);
+        }
+
+        List<SimpleEntity> objects =
+                service.getObjects(
+                        SimpleEntity.class.getSimpleName(),
+                        SimpleEntity.class);
+
+        assertNotNull(objects);
+        assertEquals(20, objects.size());
+    }
 }

@@ -77,7 +77,9 @@ class DefaultCentaurDAO implements CentaurDAO {
 
     public List<Entity> getEntitiesByPropertyValue(String kind, String property, Object value) throws CentaurException {
         Map<String, Object> keyValues = new HashMap<>();
-        keyValues.put(property, value);
+        if (null != property) {
+            keyValues.put(property, value);
+        }
 
         return getEntitiesByPropertyValues(kind, keyValues);
     }
