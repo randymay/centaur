@@ -195,6 +195,11 @@ public class CentaurServiceImpl implements CentaurService {
         return getObjectListFromEntities(klass, entities);
     }
 
+    @Override
+    public <T> List<T> getObjects(Class<T> klass) throws CentaurException {
+        return getObjects(klass.getSimpleName(), klass);
+    }
+
     public Transaction beginTransaction() {
         return dao.beginTransaction();
     }

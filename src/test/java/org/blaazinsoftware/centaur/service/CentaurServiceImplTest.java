@@ -513,4 +513,26 @@ public class CentaurServiceImplTest {
         assertNotNull(objects);
         assertEquals(20, objects.size());
     }
+
+    @Test
+    public void testGetAllObjects() throws Exception {
+        String childName = "name";
+        String childDescription = "description";
+
+        for (int i = 0; i < 20; i++) {
+            SimpleEntity simpleEntity = new SimpleEntity();
+            simpleEntity.setName(childName + i);
+            if (i <= 10) {
+                childDescription += i;
+            }
+            simpleEntity.setShortDescription(childDescription);
+            service.save(simpleEntity);
+        }
+
+        List<SimpleEntity> objects =
+                service.getObjects(SimpleEntity.class);
+
+        assertNotNull(objects);
+        assertEquals(20, objects.size());
+    }
 }

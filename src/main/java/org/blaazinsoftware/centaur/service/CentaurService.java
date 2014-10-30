@@ -51,6 +51,8 @@ public interface CentaurService {
 
     public <T> List<T> getObjects(String kind, Map<String, Object> keyValues, Class<T> klass) throws CentaurException;
 
+    public <T> List<T> getObjects(Class<T> klass) throws CentaurException;
+
     public Transaction beginTransaction();
 
     public Transaction beginCrossGroupTransaction();
