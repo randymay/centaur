@@ -1,7 +1,6 @@
-package org.blaazinsoftware.centaur.email.impl;
+package org.blaazinsoftware.centaur.email;
 
 import org.blaazinsoftware.centaur.CentaurException;
-import org.blaazinsoftware.centaur.email.EmailService;
 
 import javax.mail.Message;
 import javax.mail.Session;
@@ -10,7 +9,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.util.Properties;
 
-public class EmailServiceImpl implements EmailService {
+class EmailServiceImpl implements EmailService {
 
     private String from;
 
@@ -35,10 +34,6 @@ public class EmailServiceImpl implements EmailService {
         } catch (Exception e) {
             throw new CentaurException(e);
         }
-    }
-
-    public String getFrom() {
-        return from;
     }
 
     public void setFrom(String from) {
