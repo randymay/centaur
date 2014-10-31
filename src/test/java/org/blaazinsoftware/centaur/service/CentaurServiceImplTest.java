@@ -1,11 +1,15 @@
 package org.blaazinsoftware.centaur.service;
 
-import org.blaazinsoftware.centaur.CentaurException;
-import org.blaazinsoftware.centaur.data.dto.MapEntity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
+import com.google.appengine.api.datastore.FetchOptions;
+import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Transaction;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
+import org.apache.commons.lang3.time.DateUtils;
+import org.blaazinsoftware.centaur.CentaurException;
+import org.blaazinsoftware.centaur.data.dto.MapEntity;
+import org.blaazinsoftware.centaur.data.dto.SortCriteria;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,7 +17,6 @@ import org.junit.Test;
 import java.util.*;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
 
 public class CentaurServiceImplTest {
 
@@ -534,5 +537,100 @@ public class CentaurServiceImplTest {
 
         assertNotNull(objects);
         assertEquals(20, objects.size());
+    }
+
+    @Test
+    public void testGetObjectsByFilter() throws Exception {
+        String childName = "name";
+        String childDescription = "description";
+
+        for (int i = 0; i < 20; i++) {
+            SimpleEntity simpleEntity = new SimpleEntity();
+            simpleEntity.setShortDescription(childName + i);
+            if (i <= 10) {
+                childDescription += i;
+            }
+            simpleEntity.setLongDescription(childDescription);
+            service.save(simpleEntity);
+        }
+
+        Query.Filter filter = new Query.FilterPredicate("shortDescription", Query.FilterOperator.EQUAL, "name5");
+
+        List<SimpleEntity> objects =
+                service.getObjectsByFilter(SimpleEntity.class, filter);
+
+        assertNotNull(objects);
+        assertEquals(1, objects.size());
+        assertEquals("name5", objects.get(0).getShortDescription());
+    }
+
+    @Test
+    public void testGetObjectsByFilterSorted() throws Exception {
+        String childDescription = "description";
+
+        for (int i = 0; i < 20; i++) {
+            EntityWithStringAndIntegerField simpleEntity = new EntityWithStringAndIntegerField();
+            simpleEntity.setName("" + i);
+            simpleEntity.setIntValue(0);
+            if (i <= 10) {
+                simpleEntity.setStringValue(childDescription + i);
+                simpleEntity.setIntValue(i);
+            }
+            service.save(simpleEntity);
+        }
+
+        Query.Filter filter = new Query.FilterPredicate("intValue", Query.FilterOperator.GREATER_THAN, 5);
+        List<SortCriteria> sortCriteria = new ArrayList<>();
+        sortCriteria.add(new SortCriteria("intValue", false));
+        FetchOptions fetchOptions = FetchOptions.Builder.withDefaults();
+
+        List<EntityWithStringAndIntegerField> objects =
+                service.getObjectsByFilterSorted(EntityWithStringAndIntegerField.class, filter, sortCriteria, fetchOptions);
+
+        assertNotNull(objects);
+        assertEquals(5, objects.size());
+        assertEquals("description10", objects.get(0).getStringValue());
+        assertEquals("description9", objects.get(1).getStringValue());
+        assertEquals("description8", objects.get(2).getStringValue());
+        assertEquals("description7", objects.get(3).getStringValue());
+        assertEquals("description6", objects.get(4).getStringValue());
+    }
+
+    @Test
+    public void testGetObjectsByFilterSortedPaged() throws Exception {
+        Date date = new Date();
+
+        int pageSize = 10;
+
+        for (int i = 0; i < 100; i++) {
+            EntityWithDateField simpleEntity = new EntityWithDateField();
+            simpleEntity.setName("" + i);
+            simpleEntity.setDate(DateUtils.addMinutes(date, (i + 1) * 5));
+            service.save(simpleEntity);
+        }
+
+        Query.Filter filter = new Query.FilterPredicate("date", Query.FilterOperator.GREATER_THAN, date);
+        List<SortCriteria> sortCriteria = new ArrayList<>();
+        sortCriteria.add(new SortCriteria("date", true));
+        FetchOptions fetchOptions = FetchOptions.Builder.withLimit(pageSize);
+
+        for (int count = 0; count < 10; count++) {
+            ResultList<EntityWithDateField> page =
+                    service.getObjectsByFilterSorted(EntityWithDateField.class, filter, sortCriteria, fetchOptions);
+
+            assertNotNull(page);
+
+            if (count < 10) {
+                assertEquals(10, page.size());
+
+                for (int i = 0; i < page.size(); i++) {
+                    assertEquals(DateUtils.addMinutes(date, (i + 1) * 5 + (count * 50)), page.get(i).getDate());
+                }
+
+                fetchOptions = FetchOptions.Builder.withLimit(pageSize).startCursor(page.getCursor());
+            } else {
+                assertEquals(0, page.size());
+            }
+        }
     }
 }

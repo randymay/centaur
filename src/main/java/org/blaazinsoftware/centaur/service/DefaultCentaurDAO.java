@@ -1,19 +1,17 @@
 package org.blaazinsoftware.centaur.service;
 
+import com.google.appengine.api.datastore.*;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.blaazinsoftware.centaur.CentaurException;
 import org.blaazinsoftware.centaur.data.dto.SortCriteria;
-import com.google.appengine.api.datastore.*;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
- * @author Randy May <a href="www.blaazinsoftware.com">Blaazin Software Consulting, Inc.</a>
+ * @author Randy May
  */
 class DefaultCentaurDAO implements CentaurDAO {
 
@@ -88,9 +86,12 @@ class DefaultCentaurDAO implements CentaurDAO {
         return getEntitiesByPropertyValuesSorted(kind, keyValues);
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
     public List<Entity> getEntitiesByPropertyValuesSorted(String kind, Map<String, Object> keyValues, SortCriteria... sortCriteria) throws CentaurException {
         Query query = new Query(kind);
 
+        Query.Filter filter = null;
         if (keyValues != null && !keyValues.isEmpty()) {
             List<Query.Filter> filters = new ArrayList<>();
             for (Map.Entry<String, Object> entry : keyValues.entrySet()) {
@@ -100,7 +101,6 @@ class DefaultCentaurDAO implements CentaurDAO {
                 filters.add(new Query.FilterPredicate(property, Query.FilterOperator.EQUAL, value));
             }
 
-            Query.Filter filter;
             if (filters.size() == 1) {
                 filter = filters.get(0);
             } else {
@@ -109,21 +109,40 @@ class DefaultCentaurDAO implements CentaurDAO {
             query.setFilter(filter);
         }
 
+        List<SortCriteria> sortCriteriaList = null;
         if (sortCriteria != null) {
-           for (SortCriteria criteria : sortCriteria) {
-               if (!StringUtils.isEmpty(criteria.getPropertyName())) {
-                   Query.SortDirection direction = Query.SortDirection.DESCENDING;
-                   if (criteria.isAscending()) {
-                       direction = Query.SortDirection.ASCENDING;
-                   }
-                   query.addSort(criteria.getPropertyName(), direction);
-               }
-           }
+            sortCriteriaList = Arrays.asList(sortCriteria);
+        }
+
+        return getEntitiesByFilterSorted(kind, filter, sortCriteriaList, FetchOptions.Builder.withDefaults());
+    }
+
+    @Override
+    public QueryResultList<Entity> getEntitiesByFilterSorted(String kind, Query.Filter filter, List<SortCriteria> sortCriteria, FetchOptions fetchOptions) throws CentaurException {
+        Query query = new Query(kind);
+
+        if (filter != null) {
+            query.setFilter(filter);
+        }
+
+        if (CollectionUtils.isNotEmpty(sortCriteria)) {
+            for (SortCriteria criteria : sortCriteria) {
+                if (!StringUtils.isEmpty(criteria.getPropertyName())) {
+                    Query.SortDirection direction = Query.SortDirection.DESCENDING;
+                    if (criteria.isAscending()) {
+                        direction = Query.SortDirection.ASCENDING;
+                    }
+                    query.addSort(criteria.getPropertyName(), direction);
+                }
+            }
         }
 
         PreparedQuery pq = getDatastoreService().prepare(query);
 
-        return pq.asList(FetchOptions.Builder.withDefaults());
+        if (fetchOptions == null) {
+            fetchOptions = FetchOptions.Builder.withDefaults();
+        }
+        return pq.asQueryResultList(fetchOptions);
     }
 
     public Transaction beginTransaction() {

@@ -1,9 +1,8 @@
 package org.blaazinsoftware.centaur.service;
 
+import com.google.appengine.api.datastore.*;
 import org.blaazinsoftware.centaur.CentaurException;
-import org.blaazinsoftware.centaur.data.dto.CentaurEntity;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.Transaction;
+import org.blaazinsoftware.centaur.data.dto.SortCriteria;
 
 import java.util.List;
 import java.util.Map;
@@ -52,6 +51,12 @@ public interface CentaurService {
     public <T> List<T> getObjects(String kind, Map<String, Object> keyValues, Class<T> klass) throws CentaurException;
 
     public <T> List<T> getObjects(Class<T> klass) throws CentaurException;
+
+    public QueryResultList<Entity> getEntitiesByFilterSorted(String kind, Query.Filter filter, List<SortCriteria> sortCriteria, FetchOptions fetchOptions) throws CentaurException;
+
+    public <T> ResultList<T> getObjectsByFilterSorted(Class klass, Query.Filter filter, List<SortCriteria> sortCriteria, FetchOptions fetchOptions) throws CentaurException;
+
+    public <T> ResultList<T> getObjectsByFilter(Class klass, Query.Filter filter) throws CentaurException;
 
     public Transaction beginTransaction();
 

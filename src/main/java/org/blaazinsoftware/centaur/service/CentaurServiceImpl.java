@@ -1,10 +1,8 @@
 package org.blaazinsoftware.centaur.service;
 
-import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.api.datastore.Transaction;
+import com.google.appengine.api.datastore.*;
 import org.blaazinsoftware.centaur.CentaurException;
+import org.blaazinsoftware.centaur.data.dto.SortCriteria;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -200,6 +198,35 @@ public class CentaurServiceImpl implements CentaurService {
         return getObjects(klass.getSimpleName(), klass);
     }
 
+    @Override
+    public QueryResultList<Entity> getEntitiesByFilterSorted(String kind, Query.Filter filter, List<SortCriteria> sortCriteria, FetchOptions fetchOptions) throws CentaurException {
+        return dao.getEntitiesByFilterSorted(kind, filter, sortCriteria, fetchOptions);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> ResultList<T> getObjectsByFilterSorted(Class klass, Query.Filter filter, List<SortCriteria> sortCriteria, FetchOptions fetchOptions) throws CentaurException {
+        ResultList<T> results = new ResultList<>();
+
+        QueryResultList<Entity> entityList = getEntitiesByFilterSorted(klass.getSimpleName(), filter, sortCriteria, fetchOptions);
+
+        if (entityList == null) {
+            return results;
+        }
+
+        results.setIndexList(entityList.getIndexList());
+        results.setCursor(entityList.getCursor());
+
+        results.addAll(getObjectListFromEntities(klass, entityList));
+
+        return results;
+    }
+
+    @Override
+    public <T> ResultList<T> getObjectsByFilter(Class klass, Query.Filter filter) throws CentaurException {
+        return getObjectsByFilterSorted(klass, filter, null, null);
+    }
+
     public Transaction beginTransaction() {
         return dao.beginTransaction();
     }
@@ -219,6 +246,7 @@ public class CentaurServiceImpl implements CentaurService {
     protected void setDao(CentaurDAO dao) {
         this.dao = dao;
     }
+
     protected void setEntityTranslator(EntityTranslator entityTranslator) {
         this.entityTranslator = entityTranslator;
     }
