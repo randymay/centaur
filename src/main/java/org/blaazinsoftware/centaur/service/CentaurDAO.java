@@ -14,6 +14,8 @@ public interface CentaurDAO {
 
     public Entity getByKey(Key key) throws CentaurException;
 
+    public Map<Key, Entity> getByKeys(List<Key> keys) throws CentaurException;
+
     public Key save(Transaction transaction, Entity entity);
 
     public void delete(Transaction transaction, Entity entity);

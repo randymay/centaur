@@ -1,10 +1,12 @@
 package org.blaazinsoftware.centaur.service;
 
 import com.google.appengine.api.datastore.*;
+import org.apache.commons.collections.MapUtils;
 import org.blaazinsoftware.centaur.CentaurException;
 import org.blaazinsoftware.centaur.data.dto.SortCriteria;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -109,6 +111,38 @@ public class CentaurServiceImpl implements CentaurService {
         }
 
         return entityTranslator.fromEntity(entity, klass);
+    }
+
+    @Override
+    public <T> Map<String, T> getByKeyStrings(List<String> keyStrings, Class<T> klass) throws CentaurException {
+        List<Key> keyList = new ArrayList<>();
+
+        for (String keyString : keyStrings) {
+            keyList.add(KeyFactory.stringToKey(keyString));
+        }
+
+        return getByKeys(keyList, klass);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> Map<String, T> getByKeys(List<Key> keys, Class<T> klass) throws CentaurException {
+        Map<String, T> results = null;
+
+        Map<Key, Entity> values = dao.getByKeys(keys);
+
+        if (!MapUtils.isEmpty(values)) {
+            results = new LinkedHashMap<>();
+            for (Map.Entry<Key, Entity> value : values.entrySet()) {
+                Key key = value.getKey();
+                Entity entity = value.getValue();
+
+                results.put(KeyFactory.keyToString(key), (T)entityTranslator.fromEntity(entity, klass));
+
+            }
+        }
+
+        return results;
     }
 
     @Override

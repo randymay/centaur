@@ -21,6 +21,7 @@ class DefaultCentaurDAO implements CentaurDAO {
         return DatastoreServiceFactory.getDatastoreService();
     }
 
+    @Override
     public Entity getByKey(Key key) throws CentaurException {
         try {
             return getDatastoreService().get(key);
@@ -30,14 +31,22 @@ class DefaultCentaurDAO implements CentaurDAO {
         }
     }
 
+    @Override
+    public Map<Key, Entity> getByKeys(List<Key> keys) throws CentaurException {
+        return getDatastoreService().get(keys);
+    }
+
+    @Override
     public Key save(Transaction transaction, Entity entity) {
         return getDatastoreService().put(transaction, entity);
     }
 
+    @Override
     public void delete(Transaction transaction, Entity entity) {
         getDatastoreService().delete(transaction, entity.getKey());
     }
 
+    @Override
     public Entity refresh(Entity entity) throws CentaurException {
         try {
             return getDatastoreService().get(entity.getKey());
@@ -47,6 +56,7 @@ class DefaultCentaurDAO implements CentaurDAO {
         }
     }
 
+    @Override
     public Entity getSingleEntityByPropertyValue(String kind, String property, Object value) throws CentaurException {
         Query.Filter filter = new Query.FilterPredicate(property, Query.FilterOperator.EQUAL, value);
 
@@ -57,10 +67,12 @@ class DefaultCentaurDAO implements CentaurDAO {
         return pq.asSingleEntity();
     }
 
+    @Override
     public List<Entity> getChildren(String kind, Entity parent) throws CentaurException {
         return getChildren(kind, parent, FetchOptions.Builder.withDefaults());
     }
 
+    @Override
     public List<Entity> getChildren(String kind, Entity parent, FetchOptions fetchOptions) throws CentaurException {
         refresh(parent);
         Query query = new Query(kind, parent.getKey());
@@ -69,10 +81,12 @@ class DefaultCentaurDAO implements CentaurDAO {
         return pq.asList(fetchOptions);
     }
 
+    @Override
     public List<Entity> getEntitiesByKind(String kind) throws CentaurException {
         return getEntitiesByPropertyValue(kind, null, null);
     }
 
+    @Override
     public List<Entity> getEntitiesByPropertyValue(String kind, String property, Object value) throws CentaurException {
         Map<String, Object> keyValues = new HashMap<>();
         if (null != property) {
@@ -82,6 +96,7 @@ class DefaultCentaurDAO implements CentaurDAO {
         return getEntitiesByPropertyValues(kind, keyValues);
     }
 
+    @Override
     public List<Entity> getEntitiesByPropertyValues(String kind, Map<String, Object> keyValues) throws CentaurException {
         return getEntitiesByPropertyValuesSorted(kind, keyValues);
     }
@@ -145,11 +160,13 @@ class DefaultCentaurDAO implements CentaurDAO {
         return pq.asQueryResultList(fetchOptions);
     }
 
+    @Override
     public Transaction beginTransaction() {
         TransactionOptions options = TransactionOptions.Builder.withDefaults();
         return this.beginTransaction(options);
     }
 
+    @Override
     public Transaction beginCrossGroupTransaction() {
         TransactionOptions options = TransactionOptions.Builder.withXG(true);
         return this.beginTransaction(options);
@@ -159,10 +176,12 @@ class DefaultCentaurDAO implements CentaurDAO {
         return this.getDatastoreService().beginTransaction(options);
     }
 
+    @Override
     public void rollbackTransaction(Transaction transaction) {
         transaction.rollback();
     }
 
+    @Override
     public void commitTransaction(Transaction transaction) {
         transaction.commit();
     }

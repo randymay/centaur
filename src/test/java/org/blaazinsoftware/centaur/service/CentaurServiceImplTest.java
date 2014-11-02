@@ -1,9 +1,6 @@
 package org.blaazinsoftware.centaur.service;
 
-import com.google.appengine.api.datastore.EntityNotFoundException;
-import com.google.appengine.api.datastore.FetchOptions;
-import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.datastore.Transaction;
+import com.google.appengine.api.datastore.*;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import org.apache.commons.lang3.time.DateUtils;
@@ -631,6 +628,28 @@ public class CentaurServiceImplTest {
             } else {
                 assertEquals(0, page.size());
             }
+        }
+    }
+
+    @Test
+    public void testGetByKeys() throws Exception {
+        List<String> keys = new ArrayList<>();
+
+        for (int i = 0; i < 10; i++) {
+            EntityWithDateField simpleEntity = new EntityWithDateField();
+            simpleEntity.setDate(new Date());
+            keys.add(service.save(simpleEntity));
+        }
+
+        Map<String, EntityWithDateField> values = service.getByKeyStrings(keys, EntityWithDateField.class);
+
+        assertNotNull(values);
+        assertEquals(10, values.size());
+        for (Map.Entry<String, EntityWithDateField> entry: values.entrySet()) {
+            String keyString = entry.getKey();
+            EntityWithDateField value = entry.getValue();
+
+            assertEquals(keyString, KeyFactory.keyToString(value.getAppEngineKey()));
         }
     }
 }

@@ -52,6 +52,10 @@ public interface CentaurService {
 
     public <T> List<T> getObjects(Class<T> klass) throws CentaurException;
 
+    public <T> Map<String, T> getByKeyStrings(List<String> keyStrings, Class<T> klass) throws CentaurException;
+
+    public <T> Map<String, T> getByKeys(List<Key> keys, Class<T> klass) throws CentaurException;
+
     public QueryResultList<Entity> getEntitiesByFilterSorted(String kind, Query.Filter filter, List<SortCriteria> sortCriteria, FetchOptions fetchOptions) throws CentaurException;
 
     public <T> ResultList<T> getObjectsByFilterSorted(Class klass, Query.Filter filter, List<SortCriteria> sortCriteria, FetchOptions fetchOptions) throws CentaurException;
