@@ -5,6 +5,7 @@ import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
 
 import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 /**
@@ -21,6 +22,8 @@ public class CentaurUserFilter implements Filter {
 
     private FilterConfig filterConfig = null;
 
+    private boolean returnToLastUrl = false;
+
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         this.filterConfig = filterConfig;
@@ -31,19 +34,35 @@ public class CentaurUserFilter implements Filter {
         UserService userService = UserServiceFactory.getUserService();
         User currentUser = userService.getCurrentUser();
 
-        request.setAttribute(LOGIN_URL_PARAMETER_NAME, userService.createLoginURL(createPostLoginURL()));
+        request.setAttribute(LOGIN_URL_PARAMETER_NAME, userService.createLoginURL(createPostLoginURL((HttpServletRequest)request)));
         request.setAttribute(LOGOUT_URL_PARAMETER_NAME, userService.createLogoutURL(createPostLogoutURL()));
         request.setAttribute(CURRENT_USER_PARAMETER_NAME, currentUser);
 
         chain.doFilter(request, response);
     }
 
-    public String createPostLoginURL() {
+    public String createPostLoginURL(HttpServletRequest request) {
         if (postLoginURL == null) {
             postLoginURL = (filterConfig.getInitParameter("postLoginURL"));
+        } else if ("~".equals(postLoginURL) || returnToLastUrl) {
+            returnToLastUrl = true;
+            // Return to this URL
+
+            postLoginURL = getFullURL(request);
         }
 
         return postLoginURL;
+    }
+
+    protected String getFullURL(HttpServletRequest request) {
+        StringBuffer requestURL = request.getRequestURL();
+        String queryString = request.getQueryString();
+
+        if (queryString == null) {
+            return requestURL.toString();
+        } else {
+            return requestURL.append('?').append(queryString).toString();
+        }
     }
 
     public String createPostLogoutURL() {
