@@ -5,10 +5,7 @@ import org.apache.commons.collections.MapUtils;
 import org.blaazinsoftware.centaur.CentaurException;
 import org.blaazinsoftware.centaur.data.dto.SortCriteria;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Randy May <a href="www.blaazinsoftware.com">Blaazin Software Consulting, Inc.</a>
@@ -203,7 +200,24 @@ public class CentaurServiceImpl implements CentaurService {
 
     @Override
     public <T> List<T> getObjects(String kind, String propertyName, Object value, Class<T> klass) throws CentaurException {
-        List<Entity> entities = dao.getEntitiesByPropertyValue(kind, propertyName, value);
+        return getObjects(kind, propertyName, value, klass, null);
+    }
+
+    @Override
+    public <T> List<T> getObjects(String kind, String propertyName, Object value, Class<T> klass, String sortField) throws CentaurException {
+        return getObjectsSorted(kind, propertyName, value, klass, (SortCriteria)null);
+    }
+
+    @Override
+    public <T> List<T> getObjectsSorted(String kind, String propertyName, Object value, Class<T> klass, SortCriteria... sortCriteria) throws CentaurException {
+        Map<String, Object> keyValues = new HashMap<>();
+        keyValues.put(propertyName, value);
+        return getObjectsByPropertiesSorted(kind, keyValues, klass, sortCriteria);
+    }
+
+    @Override
+    public <T> List<T> getObjectsByPropertiesSorted(String kind, Map<String, Object> keyValues, Class<T> klass, SortCriteria... sortCriteria) throws CentaurException {
+        List<Entity> entities = dao.getEntitiesByPropertyValuesSorted(kind, keyValues, sortCriteria);
         return getObjectListFromEntities(klass, entities);
     }
 
@@ -223,8 +237,7 @@ public class CentaurServiceImpl implements CentaurService {
 
     @Override
     public <T> List<T> getObjects(String kind, Map<String, Object> keyValues, Class<T> klass) throws CentaurException {
-        List<Entity> entities = dao.getEntitiesByPropertyValues(kind, keyValues);
-        return getObjectListFromEntities(klass, entities);
+        return getObjectsByPropertiesSorted(kind, keyValues, klass, (SortCriteria)null);
     }
 
     @Override

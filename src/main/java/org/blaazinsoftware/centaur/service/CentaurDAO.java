@@ -32,6 +32,8 @@ public interface CentaurDAO {
 
     public List<Entity> getEntitiesByPropertyValue(String kind, String property, Object value) throws CentaurException;
 
+    public List<Entity> getEntitiesByPropertyValue(String kind, String property, Object value, SortCriteria... sortCriteria) throws CentaurException;
+
     public List<Entity> getEntitiesByPropertyValues(String kind, Map<String, Object> keyValues) throws CentaurException;
 
     public List<Entity> getEntitiesByPropertyValuesSorted(String kind, Map<String, Object> keyValues, SortCriteria... sortCriteria) throws CentaurException;

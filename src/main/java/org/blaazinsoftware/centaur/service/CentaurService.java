@@ -48,6 +48,12 @@ public interface CentaurService {
 
     public <T> List<T> getObjects(String kind, String propertyName, Object value, Class<T> klass) throws CentaurException;
 
+    public <T> List<T> getObjects(String kind, String propertyName, Object value, Class<T> klass, String sortField) throws CentaurException;
+
+    public <T> List<T> getObjectsSorted(String kind, String propertyName, Object value, Class<T> klass, SortCriteria... sortCriteria) throws CentaurException;
+
+    public <T> List<T> getObjectsByPropertiesSorted(String kind, Map<String, Object> keyValues, Class<T> klass, SortCriteria... sortCriteria) throws CentaurException;
+
     public <T> List<T> getObjects(String kind, Map<String, Object> keyValues, Class<T> klass) throws CentaurException;
 
     public <T> List<T> getObjects(Class<T> klass) throws CentaurException;

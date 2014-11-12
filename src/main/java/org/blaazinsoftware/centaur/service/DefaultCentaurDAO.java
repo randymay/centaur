@@ -97,6 +97,14 @@ class DefaultCentaurDAO implements CentaurDAO {
     }
 
     @Override
+    public List<Entity> getEntitiesByPropertyValue(String kind, String property, Object value, SortCriteria... sortCriteria) throws CentaurException {
+        Map<String, Object> keyValues = new HashMap<>();
+        keyValues.put(property, value);
+
+        return getEntitiesByPropertyValuesSorted(kind, keyValues, sortCriteria);
+    }
+
+    @Override
     public List<Entity> getEntitiesByPropertyValues(String kind, Map<String, Object> keyValues) throws CentaurException {
         return getEntitiesByPropertyValuesSorted(kind, keyValues);
     }
@@ -142,7 +150,7 @@ class DefaultCentaurDAO implements CentaurDAO {
 
         if (CollectionUtils.isNotEmpty(sortCriteria)) {
             for (SortCriteria criteria : sortCriteria) {
-                if (!StringUtils.isEmpty(criteria.getPropertyName())) {
+                if (criteria != null && !StringUtils.isEmpty(criteria.getPropertyName())) {
                     Query.SortDirection direction = Query.SortDirection.DESCENDING;
                     if (criteria.isAscending()) {
                         direction = Query.SortDirection.ASCENDING;
