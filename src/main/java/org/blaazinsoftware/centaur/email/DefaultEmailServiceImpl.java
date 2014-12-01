@@ -23,8 +23,7 @@ class DefaultEmailServiceImpl implements EmailService {
         this.sendEmail(from, subject, body, to);
     }
 
-    @Override
-    public void sendEmail(String from, String subject, String body, String... to) throws CentaurException {
+    protected void sendEmail(String from, String subject, String body, String... to) throws CentaurException {
         try {
             Properties props = new Properties();
             Session session = Session.getDefaultInstance(props, null);
