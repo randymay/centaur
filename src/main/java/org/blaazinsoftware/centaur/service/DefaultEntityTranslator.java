@@ -17,7 +17,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author Randy May <a href="www.blaazinsoftware.com">Blaazin Software Consulting, Inc.</a>
+ * Default implementation of <code>EntityTranslator</code>
+ *
+ * @author Randy May
  */
 public class DefaultEntityTranslator implements EntityTranslator {
     private static final Logger log = LoggerFactory.getLogger(DefaultEntityTranslator.class);

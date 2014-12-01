@@ -11,6 +11,8 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 
 /**
+ * Default implementation of <code>CentaurDAO</code>.
+ *
  * @author Randy May
  */
 class DefaultCentaurDAO implements CentaurDAO {
@@ -57,8 +59,8 @@ class DefaultCentaurDAO implements CentaurDAO {
     }
 
     @Override
-    public Entity getSingleEntityByPropertyValue(String kind, String property, Object value) throws CentaurException {
-        Query.Filter filter = new Query.FilterPredicate(property, Query.FilterOperator.EQUAL, value);
+    public Entity findSingleEntityByPropertyValue(String kind, String propertyName, Object value) throws CentaurException {
+        Query.Filter filter = new Query.FilterPredicate(propertyName, Query.FilterOperator.EQUAL, value);
 
         Query query = new Query(kind).setFilter(filter);
 
@@ -68,12 +70,12 @@ class DefaultCentaurDAO implements CentaurDAO {
     }
 
     @Override
-    public List<Entity> getChildren(String kind, Entity parent) throws CentaurException {
-        return getChildren(kind, parent, FetchOptions.Builder.withDefaults());
+    public List<Entity> getAllChildren(String kind, Entity parent) throws CentaurException {
+        return getAllChildren(kind, parent, FetchOptions.Builder.withDefaults());
     }
 
     @Override
-    public List<Entity> getChildren(String kind, Entity parent, FetchOptions fetchOptions) throws CentaurException {
+    public List<Entity> getAllChildren(String kind, Entity parent, FetchOptions fetchOptions) throws CentaurException {
         refresh(parent);
         Query query = new Query(kind, parent.getKey());
         PreparedQuery pq = getDatastoreService().prepare(query);
@@ -82,36 +84,36 @@ class DefaultCentaurDAO implements CentaurDAO {
     }
 
     @Override
-    public List<Entity> getEntitiesByKind(String kind) throws CentaurException {
-        return getEntitiesByPropertyValue(kind, null, null);
+    public List<Entity> getAllEntitiesByKind(String kind) throws CentaurException {
+        return findEntitiesByPropertyValue(kind, null, null);
     }
 
     @Override
-    public List<Entity> getEntitiesByPropertyValue(String kind, String property, Object value) throws CentaurException {
+    public List<Entity> findEntitiesByPropertyValue(String kind, String propertyName, Object value) throws CentaurException {
         Map<String, Object> keyValues = new HashMap<>();
-        if (null != property) {
-            keyValues.put(property, value);
+        if (null != propertyName) {
+            keyValues.put(propertyName, value);
         }
 
-        return getEntitiesByPropertyValues(kind, keyValues);
+        return findEntitiesByPropertyValues(kind, keyValues);
     }
 
     @Override
-    public List<Entity> getEntitiesByPropertyValue(String kind, String property, Object value, SortCriteria... sortCriteria) throws CentaurException {
+    public List<Entity> findEntitiesByPropertyValue(String kind, String propertyName, Object value, SortCriteria... sortCriteria) throws CentaurException {
         Map<String, Object> keyValues = new HashMap<>();
-        keyValues.put(property, value);
+        keyValues.put(propertyName, value);
 
-        return getEntitiesByPropertyValuesSorted(kind, keyValues, sortCriteria);
+        return findEntitiesByPropertyValuesSorted(kind, keyValues, sortCriteria);
     }
 
     @Override
-    public List<Entity> getEntitiesByPropertyValues(String kind, Map<String, Object> keyValues) throws CentaurException {
-        return getEntitiesByPropertyValuesSorted(kind, keyValues);
+    public List<Entity> findEntitiesByPropertyValues(String kind, Map<String, Object> keyValues) throws CentaurException {
+        return findEntitiesByPropertyValuesSorted(kind, keyValues);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<Entity> getEntitiesByPropertyValuesSorted(String kind, Map<String, Object> keyValues, SortCriteria... sortCriteria) throws CentaurException {
+    public List<Entity> findEntitiesByPropertyValuesSorted(String kind, Map<String, Object> keyValues, SortCriteria... sortCriteria) throws CentaurException {
         Query query = new Query(kind);
 
         Query.Filter filter = null;
@@ -137,11 +139,11 @@ class DefaultCentaurDAO implements CentaurDAO {
             sortCriteriaList = Arrays.asList(sortCriteria);
         }
 
-        return getEntitiesByFilterSorted(kind, filter, sortCriteriaList, FetchOptions.Builder.withDefaults());
+        return findEntitiesByFilterSorted(kind, filter, sortCriteriaList, FetchOptions.Builder.withDefaults());
     }
 
     @Override
-    public QueryResultList<Entity> getEntitiesByFilterSorted(String kind, Query.Filter filter, List<SortCriteria> sortCriteria, FetchOptions fetchOptions) throws CentaurException {
+    public QueryResultList<Entity> findEntitiesByFilterSorted(String kind, Query.Filter filter, List<SortCriteria> sortCriteria, FetchOptions fetchOptions) throws CentaurException {
         Query query = new Query(kind);
 
         if (filter != null) {

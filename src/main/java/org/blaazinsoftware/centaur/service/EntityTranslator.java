@@ -2,28 +2,43 @@ package org.blaazinsoftware.centaur.service;
 
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
-import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.blaazinsoftware.centaur.CentaurException;
-import org.blaazinsoftware.centaur.data.dto.MapEntity;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 /**
- * @author Randy May <a href="www.blaazinsoftware.com">Blaazin Software Consulting, Inc.</a>
+ * @author Randy May
  */
 public interface EntityTranslator {
 
+    /**
+     * Translates the given <code>T</code> to <code>Entity</code>
+     *
+     * @param object        - Object to translate
+     *
+     * @return              - Entity representation
+     *
+     * @throws CentaurException
+     */
     public <T> Entity toEntity(final T object) throws CentaurException;
 
+    /**
+     * Translates the given <code>T</code> to <code>Entity</code>
+     *
+     * @param object        - Object to translate
+     * @param parentKey     - The parent of the <code>Entity</code>, null if non-existent
+     *
+     * @return              - Entity representation
+     *
+     * @throws CentaurException
+     */
     public <T> Entity toEntity(final T object, Key parentKey) throws CentaurException;
 
+    /**
+     * Translates the given <code>Entity</code> to it's <code>T</code> equivalent
+     * @param entity        - <code>Entity</code> to translate
+     * @param klass         - Return type of the result
+     *
+     * @return              - Instance of <code>T</code> that corresponds to <code>Entity</code>
+     * @throws CentaurException
+     */
     public <T> T fromEntity(final Entity entity, Class<?> klass) throws CentaurException;
 }

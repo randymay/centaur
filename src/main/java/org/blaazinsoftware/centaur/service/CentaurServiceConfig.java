@@ -1,7 +1,7 @@
 package org.blaazinsoftware.centaur.service;
 
 /**
- * @author Randy May <a href="www.blaazinsoftware.com">Blaazin Software Consulting, Inc.</a>
+ * @author Randy May
  */
 public class CentaurServiceConfig {
     private CentaurDAO centaurDAO;

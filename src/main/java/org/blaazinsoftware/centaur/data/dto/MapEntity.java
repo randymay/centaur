@@ -5,9 +5,10 @@ import org.blaazinsoftware.centaur.annotation.AppEngineKey;
 import org.blaazinsoftware.centaur.annotation.AppEngineKind;
 import org.blaazinsoftware.centaur.annotation.AppEngineName;
 
+import java.io.Serializable;
 import java.util.HashMap;
 
-public final class MapEntity extends HashMap<String, Object> implements CentaurEntity {
+public final class MapEntity extends HashMap<String, Object> implements Serializable {
 
     @AppEngineKey
     private Key key;

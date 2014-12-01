@@ -9,14 +9,21 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.util.Properties;
 
-class EmailServiceImpl implements EmailService {
+/**
+ * Default implementation of <code>EmailService</code>
+ *
+ * @author Randy May
+ */
+class DefaultEmailServiceImpl implements EmailService {
 
     private String from;
 
+    @Override
     public void sendEmail(String subject, String body, String... to) throws CentaurException {
         this.sendEmail(from, subject, body, to);
     }
 
+    @Override
     public void sendEmail(String from, String subject, String body, String... to) throws CentaurException {
         try {
             Properties props = new Properties();

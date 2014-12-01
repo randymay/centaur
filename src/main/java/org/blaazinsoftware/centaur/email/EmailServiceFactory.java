@@ -10,7 +10,7 @@ public class EmailServiceFactory {
     }
 
     public static EmailService getInstance(String fromAddress) {
-        EmailServiceImpl impl = new EmailServiceImpl();
+        DefaultEmailServiceImpl impl = new DefaultEmailServiceImpl();
         impl.setFrom(fromAddress);
 
         return impl;

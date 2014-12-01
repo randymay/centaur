@@ -8,9 +8,11 @@ import org.blaazinsoftware.centaur.data.dto.SortCriteria;
 import java.util.*;
 
 /**
- * @author Randy May <a href="www.blaazinsoftware.com">Blaazin Software Consulting, Inc.</a>
+ * Default Implementation of <code>CentaurService</code>
+ *
+ * @author Randy May
  */
-public class CentaurServiceImpl implements CentaurService {
+public class DefaultCentaurServiceImpl implements CentaurService {
 
     private EntityTranslator entityTranslator;
     private CentaurDAO dao;
@@ -86,23 +88,23 @@ public class CentaurServiceImpl implements CentaurService {
     }
 
     @Override
-    public <T> T getObjectByProperty(String propertyName, Object value, Class<T> klass) throws CentaurException {
-        return this.getObject(klass.getSimpleName(), propertyName, value, klass);
+    public <T> T findObjectByProperty(String propertyName, Object value, Class<T> klass) throws CentaurException {
+        return this.findObject(klass.getSimpleName(), propertyName, value, klass);
     }
 
     @Override
-    public <T> T getObjectByUserId(String userId, Class<T> klass) throws CentaurException {
-        return getObject(klass.getSimpleName(), "userId", userId, klass);
+    public <T> T findObjectByUserId(String userId, Class<T> klass) throws CentaurException {
+        return findObject(klass.getSimpleName(), "userId", userId, klass);
     }
 
     @Override
-    public <T> T getObjectByUserId(String kind, String userId, Class<T> klass) throws CentaurException {
-        return getObject(kind, "userId", userId, klass);
+    public <T> T findObjectByUserId(String kind, String userId, Class<T> klass) throws CentaurException {
+        return findObject(kind, "userId", userId, klass);
     }
 
     @Override
-    public <T> T getObject(String kind, String propertyName, Object value, Class<T> klass) throws CentaurException {
-        Entity entity = dao.getSingleEntityByPropertyValue(kind, propertyName, value);
+    public <T> T findObject(String kind, String propertyName, Object value, Class<T> klass) throws CentaurException {
+        Entity entity = dao.findSingleEntityByPropertyValue(kind, propertyName, value);
         if (entity == null) {
             return null;
         }
@@ -111,19 +113,19 @@ public class CentaurServiceImpl implements CentaurService {
     }
 
     @Override
-    public <T> Map<String, T> getByKeyStrings(List<String> keyStrings, Class<T> klass) throws CentaurException {
+    public <T> Map<String, T> getObjectByKeyStrings(List<String> keyStrings, Class<T> klass) throws CentaurException {
         List<Key> keyList = new ArrayList<>();
 
         for (String keyString : keyStrings) {
             keyList.add(KeyFactory.stringToKey(keyString));
         }
 
-        return getByKeys(keyList, klass);
+        return getObjectByKeys(keyList, klass);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> Map<String, T> getByKeys(List<Key> keys, Class<T> klass) throws CentaurException {
+    public <T> Map<String, T> getObjectByKeys(List<Key> keys, Class<T> klass) throws CentaurException {
         Map<String, T> results = null;
 
         Map<Key, Entity> values = dao.getByKeys(keys);
@@ -165,9 +167,9 @@ public class CentaurServiceImpl implements CentaurService {
     }
 
     @Override
-    public <T, X> List<T> getChildren(String kind, X parent, Class<T> klass) throws CentaurException {
+    public <T, X> List<T> getAllChildren(String kind, X parent, Class<T> klass) throws CentaurException {
         Entity parentEntity = entityTranslator.toEntity(parent);
-        List<Entity> entities = dao.getChildren(kind, parentEntity);
+        List<Entity> entities = dao.getAllChildren(kind, parentEntity);
 
         List<T> results = new ArrayList<>();
         if (null == entities) {
@@ -185,7 +187,7 @@ public class CentaurServiceImpl implements CentaurService {
     @Override
     public <T> List<T> getObjects(String kind, Class<T> klass) throws CentaurException {
         List<T> entityList = new ArrayList<>();
-        List<Entity> entities = dao.getEntitiesByKind(kind);
+        List<Entity> entities = dao.getAllEntitiesByKind(kind);
         if (entities == null) {
             return null;
         }
@@ -199,25 +201,25 @@ public class CentaurServiceImpl implements CentaurService {
     }
 
     @Override
-    public <T> List<T> getObjects(String kind, String propertyName, Object value, Class<T> klass) throws CentaurException {
-        return getObjects(kind, propertyName, value, klass, null);
+    public <T> List<T> findObjects(String kind, String propertyName, Object value, Class<T> klass) throws CentaurException {
+        return findObjects(kind, propertyName, value, klass, null);
     }
 
     @Override
-    public <T> List<T> getObjects(String kind, String propertyName, Object value, Class<T> klass, String sortField) throws CentaurException {
-        return getObjectsSorted(kind, propertyName, value, klass, (SortCriteria)null);
+    public <T> List<T> findObjects(String kind, String propertyName, Object value, Class<T> klass, String sortField) throws CentaurException {
+        return findObjectsSorted(kind, propertyName, value, klass, (SortCriteria) null);
     }
 
     @Override
-    public <T> List<T> getObjectsSorted(String kind, String propertyName, Object value, Class<T> klass, SortCriteria... sortCriteria) throws CentaurException {
+    public <T> List<T> findObjectsSorted(String kind, String propertyName, Object value, Class<T> klass, SortCriteria... sortCriteria) throws CentaurException {
         Map<String, Object> keyValues = new HashMap<>();
         keyValues.put(propertyName, value);
-        return getObjectsByPropertiesSorted(kind, keyValues, klass, sortCriteria);
+        return findObjectsByPropertiesSorted(kind, keyValues, klass, sortCriteria);
     }
 
     @Override
-    public <T> List<T> getObjectsByPropertiesSorted(String kind, Map<String, Object> keyValues, Class<T> klass, SortCriteria... sortCriteria) throws CentaurException {
-        List<Entity> entities = dao.getEntitiesByPropertyValuesSorted(kind, keyValues, sortCriteria);
+    public <T> List<T> findObjectsByPropertiesSorted(String kind, Map<String, Object> keyValues, Class<T> klass, SortCriteria... sortCriteria) throws CentaurException {
+        List<Entity> entities = dao.findEntitiesByPropertyValuesSorted(kind, keyValues, sortCriteria);
         return getObjectListFromEntities(klass, entities);
     }
 
@@ -236,8 +238,8 @@ public class CentaurServiceImpl implements CentaurService {
     }
 
     @Override
-    public <T> List<T> getObjects(String kind, Map<String, Object> keyValues, Class<T> klass) throws CentaurException {
-        return getObjectsByPropertiesSorted(kind, keyValues, klass, (SortCriteria)null);
+    public <T> List<T> findObjects(String kind, Map<String, Object> keyValues, Class<T> klass) throws CentaurException {
+        return findObjectsByPropertiesSorted(kind, keyValues, klass, (SortCriteria) null);
     }
 
     @Override
@@ -246,16 +248,16 @@ public class CentaurServiceImpl implements CentaurService {
     }
 
     @Override
-    public QueryResultList<Entity> getEntitiesByFilterSorted(String kind, Query.Filter filter, List<SortCriteria> sortCriteria, FetchOptions fetchOptions) throws CentaurException {
-        return dao.getEntitiesByFilterSorted(kind, filter, sortCriteria, fetchOptions);
+    public QueryResultList<Entity> findEntitiesByFilterSorted(String kind, Query.Filter filter, List<SortCriteria> sortCriteria, FetchOptions fetchOptions) throws CentaurException {
+        return dao.findEntitiesByFilterSorted(kind, filter, sortCriteria, fetchOptions);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> ResultList<T> getObjectsByFilterSorted(Class klass, Query.Filter filter, List<SortCriteria> sortCriteria, FetchOptions fetchOptions) throws CentaurException {
+    public <T> ResultList<T> findObjectsByFilterSorted(Class klass, Query.Filter filter, List<SortCriteria> sortCriteria, FetchOptions fetchOptions) throws CentaurException {
         ResultList<T> results = new ResultList<>();
 
-        QueryResultList<Entity> entityList = getEntitiesByFilterSorted(klass.getSimpleName(), filter, sortCriteria, fetchOptions);
+        QueryResultList<Entity> entityList = findEntitiesByFilterSorted(klass.getSimpleName(), filter, sortCriteria, fetchOptions);
 
         if (entityList == null) {
             return results;
@@ -270,8 +272,8 @@ public class CentaurServiceImpl implements CentaurService {
     }
 
     @Override
-    public <T> ResultList<T> getObjectsByFilter(Class klass, Query.Filter filter) throws CentaurException {
-        return getObjectsByFilterSorted(klass, filter, null, null);
+    public <T> ResultList<T> findObjectsByFilter(Class klass, Query.Filter filter) throws CentaurException {
+        return findObjectsByFilterSorted(klass, filter, null, null);
     }
 
     public Transaction beginTransaction() {

@@ -8,7 +8,11 @@ import org.blaazinsoftware.centaur.annotation.AppEngineName;
 
 import java.io.Serializable;
 
-public abstract class AbstractIDEntity implements CentaurEntity, Serializable {
+/**
+ * Convenience class for using Centaur.  This class contains fields for Keys, Kind, and name which are needed
+ * to store and retrieve data in Google App Engine.
+ */
+public abstract class AbstractIDEntity implements Serializable {
 
     @AppEngineKey
     @JsonIgnore
@@ -18,8 +22,8 @@ public abstract class AbstractIDEntity implements CentaurEntity, Serializable {
     @JsonIgnore
     private String kind;
 
-    @JsonIgnore
     @AppEngineName
+    @JsonIgnore
     private String name;
 
     public AbstractIDEntity() {

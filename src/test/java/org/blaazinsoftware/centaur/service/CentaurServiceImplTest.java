@@ -92,7 +92,7 @@ public class CentaurServiceImplTest {
             assertNotNull(simpleEntity.getAppEngineKey());
         }
 
-        List<SimpleEntity> simpleEntities = service.getChildren(SimpleEntity.class.getSimpleName(), parentEntity, SimpleEntity.class);
+        List<SimpleEntity> simpleEntities = service.getAllChildren(SimpleEntity.class.getSimpleName(), parentEntity, SimpleEntity.class);
 
         assertEquals(10, simpleEntities.size());
         for (int i = 0; i < simpleEntities.size(); i++) {
@@ -124,7 +124,7 @@ public class CentaurServiceImplTest {
             assertNotNull(simpleEntity.getAppEngineKey());
         }
 
-        List<SimpleEntity> simpleEntities = service.getChildren(SimpleEntity.class.getSimpleName(), parentEntity, SimpleEntity.class);
+        List<SimpleEntity> simpleEntities = service.getAllChildren(SimpleEntity.class.getSimpleName(), parentEntity, SimpleEntity.class);
 
         assertEquals(10, simpleEntities.size());
         for (int i = 0; i < simpleEntities.size(); i++) {
@@ -143,7 +143,7 @@ public class CentaurServiceImplTest {
 
         service.save(entityWithIntegerField);
 
-        entityWithIntegerField = service.getObject(EntityWithIntegerField.class.getSimpleName(), "userId", userId, EntityWithIntegerField.class);
+        entityWithIntegerField = service.findObject(EntityWithIntegerField.class.getSimpleName(), "userId", userId, EntityWithIntegerField.class);
         assertNotNull(entityWithIntegerField);
         assertNotNull(entityWithIntegerField.getUserId());
         assertEquals(userId, entityWithIntegerField.getUserId());
@@ -241,7 +241,7 @@ public class CentaurServiceImplTest {
         }
 
         List<SimpleEntity> objects =
-                service.getObjects(
+                service.findObjects(
                         SimpleEntity.class.getSimpleName(),
                         "shortDescription",
                         childDescription,
@@ -272,7 +272,7 @@ public class CentaurServiceImplTest {
         keyValues.put("stringValue", childDescription);
 
         List<EntityWithStringAndIntegerField> objects =
-                service.getObjects(
+                service.findObjects(
                         EntityWithStringAndIntegerField.class.getSimpleName(),
                         keyValues,
                         EntityWithStringAndIntegerField.class);
@@ -452,7 +452,7 @@ public class CentaurServiceImplTest {
                 assertNotNull(simpleEntity.getAppEngineKey());
             }
 
-            List<SimpleEntity> simpleEntities = service.getChildren(SimpleEntity.class.getSimpleName(), parentEntity, SimpleEntity.class);
+            List<SimpleEntity> simpleEntities = service.getAllChildren(SimpleEntity.class.getSimpleName(), parentEntity, SimpleEntity.class);
 
             assertEquals(10, simpleEntities.size());
             for (int i = 0; i < simpleEntities.size(); i++) {
@@ -554,7 +554,7 @@ public class CentaurServiceImplTest {
         Query.Filter filter = new Query.FilterPredicate("shortDescription", Query.FilterOperator.EQUAL, "name5");
 
         List<SimpleEntity> objects =
-                service.getObjectsByFilter(SimpleEntity.class, filter);
+                service.findObjectsByFilter(SimpleEntity.class, filter);
 
         assertNotNull(objects);
         assertEquals(1, objects.size());
@@ -582,7 +582,7 @@ public class CentaurServiceImplTest {
         FetchOptions fetchOptions = FetchOptions.Builder.withDefaults();
 
         List<EntityWithStringAndIntegerField> objects =
-                service.getObjectsByFilterSorted(EntityWithStringAndIntegerField.class, filter, sortCriteria, fetchOptions);
+                service.findObjectsByFilterSorted(EntityWithStringAndIntegerField.class, filter, sortCriteria, fetchOptions);
 
         assertNotNull(objects);
         assertEquals(5, objects.size());
@@ -613,7 +613,7 @@ public class CentaurServiceImplTest {
 
         for (int count = 0; count < 10; count++) {
             ResultList<EntityWithDateField> page =
-                    service.getObjectsByFilterSorted(EntityWithDateField.class, filter, sortCriteria, fetchOptions);
+                    service.findObjectsByFilterSorted(EntityWithDateField.class, filter, sortCriteria, fetchOptions);
 
             assertNotNull(page);
 
@@ -641,7 +641,7 @@ public class CentaurServiceImplTest {
             keys.add(service.save(simpleEntity));
         }
 
-        Map<String, EntityWithDateField> values = service.getByKeyStrings(keys, EntityWithDateField.class);
+        Map<String, EntityWithDateField> values = service.getObjectByKeyStrings(keys, EntityWithDateField.class);
 
         assertNotNull(values);
         assertEquals(10, values.size());
