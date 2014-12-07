@@ -1,5 +1,7 @@
 package org.blaazinsoftware.centaur.data.dto;
 
+import com.google.appengine.api.datastore.Text;
+
 /**
  * Convenience class for using Centaur.  This class contains fields for Keys, Kind, and name which are needed
  * to store and retrieve data in Google App Engine, as well as fields for short and long descriptions.
@@ -7,7 +9,7 @@ package org.blaazinsoftware.centaur.data.dto;
 public abstract class AbstractDescribedNamedEntity extends AbstractIDEntity {
 
     private String shortDescription;
-    private String longDescription;
+    private Text longDescription;
 
     /**
      * Retrieves the Short Description
@@ -31,7 +33,7 @@ public abstract class AbstractDescribedNamedEntity extends AbstractIDEntity {
      *
      * @return          - <code>String</code> representing the Long Description
      */
-    public String getLongDescription() {
+    public Text getLongDescription() {
         return longDescription;
     }
 
@@ -39,7 +41,7 @@ public abstract class AbstractDescribedNamedEntity extends AbstractIDEntity {
      * Sets the Long Description
      *
      */
-    public void setLongDescription(String longDescription) {
+    public void setLongDescription(Text longDescription) {
         this.longDescription = longDescription;
     }
 }

@@ -339,14 +339,14 @@ public class CentaurServiceImplTest {
         String description = "Description for testGetObject";
 
         SimpleEntity expected = new SimpleEntity();
-        expected.setLongDescription(description);
+        expected.setLongDescription(new Text(description));
 
         String key = service.save(expected);
         assertNotNull(key);
 
         SimpleEntity actual = service.getObject(key, SimpleEntity.class);
         assertNotNull(actual);
-        assertEquals(description, actual.getLongDescription());
+        assertEquals(description, actual.getLongDescription().getValue());
     }
 
     @Test
@@ -356,7 +356,7 @@ public class CentaurServiceImplTest {
         String description = "Description for testGetObject";
 
         SimpleEntity expected = new SimpleEntity();
-        expected.setLongDescription(description);
+        expected.setLongDescription(new Text(description));
 
         String key = service.save(expected, transaction);
 
@@ -388,7 +388,7 @@ public class CentaurServiceImplTest {
 
         SimpleEntity actual = service.getObject(key, SimpleEntity.class);
         assertNotNull(actual);
-        assertEquals(description, actual.getLongDescription());
+        assertEquals(description, actual.getLongDescription().getValue());
     }
 
 
@@ -547,7 +547,7 @@ public class CentaurServiceImplTest {
             if (i <= 10) {
                 childDescription += i;
             }
-            simpleEntity.setLongDescription(childDescription);
+            simpleEntity.setLongDescription(new Text(childDescription));
             service.save(simpleEntity);
         }
 
