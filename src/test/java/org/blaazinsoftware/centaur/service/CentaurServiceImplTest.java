@@ -150,6 +150,35 @@ public class CentaurServiceImplTest {
     }
 
     @Test
+    public void testToAndFromEntityWithAllPropertyTypes() throws Exception {
+        final int intValue = 1;
+        final Integer integerWrapperValue = 2;
+        final float floatValue = 3f;
+        final Float floatWrapperValue = 4f;
+        final double doubleValue = 5d;
+        final Double doubleWrapperValue = 6d;
+
+        EntityWithAllFields entity = new EntityWithAllFields();
+        entity.setIntField(intValue);
+        entity.setIntegerWrapperField(integerWrapperValue);
+        entity.setFloatField(floatValue);
+        entity.setFloatWrapperField(floatWrapperValue);
+        entity.setDoubleField(doubleValue);
+        entity.setDoubleWrapperField(doubleWrapperValue);
+
+        String key = service.save(entity);
+
+        entity = service.getObject(key, EntityWithAllFields.class);
+        assertNotNull(entity);
+        assertEquals(intValue, entity.getIntField());
+        assertEquals(integerWrapperValue, entity.getIntegerWrapperField());
+        assertTrue(floatValue == entity.getFloatField());
+        assertEquals(floatWrapperValue, entity.getFloatWrapperField());
+        assertTrue(doubleValue == entity.getDoubleField());
+        assertEquals(doubleWrapperValue, entity.getDoubleWrapperField());
+    }
+
+    @Test
     public void testToAndFromEntityWithListOfLongsProperty() throws Exception {
         EntityWithListOfLongField object = new EntityWithListOfLongField();
         List<Long> userIds = new ArrayList<>();

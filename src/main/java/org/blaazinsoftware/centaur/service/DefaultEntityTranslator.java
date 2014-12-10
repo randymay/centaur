@@ -134,6 +134,9 @@ public class DefaultEntityTranslator implements EntityTranslator {
                             if (Integer.class.equals(descriptor.getPropertyType()) ||
                                     int.class.equals(descriptor.getPropertyType())) {
                                 castValue = ((Long) value).intValue();
+                            } else if (Float.class.equals(descriptor.getPropertyType()) ||
+                                    float.class.equals(descriptor.getPropertyType())) {
+                                castValue = ((Double) value).floatValue();
                             } else if (List.class.equals(descriptor.getPropertyType())) {
                                 // Field is a List class.  Let's see if we have to convert the values
 
