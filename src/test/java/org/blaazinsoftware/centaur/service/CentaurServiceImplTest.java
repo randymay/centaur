@@ -375,7 +375,7 @@ public class CentaurServiceImplTest {
 
         SimpleEntity actual = service.getObject(key, SimpleEntity.class);
         assertNotNull(actual);
-        assertEquals(description, actual.getLongDescription().getValue());
+        assertEquals(description, actual.getLongDescriptionValue());
     }
 
     @Test

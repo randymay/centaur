@@ -44,4 +44,13 @@ public abstract class AbstractDescribedNamedEntity extends AbstractIDEntity {
     public void setLongDescription(Text longDescription) {
         this.longDescription = longDescription;
     }
+
+    /**
+     * Returns the value of the Long Description in String form
+     *
+     * @return          Long Description in <code>String</code> form
+     */
+    public String getLongDescriptionValue() {
+        return this.getLongDescription() != null ? this.getLongDescription().getValue() : null;
+    }
 }
