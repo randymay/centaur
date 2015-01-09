@@ -6,6 +6,7 @@ package org.blaazinsoftware.centaur.service;
 public class CentaurServiceConfig {
     private CentaurDAO centaurDAO;
     private EntityTranslator entityTranslator;
+    private CentaurCache centaurCache;
 
     public CentaurDAO getCentaurDAO() {
         return centaurDAO;
@@ -21,5 +22,13 @@ public class CentaurServiceConfig {
 
     public void setEntityTranslator(EntityTranslator entityTranslator) {
         this.entityTranslator = entityTranslator;
+    }
+
+    public CentaurCache getCentaurCache() {
+        return centaurCache;
+    }
+
+    public void setCentaurCache(CentaurCache centaurCache) {
+        this.centaurCache = centaurCache;
     }
 }

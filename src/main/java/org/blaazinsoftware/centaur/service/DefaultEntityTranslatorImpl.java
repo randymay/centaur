@@ -21,8 +21,8 @@ import java.util.Map;
  *
  * @author Randy May
  */
-public class DefaultEntityTranslator implements EntityTranslator {
-    private static final Logger log = LoggerFactory.getLogger(DefaultEntityTranslator.class);
+public class DefaultEntityTranslatorImpl implements EntityTranslator {
+    private static final Logger log = LoggerFactory.getLogger(DefaultEntityTranslatorImpl.class);
 
     public <T> Entity toEntity(final T object) throws CentaurException {
         return toEntity(object, null);

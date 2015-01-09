@@ -3,16 +3,14 @@ package org.blaazinsoftware.centaur.data.util;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
-import org.blaazinsoftware.centaur.service.DefaultEntityTranslator;
+import org.blaazinsoftware.centaur.service.DefaultEntityTranslatorImpl;
 import org.blaazinsoftware.centaur.service.EntityTranslator;
 import org.blaazinsoftware.centaur.service.SimpleEntity;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 public class DefaultEntityTranslatorTest {
 
@@ -29,7 +27,7 @@ public class DefaultEntityTranslatorTest {
         helper.tearDown();
     }
 
-    private EntityTranslator entityTranslator = new DefaultEntityTranslator();
+    private EntityTranslator entityTranslator = new DefaultEntityTranslatorImpl();
 
     @Test
     public void testToEntityWithEmptyKey() throws Exception {

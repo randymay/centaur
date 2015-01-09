@@ -15,9 +15,9 @@ import java.util.*;
  *
  * @author Randy May
  */
-class DefaultCentaurDAO implements CentaurDAO {
+class DefaultCentaurDAOImpl implements CentaurDAO {
 
-    private static final Logger log = LoggerFactory.getLogger(DefaultCentaurDAO.class);
+    private static final Logger log = LoggerFactory.getLogger(DefaultCentaurDAOImpl.class);
 
     private DatastoreService getDatastoreService() {
         return DatastoreServiceFactory.getDatastoreService();

@@ -15,12 +15,12 @@ import java.util.*;
 
 import static org.junit.Assert.*;
 
-public class CentaurServiceImplTest {
+public class DefaultCentaurServiceImplTest {
 
     private final LocalServiceTestHelper helper =
             new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
 
-    private CentaurService service = CentaurServiceFactory.newInstance();
+    private DefaultCentaurServiceImpl service = (DefaultCentaurServiceImpl)CentaurServiceFactory.newInstance();
 
     @Before
     public void setUp() {
@@ -680,5 +680,39 @@ public class CentaurServiceImplTest {
 
             assertEquals(keyString, KeyFactory.keyToString(value.getAppEngineKey()));
         }
+    }
+
+    @Test
+    public void testCaching() throws Exception {
+        final int intValue = 1;
+        final Integer integerWrapperValue = 2;
+        final float floatValue = 3f;
+        final Float floatWrapperValue = 4f;
+        final double doubleValue = 5d;
+        final Double doubleWrapperValue = 6d;
+
+        EntityWithAllFields entity = new EntityWithAllFields();
+        entity.setIntField(intValue);
+        entity.setIntegerWrapperField(integerWrapperValue);
+        entity.setFloatField(floatValue);
+        entity.setFloatWrapperField(floatWrapperValue);
+        entity.setDoubleField(doubleValue);
+        entity.setDoubleWrapperField(doubleWrapperValue);
+
+        CentaurService service = getService();
+        String key = service.save(entity);
+
+        assertNotNull(key);
+        assertNull(service.getObjectFromCacheByKey(key));
+        service.cacheObjectByKey(key, entity);
+        final Object objectFromCache = service.getObjectFromCacheByKey(key);
+        assertNotNull(objectFromCache);
+
+        service.cacheObjectByKey(key, null);
+        assertNull(service.getObjectFromCacheByKey(key));
+    }
+
+    private CentaurService getService() {
+        return CentaurServiceFactory.newInstance();
     }
 }

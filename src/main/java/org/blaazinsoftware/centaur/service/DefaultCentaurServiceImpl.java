@@ -16,6 +16,29 @@ public class DefaultCentaurServiceImpl implements CentaurService {
 
     private EntityTranslator entityTranslator;
     private CentaurDAO dao;
+    private CentaurCache cache;
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T getObjectFromCacheByKey(String keyString) throws CentaurException {
+        return (T)getObjectFromCache(keyString);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T getObjectFromCache(Object key) throws CentaurException {
+        return (T)cache.getObjectFromCache(key);
+    }
+
+    @Override
+    public <T> void cacheObjectByKey(String key, T objectToCache) throws CentaurException {
+        cacheObject(key, objectToCache);
+    }
+
+    @Override
+    public <T> void cacheObject(Object key, T objectToCache) throws CentaurException {
+        cache.cacheObject(key, objectToCache);
+    }
 
     @Override
     public <T> String save(T object) throws CentaurException {
@@ -300,4 +323,7 @@ public class DefaultCentaurServiceImpl implements CentaurService {
         this.entityTranslator = entityTranslator;
     }
 
+    protected void setCache(CentaurCache cache) {
+        this.cache = cache;
+    }
 }
