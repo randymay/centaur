@@ -8,7 +8,3 @@ Naming
 =======
 
 A centaur is a mythological creature with the head, arms, and torso of a human and the body and legs of a horse.  In the case of this project, the head, arms and torso are JavaBeans (as they are intuitive and straight forward), and the body and legs (because they are lean, strong, and fast) are Google App Engine.
- 
-
-Simple Usage
-=======
