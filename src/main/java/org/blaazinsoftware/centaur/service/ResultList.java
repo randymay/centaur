@@ -18,9 +18,25 @@ public class ResultList <T> extends ArrayList<T> implements QueryResultList<T> {
     private Cursor cursor;
 
     /**
+     * Default Constructor
+     */
+    public ResultList() {
+
+    }
+
+    /**
+     * Constructor for cloning a ResultList object
+     *
+     * @param cursor        - <code>Cursor</code> to use
+     */
+    public ResultList (Cursor cursor) {
+        this.cursor = cursor;
+    }
+
+    /**
      * Get the indexes used to perform the query.
      *
-     * @return      - <code>Index</code>
+     * @return              - <code>Index</code>
      */
     public List<Index> getIndexList() {
         return indexList;
