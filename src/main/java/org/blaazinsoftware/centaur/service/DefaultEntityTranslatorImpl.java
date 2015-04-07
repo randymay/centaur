@@ -2,19 +2,24 @@ package org.blaazinsoftware.centaur.service;
 
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.Text;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.blaazinsoftware.centaur.CentaurException;
 import org.blaazinsoftware.centaur.data.dto.MapEntity;
+import org.blaazinsoftware.centaur.exception.TranslatorNotFoundException;
+import org.blaazinsoftware.centaur.service.fieldTranslator.FieldTranslator;
+import org.blaazinsoftware.centaur.service.fieldTranslator.FloatFieldTranslator;
+import org.blaazinsoftware.centaur.service.fieldTranslator.IntegerFieldTranslator;
+import org.blaazinsoftware.centaur.service.fieldTranslator.NoCastFieldTranslator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.Type;
+import java.util.*;
 
 /**
  * Default implementation of <code>EntityTranslator</code>
@@ -24,8 +29,29 @@ import java.util.Map;
 public class DefaultEntityTranslatorImpl implements EntityTranslator {
     private static final Logger log = LoggerFactory.getLogger(DefaultEntityTranslatorImpl.class);
 
+    private Map<Class, FieldTranslator> fieldTranslatorMap = new HashMap<>();
+
     public <T> Entity toEntity(final T object) throws CentaurException {
         return toEntity(object, null);
+    }
+
+    public DefaultEntityTranslatorImpl () {
+        final IntegerFieldTranslator integerFieldTranslator = new IntegerFieldTranslator();
+        final FloatFieldTranslator floatFieldTranslator = new FloatFieldTranslator();
+        final NoCastFieldTranslator noCastFieldTranslator = new NoCastFieldTranslator();
+        fieldTranslatorMap.put(Integer.class, integerFieldTranslator);
+        fieldTranslatorMap.put(int.class, integerFieldTranslator);
+        fieldTranslatorMap.put(Float.class, floatFieldTranslator);
+        fieldTranslatorMap.put(float.class, floatFieldTranslator);
+        fieldTranslatorMap.put(String.class, noCastFieldTranslator);
+        fieldTranslatorMap.put(Double.class, noCastFieldTranslator);
+        fieldTranslatorMap.put(double.class, noCastFieldTranslator);
+        fieldTranslatorMap.put(Long.class, noCastFieldTranslator);
+        fieldTranslatorMap.put(long.class, noCastFieldTranslator);
+        fieldTranslatorMap.put(Date.class, noCastFieldTranslator);
+        fieldTranslatorMap.put(Boolean.class, noCastFieldTranslator);
+        fieldTranslatorMap.put(boolean.class, noCastFieldTranslator);
+        fieldTranslatorMap.put(Text.class, noCastFieldTranslator);
     }
 
     @SuppressWarnings("unchecked")
@@ -131,27 +157,31 @@ public class DefaultEntityTranslatorImpl implements EntityTranslator {
                         //Field field = getField(object, propertyName);
                         Object castValue = value;
                         if (value != null) {
-                            if (Integer.class.equals(descriptor.getPropertyType()) ||
-                                    int.class.equals(descriptor.getPropertyType())) {
-                                castValue = ((Long) value).intValue();
-                            } else if (Float.class.equals(descriptor.getPropertyType()) ||
-                                    float.class.equals(descriptor.getPropertyType())) {
-                                castValue = ((Double) value).floatValue();
-                            } else if (List.class.equals(descriptor.getPropertyType())) {
+                            if (List.class.equals(descriptor.getPropertyType())) {
                                 // Field is a List class.  Let's see if we have to convert the values
 
                                 if (getterMethod.getGenericReturnType() instanceof ParameterizedType) {
                                     ParameterizedType pType = (ParameterizedType) getterMethod.getGenericReturnType();
-                                    if (Integer.class.equals(pType.getActualTypeArguments()[0])) {
-                                        List<Integer> integerList = new ArrayList<>();
-
-                                        for (Long longValue : (List<Long>) value) {
-                                            integerList.add(longValue.intValue());
-                                        }
-
-                                        castValue = integerList;
+                                    final Type listClass = pType.getActualTypeArguments()[0];
+                                    FieldTranslator fieldTranslator = fieldTranslatorMap.get(listClass);
+                                    if (fieldTranslator == null) {
+                                        throw new TranslatorNotFoundException("No FieldTranslator found for class: " + descriptor.getPropertyType());
                                     }
+                                    List<Object> list = new ArrayList<>();
+                                    for (Object listValue : (List) value) {
+                                        list.add(fieldTranslator.castValue(listValue, object, propertyName));
+                                    }
+                                    castValue = list;
                                 }
+                            } else {
+                                FieldTranslator fieldTranslator = fieldTranslatorMap.get(descriptor.getPropertyType());
+                                if (fieldTranslator == null) {
+                                    throw new TranslatorNotFoundException("No FieldTranslator found for class: " + descriptor.getPropertyType());
+                                }
+
+                                log.debug("Value to Translate: " + value);
+                                castValue = fieldTranslator.castValue(value, object, propertyName);
+                                log.debug("Translated Value: " + castValue);
                             }
                         }
                         setterMethod.invoke(object, castValue);
@@ -164,6 +194,11 @@ public class DefaultEntityTranslatorImpl implements EntityTranslator {
                 }
             }
         }
+
         return object;
+    }
+
+    public Map<Class, FieldTranslator> getFieldTranslatorMap() {
+        return fieldTranslatorMap;
     }
 }
