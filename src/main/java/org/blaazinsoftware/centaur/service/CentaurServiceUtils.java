@@ -141,6 +141,13 @@ final class CentaurServiceUtils {
         }
     }
 
+    protected static String keyToString(Key key) {
+        if (key == null) {
+            return null;
+        }
+        return KeyFactory.keyToString(key);
+    }
+
     private static <T> Field getSingleFieldByAnnotation(T object, Class<? extends Annotation> annotation) throws CentaurException {
         return CentaurServiceUtils.getSingleFieldByAnnotation(object.getClass(), annotation);
     }

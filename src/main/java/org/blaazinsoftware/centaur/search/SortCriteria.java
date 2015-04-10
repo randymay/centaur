@@ -1,4 +1,4 @@
-package org.blaazinsoftware.centaur.data.dto;
+package org.blaazinsoftware.centaur.search;
 
 /**
  * Immutable class representing the sort criteria to be used by <code>CentaurDAO</code>.

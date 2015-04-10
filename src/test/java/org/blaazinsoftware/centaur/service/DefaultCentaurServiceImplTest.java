@@ -1,12 +1,13 @@
 package org.blaazinsoftware.centaur.service;
 
 import com.google.appengine.api.datastore.*;
+import com.google.appengine.api.search.QueryOptions;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import org.apache.commons.lang3.time.DateUtils;
 import org.blaazinsoftware.centaur.CentaurException;
 import org.blaazinsoftware.centaur.data.dto.MapEntity;
-import org.blaazinsoftware.centaur.data.dto.SortCriteria;
+import org.blaazinsoftware.centaur.search.SortCriteria;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,7 +21,7 @@ public class DefaultCentaurServiceImplTest {
     private final LocalServiceTestHelper helper =
             new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
 
-    private DefaultCentaurServiceImpl service = (DefaultCentaurServiceImpl)CentaurServiceFactory.newInstance();
+    private DefaultCentaurServiceImpl service = (DefaultCentaurServiceImpl) CentaurServiceFactory.newInstance();
 
     @Before
     public void setUp() {
@@ -65,6 +66,57 @@ public class DefaultCentaurServiceImplTest {
         } catch (CentaurException e) {
             assertTrue(e.getMessage().startsWith("com.google.appengine.api.datastore.EntityNotFoundException: No entity was found matching the key: "));
         }
+    }
+
+    @Test
+    public void testSimpleCRUDWithSearch() throws Exception {
+        SimpleEntity simpleEntity = new SimpleEntity();
+
+        String name = "name";
+        String description = "description";
+
+        simpleEntity.setName(name);
+        simpleEntity.setShortDescription(description);
+
+        String key = service.saveAndIndex(simpleEntity);
+        assertNotNull(key);
+
+        com.google.appengine.api.search.Query.Builder queryBuilder = com.google.appengine.api.search.Query.newBuilder();
+        QueryOptions.Builder queryOptionsBuilder = QueryOptions.newBuilder();
+        //FieldExpression.Builder fieldExpressionBuilder = FieldExpression.newBuilder();
+        //FieldExpression fieldExpression = fieldExpressionBuilder.build();
+
+        //queryOptionsBuilder.addExpressionToReturn(fieldExpression);
+        QueryOptions queryOptions = queryOptionsBuilder.build();
+
+        queryBuilder.setOptions(queryOptions);
+
+        com.google.appengine.api.search.Query query = queryBuilder.build("name");
+        SearchResults<SimpleEntity> searchResults = service.search(SimpleEntity.class, query);
+
+        assertNotNull(searchResults);
+        assertEquals(1, searchResults.getNumberReturned());
+
+        SimpleEntity translated = searchResults.getResults().iterator().next();
+
+        assertNotNull(translated);
+        assertEquals(name, translated.getName());
+        assertEquals(description, translated.getShortDescription());
+
+        name = "new name";
+        simpleEntity.setName(name);
+        service.saveAndIndex(simpleEntity);
+
+        searchResults = service.search(SimpleEntity.class, query);
+        translated = searchResults.getResults().iterator().next();
+
+        assertNotNull(translated);
+        assertEquals(name, translated.getName());
+        assertEquals(description, translated.getShortDescription());
+
+        service.deleteObject(simpleEntity);
+        searchResults = service.search(SimpleEntity.class, query);
+        assertFalse(searchResults.getResults().iterator().hasNext());
     }
 
     @Test
@@ -674,7 +726,7 @@ public class DefaultCentaurServiceImplTest {
 
         assertNotNull(values);
         assertEquals(10, values.size());
-        for (Map.Entry<String, EntityWithDateField> entry: values.entrySet()) {
+        for (Map.Entry<String, EntityWithDateField> entry : values.entrySet()) {
             String keyString = entry.getKey();
             EntityWithDateField value = entry.getValue();
 

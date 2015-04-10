@@ -2,7 +2,7 @@ package org.blaazinsoftware.centaur.service;
 
 import com.google.appengine.api.datastore.*;
 import org.blaazinsoftware.centaur.CentaurException;
-import org.blaazinsoftware.centaur.data.dto.SortCriteria;
+import org.blaazinsoftware.centaur.search.SortCriteria;
 
 import java.util.List;
 import java.util.Map;

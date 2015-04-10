@@ -4,7 +4,7 @@ import com.google.appengine.api.datastore.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.blaazinsoftware.centaur.CentaurException;
-import org.blaazinsoftware.centaur.data.dto.SortCriteria;
+import org.blaazinsoftware.centaur.search.SortCriteria;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
