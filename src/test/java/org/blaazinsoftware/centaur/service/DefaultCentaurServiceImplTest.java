@@ -83,10 +83,6 @@ public class DefaultCentaurServiceImplTest {
 
         com.google.appengine.api.search.Query.Builder queryBuilder = com.google.appengine.api.search.Query.newBuilder();
         QueryOptions.Builder queryOptionsBuilder = QueryOptions.newBuilder();
-        //FieldExpression.Builder fieldExpressionBuilder = FieldExpression.newBuilder();
-        //FieldExpression fieldExpression = fieldExpressionBuilder.build();
-
-        //queryOptionsBuilder.addExpressionToReturn(fieldExpression);
         QueryOptions queryOptions = queryOptionsBuilder.build();
 
         queryBuilder.setOptions(queryOptions);
@@ -98,8 +94,9 @@ public class DefaultCentaurServiceImplTest {
         assertEquals(1, searchResults.getNumberReturned());
 
         SimpleEntity translated = searchResults.getResults().iterator().next();
-
         assertNotNull(translated);
+        final Key appEngineKey = translated.getAppEngineKey();
+        assertNotNull(appEngineKey);
         assertEquals(name, translated.getName());
         assertEquals(description, translated.getShortDescription());
 
@@ -109,8 +106,8 @@ public class DefaultCentaurServiceImplTest {
 
         searchResults = service.search(SimpleEntity.class, query);
         translated = searchResults.getResults().iterator().next();
-
         assertNotNull(translated);
+        assertEquals(appEngineKey, translated.getAppEngineKey());
         assertEquals(name, translated.getName());
         assertEquals(description, translated.getShortDescription());
 

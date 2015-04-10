@@ -1,6 +1,7 @@
 package org.blaazinsoftware.centaur.service;
 
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Text;
 import com.google.appengine.api.search.Document;
 import com.google.appengine.api.search.Field;
@@ -138,7 +139,9 @@ public class DefaultDocumentTranslatorImpl implements DocumentTranslator {
             return null;
         }
 
-        //CentaurServiceUtils.setKey(object, document.getKey());
+        if (document.getId() != null) {
+            CentaurServiceUtils.setKey(object, KeyFactory.stringToKey(document.getId()));
+        }
 
         for (Field field : document.getFields()) {
             /*if (object instanceof MapEntity) {
