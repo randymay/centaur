@@ -8,10 +8,7 @@ import com.google.appengine.api.search.Field;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.blaazinsoftware.centaur.CentaurException;
 import org.blaazinsoftware.centaur.exception.TranslatorNotFoundException;
-import org.blaazinsoftware.centaur.service.fieldTranslator.FieldTranslator;
-import org.blaazinsoftware.centaur.service.fieldTranslator.FloatFieldTranslator;
-import org.blaazinsoftware.centaur.service.fieldTranslator.IntegerFieldTranslator;
-import org.blaazinsoftware.centaur.service.fieldTranslator.NoCastFieldTranslator;
+import org.blaazinsoftware.centaur.service.fieldTranslator.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,6 +32,7 @@ public class DefaultDocumentTranslatorImpl implements DocumentTranslator {
         final IntegerFieldTranslator integerFieldTranslator = new IntegerFieldTranslator();
         final FloatFieldTranslator floatFieldTranslator = new FloatFieldTranslator();
         final NoCastFieldTranslator noCastFieldTranslator = new NoCastFieldTranslator();
+        final TextCastFieldTranslator textCastFieldTranslator = new TextCastFieldTranslator();
         fieldTranslatorMap.put(Integer.class, integerFieldTranslator);
         fieldTranslatorMap.put(int.class, integerFieldTranslator);
         fieldTranslatorMap.put(Float.class, floatFieldTranslator);
@@ -47,7 +45,7 @@ public class DefaultDocumentTranslatorImpl implements DocumentTranslator {
         fieldTranslatorMap.put(Date.class, noCastFieldTranslator);
         fieldTranslatorMap.put(Boolean.class, noCastFieldTranslator);
         fieldTranslatorMap.put(boolean.class, noCastFieldTranslator);
-        fieldTranslatorMap.put(Text.class, noCastFieldTranslator);
+        fieldTranslatorMap.put(Text.class, textCastFieldTranslator);
     }
 
     @SuppressWarnings("unchecked")
@@ -116,7 +114,11 @@ public class DefaultDocumentTranslatorImpl implements DocumentTranslator {
             } else if (value instanceof Number) {
                 builder.setNumber((Double) value);
             } else {
-                builder.setText(value.toString());
+                if (value instanceof Text) {
+                    builder.setText(((Text)value).getValue());
+                } else {
+                    builder.setText(value.toString());
+                }
             }
         }
 
@@ -193,7 +195,7 @@ public class DefaultDocumentTranslatorImpl implements DocumentTranslator {
                                 log.debug("Translated Value: " + castValue);
                             }
                         }
-                        setterMethod.invoke(object, value);
+                        setterMethod.invoke(object, castValue);
                     }
                 } catch (NoSuchMethodException e) {
                     log.warn("No getter method found for field '" + propertyName);

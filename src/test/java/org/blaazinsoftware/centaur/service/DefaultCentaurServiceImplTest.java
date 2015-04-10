@@ -74,9 +74,11 @@ public class DefaultCentaurServiceImplTest {
 
         String name = "name";
         String description = "description";
+        String longDescription = "long description";
 
         simpleEntity.setName(name);
         simpleEntity.setShortDescription(description);
+        simpleEntity.setLongDescription(new Text(longDescription));
 
         String key = service.saveAndIndex(simpleEntity);
         assertNotNull(key);
@@ -99,6 +101,7 @@ public class DefaultCentaurServiceImplTest {
         assertNotNull(appEngineKey);
         assertEquals(name, translated.getName());
         assertEquals(description, translated.getShortDescription());
+        assertEquals(longDescription, translated.getLongDescriptionValue());
 
         name = "new name";
         simpleEntity.setName(name);
@@ -110,6 +113,7 @@ public class DefaultCentaurServiceImplTest {
         assertEquals(appEngineKey, translated.getAppEngineKey());
         assertEquals(name, translated.getName());
         assertEquals(description, translated.getShortDescription());
+        assertEquals(longDescription, translated.getLongDescriptionValue());
 
         service.deleteObject(simpleEntity);
         searchResults = service.search(SimpleEntity.class, query);
