@@ -76,8 +76,15 @@ class DefaultCentaurDAOImpl implements CentaurDAO {
 
     @Override
     public List<Entity> getAllChildren(String kind, Entity parent, FetchOptions fetchOptions) throws CentaurException {
-        //refresh(parent);
         Query query = new Query(kind).setAncestor(parent.getKey());
+        PreparedQuery pq = getDatastoreService().prepare(query);
+
+        return pq.asList(fetchOptions);
+    }
+
+    @Override
+    public List<Entity> getAllChildren(Entity parent, FetchOptions fetchOptions) throws CentaurException {
+        Query query = new Query().setAncestor(parent.getKey());
         PreparedQuery pq = getDatastoreService().prepare(query);
 
         return pq.asList(fetchOptions);

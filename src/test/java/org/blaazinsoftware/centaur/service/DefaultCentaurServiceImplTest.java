@@ -512,18 +512,19 @@ public class DefaultCentaurServiceImplTest {
     public void testSaveChildrenWithNoNameWithTransaction() throws Exception {
         Transaction transaction = service.beginTransaction();
         try {
-            ParentEntity parentEntity = new ParentEntity();
-
             String parentName = "parentName";
             String parentDescription = "parentDescription";
 
-            String parentKey = service.save(parentEntity, transaction);
-            assertNotNull(parentKey);
-
+            ParentEntity parentEntity = new ParentEntity();
             parentEntity.setName(parentName);
             parentEntity.setShortDescription(parentDescription);
 
-            String childName = "name";
+            String parentKey = service.save(parentEntity, transaction);
+            service.commit(transaction);
+            assertNotNull(parentKey);
+
+            transaction = service.beginTransaction();
+
             String childDescription = "description";
 
             for (int i = 0; i < 10; i++) {
@@ -533,6 +534,7 @@ public class DefaultCentaurServiceImplTest {
                 assertNotNull(key);
                 assertNotNull(simpleEntity.getAppEngineKey());
             }
+            service.commit(transaction);
 
             List<SimpleEntity> simpleEntities = service.getAllChildren(SimpleEntity.class.getSimpleName(), parentEntity, SimpleEntity.class);
 
@@ -540,12 +542,11 @@ public class DefaultCentaurServiceImplTest {
             for (int i = 0; i < simpleEntities.size(); i++) {
                 SimpleEntity listEntity = simpleEntities.get(i);
 
-                assertEquals(childName + i, listEntity.getName());
                 assertEquals(childDescription + i, listEntity.getShortDescription());
             }
-            service.commit(transaction);
         } catch (Exception e) {
             service.rollback(transaction);
+            fail(e.getMessage());
         }
     }
 
