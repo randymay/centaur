@@ -129,8 +129,8 @@ public interface CentaurService {
     /**
      * Retrieves an object using the String representation of its Google App Engine Key.
      *
-     * @param keyString - Google App Engine Key String
-     * @param expectedReturnType     - Return type of the result
+     * @param keyString          - Google App Engine Key String
+     * @param expectedReturnType - Return type of the result
      * @return - The requested object
      * @throws CentaurException
      */
@@ -139,8 +139,8 @@ public interface CentaurService {
     /**
      * Retrieves an object using the object's <code>kind</code> and <code>name</code>.
      *
-     * @param kind  - <code>kind</code> of the desired object
-     * @param name  - <code>name</code> of the desired object
+     * @param kind               - <code>kind</code> of the desired object
+     * @param name               - <code>name</code> of the desired object
      * @param expectedReturnType - Return type of the result
      * @return - The requested object
      * @throws CentaurException
@@ -150,8 +150,8 @@ public interface CentaurService {
     /**
      * Retrieves an object using the object's <code>kind</code> and <code>id</code>.
      *
-     * @param kind  - <code>kind</code> of the desired object
-     * @param id    - <code>id</code> of the desired object
+     * @param kind               - <code>kind</code> of the desired object
+     * @param id                 - <code>id</code> of the desired object
      * @param expectedReturnType - Return type of the result
      * @return - The requested object
      * @throws CentaurException
@@ -161,9 +161,9 @@ public interface CentaurService {
     /**
      * Find an object by <code>property name</code> and <code>value</code>
      *
-     * @param propertyName - Name of the property to search on
-     * @param value        - Value of the property to match
-     * @param expectedReturnType        - Return type of the result
+     * @param propertyName       - Name of the property to search on
+     * @param value              - Value of the property to match
+     * @param expectedReturnType - Return type of the result
      * @return - The requested object
      * @throws CentaurException
      */
@@ -175,8 +175,8 @@ public interface CentaurService {
      * <p>
      * <code>findObjectByProperty("userId", value, expectedReturnType);</code>
      *
-     * @param userId - Name of the property to search on
-     * @param expectedReturnType  - Return type of the result
+     * @param userId             - Name of the property to search on
+     * @param expectedReturnType - Return type of the result
      * @return - The requested object
      * @throws CentaurException
      */
@@ -220,9 +220,9 @@ public interface CentaurService {
     /**
      * Convenience method for finding an object by <code>kind</code> and <code>userId</code>.
      *
-     * @param kind   - Kind of the object to be found
-     * @param userId - User Id of the object to be found
-     * @param expectedReturnType  - Return type of the result
+     * @param kind               - Kind of the object to be found
+     * @param userId             - User Id of the object to be found
+     * @param expectedReturnType - Return type of the result
      * @return - The requested object
      * @throws CentaurException
      */
@@ -231,9 +231,19 @@ public interface CentaurService {
     /**
      * Returns all children of the provided kind for the given parent.
      *
-     * @param kind   - Kind of object to be found
-     * @param parent - Parent object
-     * @param expectedReturnType  - Return type of the result
+     * @param parent             - Parent object
+     * @param expectedReturnType - Return type of the result
+     * @return - The <code>List</code> of children
+     * @throws CentaurException
+     */
+    public <T, X> List<T> getAllChildren(X parent, Class<T> expectedReturnType) throws CentaurException;
+
+    /**
+     * Returns all children of the provided kind for the given parent.
+     *
+     * @param kind               - Kind of object to be found
+     * @param parent             - Parent object
+     * @param expectedReturnType - Return type of the result
      * @return - The <code>List</code> of children
      * @throws CentaurException
      */
@@ -242,10 +252,10 @@ public interface CentaurService {
     /**
      * Finds an object by the provided <code>kind</code>, <code>property</code>, <code>value</code>
      *
-     * @param kind         - Kind of object to be found
-     * @param propertyName - Name of the property to search on
-     * @param value        - Value of the property to match
-     * @param expectedReturnType        - Return type of the result
+     * @param kind               - Kind of object to be found
+     * @param propertyName       - Name of the property to search on
+     * @param value              - Value of the property to match
+     * @param expectedReturnType - Return type of the result
      * @return - The <code>List</code> of found objects
      * @throws CentaurException
      */
@@ -254,7 +264,7 @@ public interface CentaurService {
     /**
      * Returns a <code>List</code> of objects of the provided <code>kind</code>.
      *
-     * @param kind  - Kind of objects to be found
+     * @param kind               - Kind of objects to be found
      * @param expectedReturnType - Return type of the result
      * @return - The <code>List</code> of found objects
      * @throws CentaurException
@@ -265,10 +275,10 @@ public interface CentaurService {
      * Returns a <code>List</code> of objects for the provided
      * <code>kind</code>, <code>propertyName</code>, <code>value</code>
      *
-     * @param kind         - Kind of objects to be found
-     * @param propertyName - Name of the property to search on
-     * @param value        - Value of the property to match
-     * @param expectedReturnType        - Return type of the result
+     * @param kind               - Kind of objects to be found
+     * @param propertyName       - Name of the property to search on
+     * @param value              - Value of the property to match
+     * @param expectedReturnType - Return type of the result
      * @return - The <code>List</code> of found objects
      * @throws CentaurException
      */
@@ -278,11 +288,11 @@ public interface CentaurService {
      * Returns a sorted <code>List</code> of objects for the provided
      * <code>kind</code>, <code>propertyName</code>, <code>value</code>
      *
-     * @param kind         - Kind of objects to be found
-     * @param propertyName - Name of the property to search on
-     * @param value        - Value of the property to match
-     * @param expectedReturnType        - Return type of the result
-     * @param sortField    - Name of the property to be sorted on
+     * @param kind               - Kind of objects to be found
+     * @param propertyName       - Name of the property to search on
+     * @param value              - Value of the property to match
+     * @param expectedReturnType - Return type of the result
+     * @param sortField          - Name of the property to be sorted on
      * @return - The <code>List</code> of found objects
      * @throws CentaurException
      */
@@ -292,11 +302,11 @@ public interface CentaurService {
      * Returns a sorted <code>List</code> of objects for the provided
      * <code>kind</code>, <code>propertyName</code>, <code>value</code>
      *
-     * @param kind         - Kind of objects to be found
-     * @param propertyName - Name of the property to search on
-     * @param value        - Value of the property to match
-     * @param expectedReturnType        - Return type of the result
-     * @param sortCriteria - Sort Criteria to be applied
+     * @param kind               - Kind of objects to be found
+     * @param propertyName       - Name of the property to search on
+     * @param value              - Value of the property to match
+     * @param expectedReturnType - Return type of the result
+     * @param sortCriteria       - Sort Criteria to be applied
      * @return - The <code>List</code> of found objects
      * @throws CentaurException
      */
@@ -306,11 +316,11 @@ public interface CentaurService {
      * Returns a sorted <code>List</code> of objects for the provided
      * <code>kind</code>, <code>propertyName</code>, <code>value</code>
      *
-     * @param kind         - Kind of objects to be found
-     * @param keyValues    - <code>Map</code> where the key is the name of the property to search on, and the
-     *                     value is the value that the property is to match
-     * @param expectedReturnType        - Return type of the result
-     * @param sortCriteria - Sort Criteria to be applied
+     * @param kind               - Kind of objects to be found
+     * @param keyValues          - <code>Map</code> where the key is the name of the property to search on, and the
+     *                           value is the value that the property is to match
+     * @param expectedReturnType - Return type of the result
+     * @param sortCriteria       - Sort Criteria to be applied
      * @return - The <code>List</code> of found objects
      * @throws CentaurException
      */
@@ -320,10 +330,10 @@ public interface CentaurService {
      * Returns a <code>List</code> of objects for the provided
      * <code>kind</code>, <code>propertyName</code>, <code>value</code>
      *
-     * @param kind      - Kind of objects to be found
-     * @param keyValues - <code>Map</code> where the key is the name of the property to search on, and the
-     *                  value is the value that the property is to match
-     * @param expectedReturnType     - Return type of the result
+     * @param kind               - Kind of objects to be found
+     * @param keyValues          - <code>Map</code> where the key is the name of the property to search on, and the
+     *                           value is the value that the property is to match
+     * @param expectedReturnType - Return type of the result
      * @return - The <code>List</code> of found objects
      * @throws CentaurException
      */
@@ -341,8 +351,8 @@ public interface CentaurService {
     /**
      * Returns a list of Objects that match the given String representations of their Google App Engine Key
      *
-     * @param keyStrings - String representation of a Google App Engine Key
-     * @param expectedReturnType      - Return type of the result
+     * @param keyStrings         - String representation of a Google App Engine Key
+     * @param expectedReturnType - Return type of the result
      * @return - The <code>List</code> of found objects
      * @throws CentaurException
      */
@@ -351,7 +361,7 @@ public interface CentaurService {
     /**
      * Returns a list of Objects that match the given Google App Engine Keys
      *
-     * @param keys  - String representation of a Google App Engine Key
+     * @param keys               - String representation of a Google App Engine Key
      * @param expectedReturnType - Return type of the result
      * @return - The <code>List</code> of found objects
      * @throws CentaurException
@@ -375,10 +385,10 @@ public interface CentaurService {
      * Returns a sorted <code>ResultList</code> of <code>Entity</code>s for the provided
      * <code>expectedReturnType</code>, <code>filter</code>
      *
-     * @param expectedReturnType        - Return type of the result
-     * @param filter       - <code>filter</code> to be applied
-     * @param sortCriteria - Sort Criteria to be applied
-     * @param fetchOptions - <code>FetchOptions</code> to be applied
+     * @param expectedReturnType - Return type of the result
+     * @param filter             - <code>filter</code> to be applied
+     * @param sortCriteria       - Sort Criteria to be applied
+     * @param fetchOptions       - <code>FetchOptions</code> to be applied
      * @return - The <code>ResultList</code> of found objects
      * @throws CentaurException
      */
@@ -388,8 +398,8 @@ public interface CentaurService {
      * Returns a <code>ResultList</code> of <code>Entity</code>s for the provided
      * <code>expectedReturnType</code>, <code>filter</code>
      *
-     * @param expectedReturnType  - Return type of the result
-     * @param filter - <code>filter</code> to be applied
+     * @param expectedReturnType - Return type of the result
+     * @param filter             - <code>filter</code> to be applied
      * @return - The <code>ResultList</code> of found objects
      * @throws CentaurException
      */

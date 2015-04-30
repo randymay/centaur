@@ -238,6 +238,22 @@ public class DefaultCentaurServiceImpl implements CentaurService {
     }
 
     @Override
+    public <T, X> List<T> getAllChildren(X parent, Class<T> expectedReturnType) throws CentaurException {
+        final Key key = CentaurServiceUtils.getKey(parent);
+        if (null == parent || null == key) {
+            throw new CentaurException("Parent is null, or no Key field found");
+        }
+
+        try {
+            final T object = expectedReturnType.newInstance();
+            String kind = CentaurServiceUtils.getKindValue(object);
+            return getAllChildren(kind, parent, expectedReturnType);
+        } catch (Exception e) {
+            throw new CentaurException(e);
+        }
+    }
+
+    @Override
     public <T, X> List<T> getAllChildren(String kind, X parent, Class<T> expectedReturnType) throws CentaurException {
         Entity parentEntity = entityTranslator.toEntity(parent);
         List<Entity> entities = dao.getAllChildren(kind, parentEntity);

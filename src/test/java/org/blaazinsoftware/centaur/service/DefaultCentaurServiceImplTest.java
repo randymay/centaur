@@ -145,7 +145,7 @@ public class DefaultCentaurServiceImplTest {
             assertNotNull(simpleEntity.getAppEngineKey());
         }
 
-        List<SimpleEntity> simpleEntities = service.getAllChildren(SimpleEntity.class.getSimpleName(), parentEntity, SimpleEntity.class);
+        List<SimpleEntity> simpleEntities = service.getAllChildren(parentEntity, SimpleEntity.class);
 
         assertEquals(10, simpleEntities.size());
         for (int i = 0; i < simpleEntities.size(); i++) {
