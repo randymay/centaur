@@ -2,11 +2,9 @@ package org.blaazinsoftware.centaur.service;
 
 import com.google.appengine.api.search.Cursor;
 import com.google.appengine.api.search.OperationResult;
-import com.google.appengine.api.search.checkers.Preconditions;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.Collections;
 
 /**
  * @author Randy May
@@ -21,8 +19,14 @@ public class SearchResults <T> implements Serializable {
     private final Cursor cursor;
 
     protected SearchResults(OperationResult operationResult, Collection<T> results, long numberFound, int numberReturned, Cursor cursor) {
-        this.operationResult = (OperationResult) Preconditions.checkNotNull(operationResult, "operation result cannot be null");
-        this.results = Collections.unmodifiableCollection((Collection) Preconditions.checkNotNull(results, "search results cannot be null"));
+        if (null == operationResult) {
+            throw new NullPointerException("Operation Result cannot be null");
+        }
+        this.operationResult = operationResult;
+        if (null == results) {
+            throw new NullPointerException("Search Results cannot be null");
+        }
+        this.results = results;
         this.numberFound = numberFound;
         this.numberReturned = numberReturned;
         this.cursor = cursor;
