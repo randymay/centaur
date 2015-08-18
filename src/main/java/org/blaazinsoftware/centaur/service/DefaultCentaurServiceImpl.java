@@ -6,6 +6,7 @@ import com.google.appengine.api.search.Results;
 import com.google.appengine.api.search.ScoredDocument;
 import org.apache.commons.collections.MapUtils;
 import org.blaazinsoftware.centaur.CentaurException;
+import org.blaazinsoftware.centaur.query.DataOptions;
 import org.blaazinsoftware.centaur.search.SortCriteria;
 
 import java.util.*;
@@ -220,7 +221,7 @@ public class DefaultCentaurServiceImpl implements CentaurService {
         dao.delete(transaction, entity);
 
         if (null != index && index.existsInIndex(CentaurServiceUtils.keyToString(entity.getKey()), object.getClass().getCanonicalName())) {
-        final Document document = documentTranslator.toDocument(object);
+            final Document document = documentTranslator.toDocument(object);
             index.removeDocumentFromIndex(document, object.getClass());
         }
     }
@@ -239,36 +240,55 @@ public class DefaultCentaurServiceImpl implements CentaurService {
 
     @Override
     public <T, X> List<T> getAllChildren(X parent, Class<T> expectedReturnType) throws CentaurException {
-        final Key key = CentaurServiceUtils.getKey(parent);
-        if (null == parent || null == key) {
-            throw new CentaurException("Parent is null, or no Key field found");
-        }
+        return getAllChildren(parent, expectedReturnType, null);
+    }
 
-        try {
-            final T object = expectedReturnType.newInstance();
-            String kind = CentaurServiceUtils.getKindValue(object);
-            return getAllChildren(kind, parent, expectedReturnType);
-        } catch (Exception e) {
-            throw new CentaurException(e);
-        }
+    @Override
+    public <T, X> List<T> getAllChildren(X parent, Class<T> expectedReturnType, DataOptions dataOptions) throws CentaurException {
+        return getAllChildren(parent, expectedReturnType, null, dataOptions);
+    }
+
+    @Override
+    public <T, X> List<T> getAllChildren(X parent, Class<T> expectedReturnType, FetchOptions fetchOptions, DataOptions dataOptions) throws CentaurException {
+        return getAllChildren(null, parent, expectedReturnType, fetchOptions, dataOptions);
     }
 
     @Override
     public <T, X> List<T> getAllChildren(String kind, X parent, Class<T> expectedReturnType) throws CentaurException {
-        Entity parentEntity = entityTranslator.toEntity(parent);
-        List<Entity> entities = dao.getAllChildren(kind, parentEntity);
+        return getAllChildren(kind, parent, expectedReturnType, null, null);
+    }
 
-        List<T> results = new ArrayList<>();
-        if (null == entities) {
-            return null;
+    @Override
+    public <T, X> List<T> getAllChildren(String kind, X parent, Class<T> expectedReturnType, FetchOptions fetchOptions, DataOptions dataOptions) throws CentaurException {
+        try {
+            final Key key = CentaurServiceUtils.getKey(parent);
+            if (null == parent || null == key) {
+                throw new CentaurException("Parent is null, or no Key field found");
+            }
+
+            if (null == kind) {
+                final T object = expectedReturnType.newInstance();
+                kind = CentaurServiceUtils.getKindValue(object);
+
+            }
+
+            Entity parentEntity = entityTranslator.toEntity(parent);
+            List<Entity> entities = dao.getAllChildren(kind, parentEntity, fetchOptions, dataOptions);
+
+            List<T> results = new ArrayList<>();
+            if (null == entities) {
+                return null;
+            }
+
+            for (Entity entity : entities) {
+                T object = entityTranslator.fromEntity(entity, expectedReturnType);
+                results.add(object);
+            }
+
+            return results;
+        } catch (Exception e) {
+            throw new CentaurException(e);
         }
-
-        for (Entity entity : entities) {
-            T object = entityTranslator.fromEntity(entity, expectedReturnType);
-            results.add(object);
-        }
-
-        return results;
     }
 
     @Override
@@ -366,9 +386,9 @@ public class DefaultCentaurServiceImpl implements CentaurService {
     @Override
     public <T> SearchResults<T> search(Class<T> expectedReturnType, com.google.appengine.api.search.Query query) throws CentaurException {
         Results<ScoredDocument> searchResults = index.search(expectedReturnType, query);
-        
+
         List<T> results = fromDocumentList(searchResults.getResults(), expectedReturnType);
-        
+
         return new SearchResults<>(
                 searchResults.getOperationResult(),
                 results,
@@ -376,13 +396,13 @@ public class DefaultCentaurServiceImpl implements CentaurService {
                 searchResults.getNumberReturned(),
                 searchResults.getCursor());
     }
-    
+
     protected <T> List<T> fromDocumentList(Collection<ScoredDocument> documents, Class<T> expectedReturnType) throws CentaurException {
         List<T> results = new ArrayList<>();
         for (ScoredDocument document : documents) {
             results.add(documentTranslator.fromDocument(document, expectedReturnType));
         }
-        
+
         return results;
     }
 

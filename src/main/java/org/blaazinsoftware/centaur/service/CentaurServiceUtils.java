@@ -103,7 +103,7 @@ final class CentaurServiceUtils {
     protected static <T> Key createKey(T object) throws CentaurException {
         String kind = CentaurServiceUtils.getKindValue(object);
         String name = CentaurServiceUtils.getNameValue(object);
-        if (object != null && !StringUtils.isEmpty(kind) && !StringUtils.isEmpty(name)) {
+        if (object != null && !StringUtils.isEmpty(kind) && null != name) {
             return KeyFactory.createKey(kind, name);
         }
 

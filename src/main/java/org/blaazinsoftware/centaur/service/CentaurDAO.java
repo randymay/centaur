@@ -2,6 +2,7 @@ package org.blaazinsoftware.centaur.service;
 
 import com.google.appengine.api.datastore.*;
 import org.blaazinsoftware.centaur.CentaurException;
+import org.blaazinsoftware.centaur.query.DataOptions;
 import org.blaazinsoftware.centaur.search.SortCriteria;
 
 import java.util.List;
@@ -95,6 +96,18 @@ public interface CentaurDAO {
      * @throws CentaurException
      */
     public List<Entity> getAllChildren(String kind, Entity parent, FetchOptions fetchOptions) throws CentaurException;
+
+    /**
+     * Returns all children of the provided <code>kind</code> for the given <code>parent</code>.
+     *
+     * @param kind         - Kind of object to be found
+     * @param parent       - Parent object
+     * @param fetchOptions - <code>FetchOptions</code> to apply
+     * @param dataOptions  - <code>DataOptions</code> to apply
+     * @return - The <code>List</code> of children
+     * @throws CentaurException
+     */
+    public List<Entity> getAllChildren(String kind, Entity parent, FetchOptions fetchOptions, DataOptions dataOptions) throws CentaurException;
 
     /**
      * Returns all <code>Entities</code> of the provided <code>kind</code>.

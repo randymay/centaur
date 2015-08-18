@@ -4,6 +4,7 @@ import com.google.appengine.api.datastore.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.blaazinsoftware.centaur.CentaurException;
+import org.blaazinsoftware.centaur.query.DataOptions;
 import org.blaazinsoftware.centaur.search.SortCriteria;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,8 +77,23 @@ class DefaultCentaurDAOImpl implements CentaurDAO {
 
     @Override
     public List<Entity> getAllChildren(String kind, Entity parent, FetchOptions fetchOptions) throws CentaurException {
+        return getAllChildren(kind, parent, fetchOptions, null);
+    }
+
+    @Override
+    public List<Entity> getAllChildren(String kind, Entity parent, FetchOptions fetchOptions, DataOptions dataOptions) throws CentaurException {
         Query query = new Query(kind).setAncestor(parent.getKey());
+        if (dataOptions != null) {
+            for (Map.Entry<String, Query.SortDirection> entry : dataOptions.getSortOptions().entrySet()) {
+                query.addSort(entry.getKey(), entry.getValue());
+            }
+        }
+
         PreparedQuery pq = getDatastoreService().prepare(query);
+
+        if (null == fetchOptions) {
+            fetchOptions = FetchOptions.Builder.withDefaults();
+        }
 
         return pq.asList(fetchOptions);
     }

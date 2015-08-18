@@ -3,6 +3,7 @@ package org.blaazinsoftware.centaur.service;
 import com.google.appengine.api.datastore.*;
 import com.google.appengine.api.search.Document;
 import org.blaazinsoftware.centaur.CentaurException;
+import org.blaazinsoftware.centaur.query.DataOptions;
 import org.blaazinsoftware.centaur.search.SortCriteria;
 
 import java.util.List;
@@ -241,6 +242,29 @@ public interface CentaurService {
     /**
      * Returns all children of the provided kind for the given parent.
      *
+     * @param parent             - Parent object
+     * @param expectedReturnType - Return type of the result
+     * @param dataOptions        - <code>DataOptions</code> to apply
+     * @return - The <code>List</code> of children
+     * @throws CentaurException
+     */
+    public <T, X> List<T> getAllChildren(X parent, Class<T> expectedReturnType, DataOptions dataOptions) throws CentaurException;
+
+    /**
+     * Returns all children of the provided kind for the given parent.
+     *
+     * @param parent             - Parent object
+     * @param expectedReturnType - Return type of the result
+     * @param fetchOptions       - <code>FetchOptions</code> to apply
+     * @param dataOptions        - <code>DataOptions</code> to apply
+     * @return - The <code>List</code> of children
+     * @throws CentaurException
+     */
+    public <T, X> List<T> getAllChildren(X parent, Class<T> expectedReturnType, FetchOptions fetchOptions, DataOptions dataOptions) throws CentaurException;
+
+    /**
+     * Returns all children of the provided kind for the given parent.
+     *
      * @param kind               - Kind of object to be found
      * @param parent             - Parent object
      * @param expectedReturnType - Return type of the result
@@ -248,6 +272,19 @@ public interface CentaurService {
      * @throws CentaurException
      */
     public <T, X> List<T> getAllChildren(String kind, X parent, Class<T> expectedReturnType) throws CentaurException;
+
+    /**
+     * Returns all children of the provided kind for the given parent.
+     *
+     * @param kind               - Kind of object to be found
+     * @param parent             - Parent object
+     * @param expectedReturnType - Return type of the result
+     * @param fetchOptions       - <code>FetchOptions</code> to apply
+     * @param dataOptions        - <code>DataOptions</code> to apply
+     * @return - The <code>List</code> of children
+     * @throws CentaurException
+     */
+    public <T, X> List<T> getAllChildren(String kind, X parent, Class<T> expectedReturnType, FetchOptions fetchOptions, DataOptions dataOptions) throws CentaurException;
 
     /**
      * Finds an object by the provided <code>kind</code>, <code>property</code>, <code>value</code>
