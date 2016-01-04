@@ -122,6 +122,7 @@ public interface CentaurService {
      * of the entity
      *
      * @param id          - Id of the object that is to be deleted
+     * @param <T>         - Entity type
      * @param entityClass - Class of the entity to be deleted
      */
     <T> void deleteEntity(long id, Class<T> entityClass);
@@ -185,6 +186,7 @@ public interface CentaurService {
      * @param value              - Value of the property to match
      * @param expectedReturnType - Return type of the result
      * @param sortField          - Name of the property to be sorted on
+     * @param <T>                - Entity type
      * @return - The <code>ListResults</code> of found objects
      */
     <T> ListResults<T> findEntities(String propertyName, Object value, Class<T> expectedReturnType, String sortField);
@@ -214,6 +216,7 @@ public interface CentaurService {
      *
      * @param keyStrings         - String representation of a Google App Engine Key
      * @param expectedReturnType - Return type of the result
+     * @param <T>                - Entity type
      * @return - The <code>ListResults</code> of found objects
      */
     <T> Map<String, T> getEntities(List<String> keyStrings, Class<T> expectedReturnType);
