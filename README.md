@@ -1,7 +1,7 @@
 Centaur - Google App Engine Simplified
 =======
 
-Centaur is a lightweight Java library which simplifies the popular features of Google App Engine such as storing and retrieving items from DataStore, and sending Email.
+Centaur is a lightweight Java library which simplifies the popular features of Google App Engine such as storing and retrieving items from DataStore and Memcache.  Also included is a simplified API for sending Email using Google App Engine.
 
 
 Naming
