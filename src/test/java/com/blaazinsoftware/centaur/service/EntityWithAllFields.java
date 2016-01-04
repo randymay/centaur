@@ -1,12 +1,12 @@
 package com.blaazinsoftware.centaur.service;
 
-import com.blaazinsoftware.centaur.data.dto.AbstractIDEntity;
+import com.blaazinsoftware.centaur.data.dto.AbstractEntity;
 import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Entity;
 
 @Entity
 @Cache
-public class EntityWithAllFields extends AbstractIDEntity {
+public class EntityWithAllFields extends AbstractEntity {
     private byte byteField;
     private Byte byteWrapperField;
     private int intField;

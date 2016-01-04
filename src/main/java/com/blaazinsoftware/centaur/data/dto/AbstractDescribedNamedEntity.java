@@ -3,10 +3,10 @@ package com.blaazinsoftware.centaur.data.dto;
 import com.googlecode.objectify.annotation.Index;
 
 /**
- * Convenience class for using Centaur.  This class contains fields for Keys, Kind, and name which are needed
- * to store and retrieve data in Google App Engine, as well as fields for short and long descriptions.
+ * Convenience class for using Centaur.  This class contains fields for short and long description which are needed
+ * to store and retrieve data in Google App Engine.
  */
-public abstract class AbstractDescribedNamedEntity extends AbstractIDEntity {
+public abstract class AbstractDescribedNamedEntity extends AbstractEntity {
 
     @Index
     private String shortDescription;

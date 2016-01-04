@@ -4,6 +4,9 @@ import com.blaazinsoftware.centaur.search.ListResults;
 import com.blaazinsoftware.centaur.search.QuerySearchOptions;
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.QueryResultIterator;
+import com.google.appengine.api.memcache.ErrorHandlers;
+import com.google.appengine.api.memcache.MemcacheService;
+import com.google.appengine.api.memcache.MemcacheServiceFactory;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.Work;
 import com.googlecode.objectify.cmd.Query;
@@ -12,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 import static com.googlecode.objectify.ObjectifyService.ofy;
 
@@ -25,11 +29,15 @@ public class BasicDAO {
     }
 
     public <T> String saveForKey(T entity) {
-        return ofy().save().entity(entity).now().getString();
+        return ofy().save().entity(entity).now().toWebSafeString();
     }
 
     public <T> void delete(T entity) {
         ofy().delete().entity(entity).now();
+    }
+
+    public <T> void delete(Long id, Class<T> entityClass) {
+        ofy().delete().type(entityClass).id(id).now();
     }
 
     public <T> void delete(String keyString) {
@@ -41,11 +49,11 @@ public class BasicDAO {
         return ofy().save().entities(entities).now();
     }
 
-    public <T> T load(long id, Class<T> entityClass) {
+    public <T> T loadEntity(long id, Class<T> entityClass) {
         return ofy().load().type(entityClass).id(id).now();
     }
 
-    public <T> T load(String keyString) {
+    public <T> T loadEntity(String keyString) {
         Key<T> key = getKey(keyString);
         return ofy().load().key(key).now();
     }
@@ -54,13 +62,28 @@ public class BasicDAO {
         return Key.create(keyString);
     }
 
-    public <T> void cacheEntity(T entity) {
-        ofy().cache(true).save().entity(entity).now();
+    public <T> void cacheEntity(String key, T entity) {
+        MemcacheService syncCache = getMemcacheService();
+        syncCache.put(key, entity); // Populate cache.
+    }
+
+    public <T> void unCacheEntity(String key) {
+        MemcacheService syncCache = getMemcacheService();
+        syncCache.put(key, null);
+    }
+
+    private MemcacheService getMemcacheService() {
+        MemcacheService syncCache = MemcacheServiceFactory.getMemcacheService();
+        syncCache.setErrorHandler(ErrorHandlers.getConsistentLogAndContinue(Level.INFO));
+        return syncCache;
     }
 
     public <T> T loadFromCache(String keyString) {
-        Key<T> key = getKey(keyString);
-        return ofy().cache(true).load().key(key).now();
+        MemcacheService syncCache = getMemcacheService();
+
+        Object result = syncCache.get(keyString); // Populate cache.
+
+        return (T) result;
     }
 
     public <T> Map<Long, T> loadByIds(List<Long> ids, Class<T> entityClass) {
@@ -75,63 +98,22 @@ public class BasicDAO {
         return ofy().load().group(groupClass).type(entityClass).id(id).now();
     }
 
-    public <T> T loadByGroup(Long id, Class<T> entityClass, Class<?>... groupClass) {
-        return ofy().load().group(groupClass).type(entityClass).id(id).now();
-    }
-
-    /*public <T> List<T> findEntitiesByFilter(Class<T> entityClass, String fieldName, Object filterObject) {
-        Map<String, Object> filterMap = new HashMap<>();
-        filterMap.put(fieldName, filterObject);
-        return findEntitiesByFilter(entityClass, filterMap);
-    }
-
-    public <T> List<T> findEntitiesByFilter(Class<T> entityClass, Map<String, Object> filterMap) {
-        Query<T> query = ofy().load().type(entityClass);
-        for (Map.Entry<String, Object> entry : filterMap.entrySet()) {
-            query = query.filter(entry.getKey(), entry.getValue());
-        }
-        return query.list();
-    }
-
-    public <T> List<T> findEntities(QuerySearchOptions<T> searchOptions) {
-        Query<T> query = ofy().load().type(searchOptions.getReturnType());
-        for (Map.Entry<String, Object> entry : searchOptions.getFilter().entrySet()) {
-            query = query.filter(entry.getKey(), entry.getValue());
-        }
-        query.offset(searchOptions.getOffset());
-        if (searchOptions.getLimit() > 0) {
-            query.limit(searchOptions.getLimit());
-        }
-        if (null != searchOptions.getClass()) {
-            query.endAt(searchOptions.getCursor());
-        }
-        if (StringUtils.isNotEmpty(searchOptions.getOrderByField())) {
-            query.order(searchOptions.getOrderByField());
-            query.orderKey(searchOptions.isDescending());
-        }
-        return query.list();
-    }*/
-
-    public <T, P> T loadChild(Long id, Class<T> entityClass, P parentClass) {
+    public <T, P> T loadChild(long id, Class<T> entityClass, P parentClass) {
         return ofy().load().type(entityClass).parent(parentClass).id(id).now();
-    }
-
-    public <T, P> T loadChild(String key, Class<T> entityClass, P parentClass) {
-        return ofy().load().type(entityClass).parent(parentClass).id(key).now();
     }
 
     public <T, P> List<T> loadChildren(Class<T> entityClass, P parent) {
         return ofy().load().type(entityClass).ancestor(parent).list();
     }
 
-    public <T, P> List<T> findChildrenByFilter(Class<T> entityClass, P parentClass, String fieldName, Object filterObject) {
+    public <T, P> List<T> findChildrenByFilter(Class<T> childClass, P parentClass, String fieldName, Object filterObject) {
         Map<String, Object> filterMap = new HashMap<>();
         filterMap.put(fieldName, filterObject);
-        return findChildrenByFilter(entityClass, parentClass, filterMap);
+        return findChildrenByFilter(childClass, parentClass, filterMap);
     }
 
-    public <T, P> List<T> findChildrenByFilter(Class<T> entityClass, P parentClass, Map<String, Object> filterMap) {
-        Query<T> query = ofy().load().type(entityClass).ancestor(parentClass);
+    public <T, P> List<T> findChildrenByFilter(Class<T> childClass, P parentClass, Map<String, Object> filterMap) {
+        com.googlecode.objectify.cmd.Query<T> query = ofy().load().type(childClass).ancestor(parentClass);
         for (Map.Entry<String, Object> entry : filterMap.entrySet()) {
             query = query.filter(entry.getKey(), entry.getValue());
         }
@@ -164,7 +146,7 @@ public class BasicDAO {
         // Set Order By Field
         if (StringUtils.isNotEmpty(searchOptions.getOrderByField())) {
             String order = searchOptions.getOrderByField();
-            if (!searchOptions.isDescending()){
+            if (!searchOptions.isDescending()) {
                 order = "-" + order;
             }
             query = query.order(order);

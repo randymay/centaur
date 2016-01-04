@@ -1,7 +1,7 @@
-Centaur - JavaBean / Google App Engine Integration
+Centaur - Google App Engine Simplified
 =======
 
-Centaur is a lightweight library to more closely align traditional Java Development with Google App Engine.  In particular, this utility provides functionality to seamlessly store and retrieve JavaBeans to and from Google's DataStore, so you don't have to worry about the conversion.
+Centaur is a lightweight Java library which simplifies the popular features of Google App Engine such as storing and retrieving items from DataStore, and sending Email.
 
 
 Naming

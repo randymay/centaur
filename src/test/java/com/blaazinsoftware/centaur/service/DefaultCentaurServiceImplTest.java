@@ -3,6 +3,7 @@ package com.blaazinsoftware.centaur.service;
 import com.blaazinsoftware.centaur.search.ListResults;
 import com.blaazinsoftware.centaur.search.QuerySearchOptions;
 import com.google.appengine.api.datastore.Cursor;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
@@ -53,33 +54,55 @@ public class DefaultCentaurServiceImplTest {
     }
 
     @Test
-    public void testSimpleCRUD() throws Exception {
+    public void testSimpleCRUDUsingID() throws Exception {
         SimpleEntity simpleEntity = new SimpleEntity();
 
-        String name = "name";
         String description = "description";
 
-        simpleEntity.setName(name);
         simpleEntity.setShortDescription(description);
 
-        long key = service.saveForId(simpleEntity);
+        long id = service.saveForId(simpleEntity);
+        assertNotNull(id);
+
+        simpleEntity = service.getEntity(id, SimpleEntity.class);
+        assertNotNull(simpleEntity);
+        assertEquals(description, simpleEntity.getShortDescription());
+
+        description = "new description";
+        simpleEntity.setShortDescription(description);
+        service.saveForId(simpleEntity);
+        simpleEntity = service.getEntity(id, SimpleEntity.class);
+        assertNotNull(simpleEntity);
+        assertEquals(description, simpleEntity.getShortDescription());
+
+        service.deleteEntity(id, SimpleEntity.class);
+        assertNull(service.getEntity(id, SimpleEntity.class));
+    }
+
+    @Test
+    public void testSimpleCRUDUsingKey() throws Exception {
+        SimpleEntity simpleEntity = new SimpleEntity();
+
+        String description = "description";
+
+        simpleEntity.setShortDescription(description);
+
+        String key = service.saveForKey(simpleEntity);
         assertNotNull(key);
 
-        simpleEntity = service.getEntity(key, SimpleEntity.class);
+        simpleEntity = service.getEntity(key);
         assertNotNull(simpleEntity);
-        assertEquals(name, simpleEntity.getName());
         assertEquals(description, simpleEntity.getShortDescription());
 
-        name = "new name";
-        simpleEntity.setName(name);
+        description = "new description";
+        simpleEntity.setShortDescription(description);
         service.saveForId(simpleEntity);
-        simpleEntity = service.getEntity(key, SimpleEntity.class);
+        simpleEntity = service.getEntity(key);
         assertNotNull(simpleEntity);
-        assertEquals(name, simpleEntity.getName());
         assertEquals(description, simpleEntity.getShortDescription());
 
-        service.deleteEntity(simpleEntity);
-        assertNull(service.getEntity(key, SimpleEntity.class));
+        service.deleteEntity(key);
+        assertNull(service.getEntity(key));
     }
 
     /*@Test
@@ -138,22 +161,18 @@ public class DefaultCentaurServiceImplTest {
     public void testHierarchicalCRUD() throws Exception {
         ParentEntity parentEntity = new ParentEntity();
 
-        String parentName = "parentName";
         String parentDescription = "parentDescription";
 
         long parentKey = service.saveForId(parentEntity);
         assertNotNull(parentKey);
 
-        parentEntity.setName(parentName);
         parentEntity.setShortDescription(parentDescription);
 
-        String childName = "name";
         String childDescription = "description";
 
         for (int i = 0; i < 10; i++) {
             ChildEntity childEntity = new ChildEntity();
             childEntity.setParentEntity(parentEntity);
-            childEntity.setName(childName + i);
             childEntity.setShortDescription(childDescription + i);
             String key = service.saveForKey(childEntity);
             assertNotNull(key);
@@ -166,7 +185,6 @@ public class DefaultCentaurServiceImplTest {
         for (int i = 0; i < childEntities.size(); i++) {
             ChildEntity listEntity = childEntities.get(i);
 
-            assertEquals(childName + i, listEntity.getName());
             assertEquals(childDescription + i, listEntity.getShortDescription());
         }
     }
@@ -326,12 +344,10 @@ public class DefaultCentaurServiceImplTest {
 
     @Test
     public void testGetObjectsByPropertyValue() throws Exception {
-        String childName = "name";
         String childDescription = "description";
 
         for (int i = 0; i < 20; i++) {
             SimpleEntity simpleEntity = new SimpleEntity();
-            simpleEntity.setName(childName + i);
             if (i <= 10) {
                 childDescription += i;
             }
@@ -356,7 +372,6 @@ public class DefaultCentaurServiceImplTest {
 
         for (int i = 0; i < 20; i++) {
             EntityWithStringAndIntegerField simpleEntity = new EntityWithStringAndIntegerField();
-            simpleEntity.setName("" + i);
             simpleEntity.setIntValue(0);
             if (i <= 10) {
                 simpleEntity.setStringValue(childDescription + i);
@@ -511,10 +526,8 @@ public class DefaultCentaurServiceImplTest {
     public void testSimpleDeleteByString() throws Exception {
         SimpleEntity simpleEntity = new SimpleEntity();
 
-        String name = "name";
         String description = "description";
 
-        simpleEntity.setName(name);
         simpleEntity.setShortDescription(description);
 
         String keyString = service.saveForKey(simpleEntity);
@@ -527,12 +540,10 @@ public class DefaultCentaurServiceImplTest {
 
     @Test
     public void testGetObjectsByKind() throws Exception {
-        String childName = "name";
         String childDescription = "description";
 
         for (int i = 0; i < 20; i++) {
             SimpleEntity simpleEntity = new SimpleEntity();
-            simpleEntity.setName(childName + i);
             if (i <= 10) {
                 childDescription += i;
             }
@@ -550,12 +561,10 @@ public class DefaultCentaurServiceImplTest {
 
     @Test
     public void testGetAllObjects() throws Exception {
-        String childName = "name";
         String childDescription = "description";
 
         for (int i = 0; i < 20; i++) {
             SimpleEntity simpleEntity = new SimpleEntity();
-            simpleEntity.setName(childName + i);
             if (i <= 10) {
                 childDescription += i;
             }
@@ -604,7 +613,6 @@ public class DefaultCentaurServiceImplTest {
 
         for (int i = 0; i < 20; i++) {
             EntityWithStringAndIntegerField simpleEntity = new EntityWithStringAndIntegerField();
-            simpleEntity.setName("" + i);
             simpleEntity.setIntValue(0);
             if (i <= 10) {
                 simpleEntity.setStringValue(childDescription + i);
@@ -642,7 +650,6 @@ public class DefaultCentaurServiceImplTest {
 
         for (int i = 0; i < 100; i++) {
             EntityWithDateField simpleEntity = new EntityWithDateField();
-            simpleEntity.setName("" + i);
             simpleEntity.setDate(DateUtils.addMinutes(date, (i + 1) * 5));
             service.saveForId(simpleEntity);
         }
@@ -704,6 +711,7 @@ public class DefaultCentaurServiceImplTest {
 
     @Test
     public void testCaching() throws Exception {
+        final long id = 1235123451l;
         final int intValue = 1;
         final Integer integerWrapperValue = 2;
         final float floatValue = 3f;
@@ -712,6 +720,7 @@ public class DefaultCentaurServiceImplTest {
         final Double doubleWrapperValue = 6d;
 
         EntityWithAllFields entity = new EntityWithAllFields();
+        entity.setId(id);
         entity.setIntField(intValue);
         entity.setIntegerWrapperField(integerWrapperValue);
         entity.setFloatField(floatValue);
@@ -720,14 +729,15 @@ public class DefaultCentaurServiceImplTest {
         entity.setDoubleWrapperField(doubleWrapperValue);
 
         CentaurService service = new DefaultCentaurServiceImpl();
-        String key = service.saveForKey(entity);
-        service.cacheEntity(entity);
+        String key = KeyFactory.createKey(EntityWithAllFields.class.getCanonicalName(), id).toString();
+        service.cacheEntity(key, entity);
 
         assertNotNull(key);
-        final Object objectFromCache = service.getEntityFromCacheByKey(key);
+        final EntityWithAllFields objectFromCache = service.getEntityFromCache(key);
         assertNotNull(objectFromCache);
+        assertEquals(entity, objectFromCache);
 
-        service.deleteEntity(key);
-        assertNull(service.getEntityFromCacheByKey(key));
+        service.unCacheEntity(key);
+        assertNull(service.getEntityFromCache(key));
     }
 }
