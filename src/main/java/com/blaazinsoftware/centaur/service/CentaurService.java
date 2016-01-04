@@ -19,7 +19,7 @@ public interface CentaurService {
      * @param keyString - Key to retrieve
      * @param <T>       - Object type
      * @return - Object from cache
-     * @throws CentaurException
+     * @throws CentaurException - Exception
      */
     <T> T getEntityFromCacheByKey(String keyString) throws CentaurException;
 
@@ -28,7 +28,7 @@ public interface CentaurService {
      *
      * @param objectToCache - Object to Cache
      * @param <T>           - Object Type
-     * @throws CentaurException
+     * @throws CentaurException - Exception
      */
     <T> void cacheEntity(T objectToCache) throws CentaurException;
 
@@ -36,10 +36,11 @@ public interface CentaurService {
      * Saves the provided object
      *
      * @param object - Object to Save
+     * @param <T>    - Type Parameter
      * @return String representation of the Key from Google App Engine.
      * This is the key that can be passed as the <code>keyString</code> parameter
      * in the future
-     * @throws CentaurException
+     * @throws CentaurException - Exception
      */
     <T> long saveForId(T object) throws CentaurException;
 
@@ -47,10 +48,11 @@ public interface CentaurService {
      * Saves the provided object, using the provided transaction.
      *
      * @param object - Object to Save
+     * @param <T>    - Type Parameter
      * @return String representation of the Key from Google App Engine.
      * This is the key that can be passed as the <code>keyString</code> parameter
      * in the future
-     * @throws CentaurException
+     * @throws CentaurException - Exception
      */
     <T> String saveForKey(T object) throws CentaurException;
 
@@ -60,10 +62,11 @@ public interface CentaurService {
      *
      * @param parent - Parent Object
      * @param object - Object to Save
+     *               @param <T> - Type Parameter
      * @return String representation of the Key from Google App Engine for the child object.
      * This is the key that can be passed as the <code>keyString</code> parameter
      * in the future
-     * @throws CentaurException
+     * @throws CentaurException     - Exception
      */
     /*<T, X> String saveChild(X parent, T object) throws CentaurException;*/
 
@@ -77,7 +80,7 @@ public interface CentaurService {
      * @return String representation of the Key from Google App Engine for the child object.
      * This is the key that can be passed as the <code>keyString</code> parameter
      * in the future
-     * @throws CentaurException
+     * @throws CentaurException      - Exception
      *//*
     <T, X> String saveChild(X parent, T object, Transaction transaction) throws CentaurException;*/
 
@@ -86,17 +89,19 @@ public interface CentaurService {
      *
      * @param id                 - object identifier
      * @param expectedReturnType - Return type of the result
+     * @param <T>                - Type Parameter
      * @return - The requested object
-     * @throws CentaurException
+     * @throws CentaurException - Exception
      */
     <T> T getEntity(Long id, Class<T> expectedReturnType) throws CentaurException;
 
     /**
      * Retrieves an object using the String representation of its Google App Engine Key.
      *
-     * @param keyString          - Google App Engine Web Safe Key String
+     * @param keyString - Google App Engine Web Safe Key String
+     * @param <T>       - Type Parameter
      * @return - The requested object
-     * @throws CentaurException
+     * @throws CentaurException - Exception
      */
     <T> T getEntity(String keyString) throws CentaurException;
 
@@ -105,8 +110,9 @@ public interface CentaurService {
      *
      * @param ids                - object identifiers
      * @param expectedReturnType - Return type of the result
+     * @param <T>                - Type Parameter
      * @return - The requested object
-     * @throws CentaurException
+     * @throws CentaurException - Exception
      */
     <T> Map<Long, T> getEntitiesByIds(List<Long> ids, Class<T> expectedReturnType) throws CentaurException;
 
@@ -115,8 +121,9 @@ public interface CentaurService {
      *
      * @param keyStrings         - Google App Engine Key String
      * @param expectedReturnType - Return type of the result
+     * @param <T>                - Type Parameter
      * @return - The requested object
-     * @throws CentaurException
+     * @throws CentaurException - Exception
      */
     <T> Map<String, T> getEntitiesByKeys(List<String> keyStrings, Class<T> expectedReturnType) throws CentaurException;
 
@@ -126,21 +133,22 @@ public interface CentaurService {
      * @param propertyName       - Name of the property to search on
      * @param value              - Value of the property to match
      * @param expectedReturnType - Return type of the result
+     * @param <T>                - Type Parameter
      * @return - The requested object
-     * @throws CentaurException
+     * @throws CentaurException - Exception
      */
     <T> T findEntityByProperty(String propertyName, Object value, Class<T> expectedReturnType) throws CentaurException;
 
     /**
      * Convenience method for finding an object by <code>userId</code>.
      * This is the same as calling:
-     * <p/>
      * <code>findEntityByProperty("userId", value, expectedReturnType);</code>
      *
      * @param userId             - Name of the property to search on
      * @param expectedReturnType - Return type of the result
+     * @param <T>                - Type Parameter
      * @return - The requested object
-     * @throws CentaurException
+     * @throws CentaurException - Exception
      */
     <T> T findEntityByUserId(String userId, Class<T> expectedReturnType) throws CentaurException;
 
@@ -148,7 +156,8 @@ public interface CentaurService {
      * Delete the provided object
      *
      * @param object - Object to delete.
-     * @throws CentaurException
+     * @param <T>    - Type Parameter
+     * @throws CentaurException - Exception
      */
     <T> void deleteEntity(T object) throws CentaurException;
 
@@ -157,7 +166,7 @@ public interface CentaurService {
      * of the object's Google Data Store Key
      *
      * @param id - Id of the object that is to be deleted
-     * @throws CentaurException
+     * @throws CentaurException - Exception
      */
     void deleteEntity(long id) throws CentaurException;
 
@@ -166,7 +175,7 @@ public interface CentaurService {
      * of the object's Google Data Store Key
      *
      * @param keyString - Key of the object that is to be deleted
-     * @throws CentaurException
+     * @throws CentaurException - Exception
      */
     void deleteEntity(String keyString) throws CentaurException;
 
@@ -175,8 +184,10 @@ public interface CentaurService {
      *
      * @param parent             - Parent object
      * @param expectedReturnType - Return type of the result
-     * @return - The <code>ResultList</code> of children
-     * @throws CentaurException
+     * @param <T>                - Type Parameter
+     * @param <X>                - Type Parameter
+     * @return - The <code>List</code> of children
+     * @throws CentaurException - Exception
      */
     <T, X> List<T> getAllChildren(X parent, Class<T> expectedReturnType) throws CentaurException;
 
@@ -187,7 +198,7 @@ public interface CentaurService {
      * @param expectedReturnType - Return type of the result
      * @param dataOptions        - <code>DataOptions</code> to apply
      * @return - The <code>ResultList</code> of children
-     * @throws CentaurException
+     * @throws CentaurException           - Exception
      *//*
     <T, X> List<T> getAllChildren(X parent, Class<T> expectedReturnType, DataOptions dataOptions) throws CentaurException;
 
@@ -199,7 +210,7 @@ public interface CentaurService {
      * @param fetchOptions       - <code>FetchOptions</code> to apply
      * @param dataOptions        - <code>DataOptions</code> to apply
      * @return - The <code>ResultList</code> of children
-     * @throws CentaurException
+     * @throws CentaurException          - Exception
      *//*
     <T, X> List<T> getAllChildren(X parent, Class<T> expectedReturnType, FetchOptions fetchOptions, DataOptions dataOptions) throws CentaurException;*/
 
@@ -208,8 +219,8 @@ public interface CentaurService {
      *
      * @param parent             - Parent object
      * @param expectedReturnType - Return type of the result
-     * @return - The <code>ResultList</code> of children
-     * @throws CentaurException
+     * @return - The <code>ListResults</code> of found objects
+     * @throws CentaurException           - Exception
      */
     /*<T, X> List<T> getAllChildren(X parent, Class<T> expectedReturnType) throws CentaurException;*/
 
@@ -221,18 +232,18 @@ public interface CentaurService {
      * @param expectedReturnType - Return type of the result
      * @param fetchOptions       - <code>FetchOptions</code> to apply
      * @param dataOptions        - <code>DataOptions</code> to apply
-     * @return - The <code>ResultList</code> of children
-     * @throws CentaurException
+     * @return - The <code>ListResults</code> of found objects
+     * @throws CentaurException           - Exception
      *//*
     <T, X> List<T> getAllChildren(X parent, Class<T> expectedReturnType, FetchOptions fetchOptions, DataOptions dataOptions) throws CentaurException;*/
 
     /**
      * Finds an object by the provided <code>QuerySearchOptions</code>
      *
-     * @param searchOptions
-     * @param <T>
-     * @return
-     * @throws CentaurException
+     * @param searchOptions - Search Options
+     * @param <T>           - Type Parameter
+     * @return - The <code>ListResults</code> of found objects
+     * @throws CentaurException - Exception
      */
     <T> ListResults<T> findEntities(QuerySearchOptions<T> searchOptions) throws CentaurException;
 
@@ -242,8 +253,9 @@ public interface CentaurService {
      * @param propertyName       - Name of the property to search on
      * @param value              - Value of the property to match
      * @param expectedReturnType - Return type of the result
-     * @return - The <code>ResultList</code> of found objects
-     * @throws CentaurException
+     * @param <T>                - Type Parameter
+     * @return - The <code>ListResults</code> of found objects
+     * @throws CentaurException - Exception
      */
     <T> T findEntity(String propertyName, Object value, Class<T> expectedReturnType) throws CentaurException;
 
@@ -254,8 +266,9 @@ public interface CentaurService {
      * @param propertyName       - Name of the property to search on
      * @param value              - Value of the property to match
      * @param expectedReturnType - Return type of the result
-     * @return - The <code>ResultList</code> of found objects
-     * @throws CentaurException
+     * @param <T>                - Type Parameter
+     * @return - The <code>ListResults</code> of found objects
+     * @throws CentaurException - Exception
      */
     <T> ListResults<T> findEntities(String propertyName, Object value, Class<T> expectedReturnType) throws CentaurException;
 
@@ -267,8 +280,8 @@ public interface CentaurService {
      * @param value              - Value of the property to match
      * @param expectedReturnType - Return type of the result
      * @param sortField          - Name of the property to be sorted on
-     * @return - The <code>ResultList</code> of found objects
-     * @throws CentaurException
+     * @return - The <code>ListResults</code> of found objects
+     * @throws CentaurException         - Exception
      */
     //<T> ListResults<T> findEntities(String propertyName, Object value, Class<T> expectedReturnType, String sortField) throws CentaurException;
 
@@ -281,8 +294,8 @@ public interface CentaurService {
      * @param value              - Value of the property to match
      * @param expectedReturnType - Return type of the result
      * @param sortCriteria       - Sort Criteria to be applied
-     * @return - The <code>ResultList</code> of found objects
-     * @throws CentaurException
+     * @return - The <code>ListResults</code> of found objects
+     * @throws CentaurException         - Exception
      *//*
     <T> List<T> findObjectsSorted(String propertyName, Object value, Class<T> expectedReturnType, SortCriteria... sortCriteria) throws CentaurException;
 
@@ -295,8 +308,8 @@ public interface CentaurService {
      *                           value is the value that the property is to match
      * @param expectedReturnType - Return type of the result
      * @param sortCriteria       - Sort Criteria to be applied
-     * @return - The <code>ResultList</code> of found objects
-     * @throws CentaurException
+     * @return - The <code>ListResults</code> of found objects
+     * @throws CentaurException        - Exception
      *//*
     <T> List<T> findObjectsByPropertiesSorted(Map<String, Object> keyValues, Class<T> expectedReturnType, SortCriteria... sortCriteria) throws CentaurException;*/
 
@@ -306,8 +319,9 @@ public interface CentaurService {
      *
      * @param filter             - filter to apply to the query
      * @param expectedReturnType - Return type of the result
-     * @return - The <code>ResultList</code> of found objects
-     * @throws CentaurException
+     * @param <T>                - Type Parameter
+     * @return - The <code>ListResults</code> of found objects
+     * @throws CentaurException - Exception
      */
     <T> ListResults<T> findEntities(Query.Filter filter, Class<T> expectedReturnType) throws CentaurException;
 
@@ -315,8 +329,9 @@ public interface CentaurService {
      * Returns a <code>ResultList</code> of objects for the provided <code>expectedReturnType</code>
      *
      * @param expectedReturnType - Return type of the result
-     * @return - The <code>ResultList</code> of found objects
-     * @throws CentaurException
+     * @param <T>                - Type Parameter
+     * @return - The <code>ListResults</code> of found objects
+     * @throws CentaurException - Exception
      */
     <T> ListResults<T> findEntities(Class<T> expectedReturnType) throws CentaurException;
 
@@ -325,8 +340,8 @@ public interface CentaurService {
      *
      * @param keyStrings         - String representation of a Google App Engine Key
      * @param expectedReturnType - Return type of the result
-     * @return - The <code>ResultList</code> of found objects
-     * @throws CentaurException
+     * @return - The <code>ListResults</code> of found objects
+     * @throws CentaurException         - Exception
      *//*
     <T> Map<String, T> getObjectByKeyStrings(List<String> keyStrings, Class<T> expectedReturnType) throws CentaurException;
 
@@ -335,7 +350,7 @@ public interface CentaurService {
      *
      * @param keys               - String representation of a Google App Engine Key
      * @param expectedReturnType - Return type of the result
-     * @return - The <code>ResultList</code> of found objects
+     * @return - The <code>ListResults</code> of found objects
      * @throws CentaurException
      *//*
     <T> Map<String, T> getObjectByKeys(List<Key> keys, Class<T> expectedReturnType) throws CentaurException;
@@ -348,7 +363,7 @@ public interface CentaurService {
      * @param filter       - <code>filter</code> to be applied
      * @param sortCriteria - Sort Criteria to be applied
      * @param fetchOptions - <code>FetchOptions</code> to be applied
-     * @return - The <code>ResultList</code> of found objects
+     * @return - The <code>ListResults</code> of found objects
      * @throws CentaurException
      *//*
     QueryResultList<Entity> findEntitiesByFilterSorted(Query.Filter filter, List<SortCriteria> sortCriteria, FetchOptions fetchOptions) throws CentaurException;
@@ -361,7 +376,7 @@ public interface CentaurService {
      * @param filter             - <code>filter</code> to be applied
      * @param sortCriteria       - Sort Criteria to be applied
      * @param fetchOptions       - <code>FetchOptions</code> to be applied
-     * @return - The <code>ResultList</code> of found objects
+     * @return - The <code>ListResults</code> of found objects
      * @throws CentaurException
      *//*
     <T> ResultList<T> findObjectsByFilterSorted(Class expectedReturnType, Query.Filter filter, List<SortCriteria> sortCriteria, FetchOptions fetchOptions) throws CentaurException;
@@ -372,7 +387,7 @@ public interface CentaurService {
      *
      * @param expectedReturnType - Return type of the result
      * @param filter             - <code>filter</code> to be applied
-     * @return - The <code>ResultList</code> of found objects
+     * @return - The <code>ListResults</code> of found objects
      * @throws CentaurException
      *//*
     <T> ResultList<T> findObjectsByFilter(Class expectedReturnType, Query.Filter filter) throws CentaurException;

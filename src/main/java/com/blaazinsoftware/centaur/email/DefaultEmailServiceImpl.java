@@ -1,7 +1,5 @@
 package com.blaazinsoftware.centaur.email;
 
-import com.blaazinsoftware.centaur.exception.CentaurException;
-
 import javax.mail.Message;
 import javax.mail.Session;
 import javax.mail.Transport;
@@ -19,11 +17,11 @@ class DefaultEmailServiceImpl implements EmailService {
     private String from;
 
     @Override
-    public void sendEmail(String subject, String body, String... to) throws CentaurException {
+    public void sendEmail(String subject, String body, String... to) throws EmailException {
         this.sendEmail(from, subject, body, to);
     }
 
-    protected void sendEmail(String from, String subject, String body, String... to) throws CentaurException {
+    protected void sendEmail(String from, String subject, String body, String... to) throws EmailException {
         try {
             Properties props = new Properties();
             Session session = Session.getDefaultInstance(props, null);
@@ -38,7 +36,7 @@ class DefaultEmailServiceImpl implements EmailService {
             msg.setText(body);
             Transport.send(msg);
         } catch (Exception e) {
-            throw new CentaurException(e);
+            throw new EmailException(e);
         }
     }
 

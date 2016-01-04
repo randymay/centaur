@@ -11,7 +11,7 @@ public class AbstractUserOwnedEntity extends AbstractIDEntity {
     /**
      * Retrieves the User Id
      *
-     * @return          - <code>String</code> representing the User Id
+     * @return - <code>String</code> representing the User Id
      */
     public String getUserId() {
         return userId;
@@ -20,6 +20,7 @@ public class AbstractUserOwnedEntity extends AbstractIDEntity {
     /**
      * Sets the User Id
      *
+     * @param userId - <code>String</code> user id
      */
     public void setUserId(String userId) {
         this.userId = userId;

@@ -1,6 +1,5 @@
 package com.blaazinsoftware.centaur.data.dto;
 
-import com.google.appengine.api.datastore.Text;
 import com.googlecode.objectify.annotation.Index;
 
 /**
@@ -11,12 +10,12 @@ public abstract class AbstractDescribedNamedEntity extends AbstractIDEntity {
 
     @Index
     private String shortDescription;
-    private Text longDescription;
+    private String longDescription;
 
     /**
      * Retrieves the Short Description
      *
-     * @return          - <code>String</code> representing the Short Description
+     * @return - <code>String</code> representing the Short Description
      */
     public String getShortDescription() {
         return shortDescription;
@@ -25,6 +24,7 @@ public abstract class AbstractDescribedNamedEntity extends AbstractIDEntity {
     /**
      * Sets the Short Description
      *
+     * @param shortDescription - <code>String</code> short description
      */
     public void setShortDescription(String shortDescription) {
         this.shortDescription = shortDescription;
@@ -33,26 +33,27 @@ public abstract class AbstractDescribedNamedEntity extends AbstractIDEntity {
     /**
      * Retrieves the Long Description
      *
-     * @return          - <code>String</code> representing the Long Description
+     * @return - <code>String</code> representing the Long Description
      */
-    public Text getLongDescription() {
+    public String getLongDescription() {
         return longDescription;
     }
 
     /**
      * Sets the Long Description
      *
+     * @param longDescription - <code>String</code> long description
      */
-    public void setLongDescription(Text longDescription) {
+    public void setLongDescription(String longDescription) {
         this.longDescription = longDescription;
     }
 
     /**
      * Returns the value of the Long Description in String form
      *
-     * @return          Long Description in <code>String</code> form
+     * @return Long Description in <code>String</code> form
      */
     public String getLongDescriptionValue() {
-        return this.getLongDescription() != null ? this.getLongDescription().getValue() : null;
+        return this.getLongDescription() != null ? this.getLongDescription() : null;
     }
 }

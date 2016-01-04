@@ -4,7 +4,6 @@ import com.blaazinsoftware.centaur.search.ListResults;
 import com.blaazinsoftware.centaur.search.QuerySearchOptions;
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.datastore.Text;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.googlecode.objectify.ObjectifyService;
@@ -386,7 +385,7 @@ public class DefaultCentaurServiceImplTest {
         String description = "Description for testGetObject";
 
         SimpleEntity expected = new SimpleEntity();
-        expected.setLongDescription(new Text(description));
+        expected.setLongDescription(description);
 
         String key = service.saveForKey(expected);
         assertNotNull(key);
@@ -583,7 +582,7 @@ public class DefaultCentaurServiceImplTest {
             if (i <= 10) {
                 childDescription += i;
             }
-            simpleEntity.setLongDescription(new Text(childDescription));
+            simpleEntity.setLongDescription(childDescription);
             service.saveForKey(simpleEntity);
         }
 
@@ -722,6 +721,7 @@ public class DefaultCentaurServiceImplTest {
 
         CentaurService service = new DefaultCentaurServiceImpl();
         String key = service.saveForKey(entity);
+        service.cacheEntity(entity);
 
         assertNotNull(key);
         final Object objectFromCache = service.getEntityFromCacheByKey(key);
