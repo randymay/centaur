@@ -1,7 +1,7 @@
 package com.blaazinsoftware.centaur.service;
 
 import com.blaazinsoftware.centaur.data.dao.BasicDAO;
-import com.blaazinsoftware.centaur.search.ListResults;
+import com.blaazinsoftware.centaur.search.QueryResults;
 import com.blaazinsoftware.centaur.search.QuerySearchOptions;
 import com.google.appengine.api.datastore.Query;
 import com.googlecode.objectify.Work;
@@ -75,7 +75,7 @@ public class DefaultCentaurServiceImpl implements CentaurService {
                 .returnType(expectedReturnType)
                 .filter(filter);
 
-        ListResults<T> results = dao.getPagedList(searchOptions);
+        QueryResults<T> results = dao.getPagedList(searchOptions);
         if (results.getCountFound() < 1) {
             return null;
         }
@@ -84,7 +84,7 @@ public class DefaultCentaurServiceImpl implements CentaurService {
     }
 
     @Override
-    public <T> ListResults<T> findEntities(Class<T> expectedReturnType) {
+    public <T> QueryResults<T> findEntities(Class<T> expectedReturnType) {
         QuerySearchOptions<T> searchOptions = new QuerySearchOptions<>(expectedReturnType);
         return dao.getPagedList(searchOptions);
     }
@@ -134,14 +134,14 @@ public class DefaultCentaurServiceImpl implements CentaurService {
     }
 
     @Override
-    public <T> ListResults<T> findEntities(String propertyName, Object value, Class<T> expectedReturnType) {
+    public <T> QueryResults<T> findEntities(String propertyName, Object value, Class<T> expectedReturnType) {
         Query.Filter filter = new Query.FilterPredicate(propertyName, Query.FilterOperator.EQUAL, value);
 
         return findEntities(filter, expectedReturnType);
     }
 
     @Override
-    public <T> ListResults<T> findEntities(Query.Filter filter, Class<T> expectedReturnType) {
+    public <T> QueryResults<T> findEntities(Query.Filter filter, Class<T> expectedReturnType) {
         QuerySearchOptions<T> searchOptions = new QuerySearchOptions<>(expectedReturnType);
         searchOptions
                 .returnType(expectedReturnType)
@@ -151,12 +151,12 @@ public class DefaultCentaurServiceImpl implements CentaurService {
     }
 
     @Override
-    public <T> ListResults<T> findEntities(QuerySearchOptions<T> searchOptions) {
+    public <T> QueryResults<T> findEntities(QuerySearchOptions<T> searchOptions) {
         return dao.getPagedList(searchOptions);
     }
 
     @Override
-    public <T> ListResults<T> findEntities(String propertyName, Object value, Class<T> expectedReturnType, String sortField) {
+    public <T> QueryResults<T> findEntities(String propertyName, Object value, Class<T> expectedReturnType, String sortField) {
         QuerySearchOptions<T> searchOptions = new QuerySearchOptions<>(expectedReturnType);
 
         Query.Filter filter = new Query.FilterPredicate(propertyName, Query.FilterOperator.EQUAL, value);

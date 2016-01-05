@@ -7,7 +7,7 @@ import java.util.List;
  * @author Randy May
  *         Date: 15-09-30
  */
-public class ListResults<T> extends SearchOptions {
+public class QueryResults<T> extends QueryOptions {
     private List<T> results = new ArrayList<>();
     private int countReturned = 0;
     private int countFound = 0;

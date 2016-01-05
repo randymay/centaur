@@ -1,6 +1,6 @@
 package com.blaazinsoftware.centaur.service;
 
-import com.blaazinsoftware.centaur.search.ListResults;
+import com.blaazinsoftware.centaur.search.QueryResults;
 import com.blaazinsoftware.centaur.search.QuerySearchOptions;
 import com.google.appengine.api.datastore.Query;
 
@@ -153,7 +153,7 @@ public interface CentaurService {
      * @param <T>           - Type Parameter
      * @return - The <code>ListResults</code> of found objects
      */
-    <T> ListResults<T> findEntities(QuerySearchOptions<T> searchOptions);
+    <T> QueryResults<T> findEntities(QuerySearchOptions<T> searchOptions);
 
     /**
      * Finds an object by the provided <code>property</code>, <code>value</code>
@@ -176,7 +176,7 @@ public interface CentaurService {
      * @param <T>                - Type Parameter
      * @return - The <code>ListResults</code> of found objects
      */
-    <T> ListResults<T> findEntities(String propertyName, Object value, Class<T> expectedReturnType);
+    <T> QueryResults<T> findEntities(String propertyName, Object value, Class<T> expectedReturnType);
 
     /**
      * Returns a sorted <code>ResultList</code> of objects for the provided
@@ -189,7 +189,7 @@ public interface CentaurService {
      * @param <T>                - Entity type
      * @return - The <code>ListResults</code> of found objects
      */
-    <T> ListResults<T> findEntities(String propertyName, Object value, Class<T> expectedReturnType, String sortField);
+    <T> QueryResults<T> findEntities(String propertyName, Object value, Class<T> expectedReturnType, String sortField);
 
     /**
      * Returns a <code>ResultList</code> of objects for the provided
@@ -200,7 +200,7 @@ public interface CentaurService {
      * @param <T>                - Type Parameter
      * @return - The <code>ListResults</code> of found objects
      */
-    <T> ListResults<T> findEntities(Query.Filter filter, Class<T> expectedReturnType);
+    <T> QueryResults<T> findEntities(Query.Filter filter, Class<T> expectedReturnType);
 
     /**
      * Returns a <code>ResultList</code> of objects for the provided <code>expectedReturnType</code>
@@ -209,7 +209,7 @@ public interface CentaurService {
      * @param <T>                - Type Parameter
      * @return - The <code>ListResults</code> of found objects
      */
-    <T> ListResults<T> findEntities(Class<T> expectedReturnType);
+    <T> QueryResults<T> findEntities(Class<T> expectedReturnType);
 
     /**
      * Returns a list of Entities that match the given String representations of their Google App Engine Key

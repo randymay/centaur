@@ -1,6 +1,6 @@
 package com.blaazinsoftware.centaur.data.dao;
 
-import com.blaazinsoftware.centaur.search.ListResults;
+import com.blaazinsoftware.centaur.search.QueryResults;
 import com.blaazinsoftware.centaur.search.QuerySearchOptions;
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.QueryResultIterator;
@@ -78,6 +78,7 @@ public class BasicDAO {
         return syncCache;
     }
 
+    @SuppressWarnings("unchecked")
     public <T> T loadFromCache(String keyString) {
         MemcacheService syncCache = getMemcacheService();
 
@@ -134,7 +135,7 @@ public class BasicDAO {
         return ofy().transact(work);
     }
 
-    public <T> ListResults<T> getPagedList(QuerySearchOptions<T> searchOptions) {
+    public <T> QueryResults<T> getPagedList(QuerySearchOptions<T> searchOptions) {
 
         Query<T> query = ofy().load().type(searchOptions.getReturnType());
 
@@ -167,7 +168,7 @@ public class BasicDAO {
             query = query.limit(searchOptions.getLimit());
         }
 
-        ListResults<T> results = new ListResults<>();
+        QueryResults<T> results = new QueryResults<>();
 
         QueryResultIterator<T> iterator = query.iterator();
 

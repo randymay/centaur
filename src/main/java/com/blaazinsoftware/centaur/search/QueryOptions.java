@@ -6,7 +6,7 @@ import com.google.appengine.api.datastore.Cursor;
  * @author Randy May
  *         Date: 15-09-30
  */
-public abstract class SearchOptions {
+public abstract class QueryOptions {
     private Cursor cursor = null;
 
     public Cursor getCursor() {

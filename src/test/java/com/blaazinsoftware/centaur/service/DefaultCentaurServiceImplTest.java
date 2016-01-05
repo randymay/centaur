@@ -1,6 +1,6 @@
 package com.blaazinsoftware.centaur.service;
 
-import com.blaazinsoftware.centaur.search.ListResults;
+import com.blaazinsoftware.centaur.search.QueryResults;
 import com.blaazinsoftware.centaur.search.QuerySearchOptions;
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.KeyFactory;
@@ -355,7 +355,7 @@ public class DefaultCentaurServiceImplTest {
             service.saveForKey(simpleEntity);
         }
 
-        ListResults<SimpleEntity> results =
+        QueryResults<SimpleEntity> results =
                 service.findEntities(
                         "shortDescription",
                         childDescription,
@@ -385,7 +385,7 @@ public class DefaultCentaurServiceImplTest {
         Query.Filter stringFilter = new Query.FilterPredicate("stringValue", Query.FilterOperator.EQUAL, childDescription);
         Query.Filter filter = new Query.CompositeFilter(Query.CompositeFilterOperator.AND, Arrays.asList(intFilter, stringFilter));
 
-        ListResults<EntityWithStringAndIntegerField> results =
+        QueryResults<EntityWithStringAndIntegerField> results =
                 service.findEntities(
                         filter,
                         EntityWithStringAndIntegerField.class);
@@ -551,7 +551,7 @@ public class DefaultCentaurServiceImplTest {
             service.saveForKey(simpleEntity);
         }
 
-        ListResults<SimpleEntity> results =
+        QueryResults<SimpleEntity> results =
                 service.findEntities(SimpleEntity.class);
 
         assertNotNull(results);
@@ -572,7 +572,7 @@ public class DefaultCentaurServiceImplTest {
             service.saveForKey(simpleEntity);
         }
 
-        ListResults<SimpleEntity> results =
+        QueryResults<SimpleEntity> results =
                 service.findEntities(SimpleEntity.class);
 
         assertNotNull(results);
@@ -599,7 +599,7 @@ public class DefaultCentaurServiceImplTest {
         Query.Filter filter = new Query.FilterPredicate("shortDescription", Query.FilterOperator.EQUAL, "name5");
         searchOptions.filter(filter);
 
-        ListResults<SimpleEntity> results = service.findEntities(searchOptions);
+        QueryResults<SimpleEntity> results = service.findEntities(searchOptions);
 
         assertNotNull(results);
         assertEquals(1, results.getCountFound());
@@ -628,7 +628,7 @@ public class DefaultCentaurServiceImplTest {
         searchOptions.orderByField("intValue");
         searchOptions.descending(false);
 
-        ListResults<EntityWithStringAndIntegerField> results = service.findEntities(searchOptions);
+        QueryResults<EntityWithStringAndIntegerField> results = service.findEntities(searchOptions);
 
         assertNotNull(results);
         assertEquals(5, results.getCountFound());
@@ -668,7 +668,7 @@ public class DefaultCentaurServiceImplTest {
                 searchOptions.setCursor(cursor);
             }
 
-            ListResults<EntityWithDateField> page = service.findEntities(searchOptions);
+            QueryResults<EntityWithDateField> page = service.findEntities(searchOptions);
 
             assertNotNull(page);
 

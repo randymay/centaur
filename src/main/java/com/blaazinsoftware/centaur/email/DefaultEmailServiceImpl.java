@@ -16,6 +16,10 @@ class DefaultEmailServiceImpl implements EmailService {
 
     private String from;
 
+    protected DefaultEmailServiceImpl(String from) {
+        this.from = from;
+    }
+
     @Override
     public void sendEmail(String subject, String body, String... to) throws EmailException {
         this.sendEmail(from, subject, body, to);
@@ -38,9 +42,5 @@ class DefaultEmailServiceImpl implements EmailService {
         } catch (Exception e) {
             throw new EmailException(e);
         }
-    }
-
-    public void setFrom(String from) {
-        this.from = from;
     }
 }

@@ -17,41 +17,44 @@ public class CentaurUserFilter implements Filter {
     public static final String LOGOUT_URL_PARAMETER_NAME = "logoutURL";
     public static final String CURRENT_USER_PARAMETER_NAME = "currentUser";
 
+    private static final UserService userService = UserServiceFactory.getUserService();
+    private static final String LAST_URL_INDICATOR = "~";
+    private static final String POST_LOGIN_URL_PARAM = "postLoginURL";
+    private static final String POST_LOGOUT_URL_PARAM = "postLogoutURL";
+
     private String postLoginURL = null;
     private String postLogoutURL = null;
 
-    private FilterConfig filterConfig = null;
-
-    private boolean returnToLastUrl = false;
-
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        this.filterConfig = filterConfig;
+        postLoginURL = filterConfig.getInitParameter(POST_LOGIN_URL_PARAM);
+        if (null == postLoginURL) {
+            throw new ServletException(POST_LOGIN_URL_PARAM + " is missing.  If you want to redirect the User to the current URL, set this value to " + LAST_URL_INDICATOR);
+        }
+        postLogoutURL = filterConfig.getInitParameter(POST_LOGOUT_URL_PARAM);
+        if (null == postLogoutURL) {
+            throw new ServletException(POST_LOGOUT_URL_PARAM + " is missing.  Set this value to the URL to direct the User to when the log out.");
+        }
     }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        UserService userService = UserServiceFactory.getUserService();
         User currentUser = userService.getCurrentUser();
 
-        request.setAttribute(LOGIN_URL_PARAMETER_NAME, userService.createLoginURL(createPostLoginURL((HttpServletRequest)request)));
-        request.setAttribute(LOGOUT_URL_PARAMETER_NAME, userService.createLogoutURL(createPostLogoutURL()));
+        request.setAttribute(LOGIN_URL_PARAMETER_NAME, createPostLoginURL((HttpServletRequest) request));
+        request.setAttribute(LOGOUT_URL_PARAMETER_NAME, createPostLogoutURL());
         request.setAttribute(CURRENT_USER_PARAMETER_NAME, currentUser);
 
         chain.doFilter(request, response);
     }
 
     public String createPostLoginURL(HttpServletRequest request) {
-        if (postLoginURL == null) {
-            postLoginURL = (filterConfig.getInitParameter("postLoginURL"));
-        } else if ("~".equals(postLoginURL) || returnToLastUrl) {
-            returnToLastUrl = true;
-            // Return to this URL
-
+        if (LAST_URL_INDICATOR.equals(postLoginURL)) {
+            // Return to the current URL
             postLoginURL = getFullURL(request);
         }
 
-        return postLoginURL;
+        return userService.createLoginURL(postLoginURL);
     }
 
     protected String getFullURL(HttpServletRequest request) {
@@ -66,11 +69,7 @@ public class CentaurUserFilter implements Filter {
     }
 
     public String createPostLogoutURL() {
-        if (postLogoutURL == null) {
-            postLogoutURL = (filterConfig.getInitParameter("postLogoutURL"));
-        }
-
-        return postLogoutURL;
+        return userService.createLogoutURL(postLogoutURL);
     }
 
     @Override

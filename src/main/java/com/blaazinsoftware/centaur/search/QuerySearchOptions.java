@@ -6,7 +6,7 @@ import com.google.appengine.api.datastore.Query;
  * @author Randy May
  *         Date: 15-09-30
  */
-public class QuerySearchOptions<T> extends SearchOptions {
+public class QuerySearchOptions<T> extends QueryOptions {
     private int offset = 0;
     private int limit = 0;
     private String orderByField;
