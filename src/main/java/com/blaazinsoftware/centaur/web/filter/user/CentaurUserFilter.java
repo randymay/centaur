@@ -16,6 +16,8 @@ public class CentaurUserFilter implements Filter {
     public static final String LOGIN_URL_PARAMETER_NAME = "loginURL";
     public static final String LOGOUT_URL_PARAMETER_NAME = "logoutURL";
     public static final String CURRENT_USER_PARAMETER_NAME = "currentUser";
+    public static final String CURRENT_USER_ADMIN_PARAMETER_NAME = "currentUserIsAdmin";
+    public static final String CURRENT_USER_LOGGED_IN_PARAMETER_NAME = "currentUserIsLoggedIn";
 
     private static final UserService userService = UserServiceFactory.getUserService();
     private static final String LAST_URL_INDICATOR = "~";
@@ -44,7 +46,12 @@ public class CentaurUserFilter implements Filter {
         request.setAttribute(LOGIN_URL_PARAMETER_NAME, createPostLoginURL((HttpServletRequest) request));
         request.setAttribute(LOGOUT_URL_PARAMETER_NAME, createPostLogoutURL());
         request.setAttribute(CURRENT_USER_PARAMETER_NAME, currentUser);
-
+        request.setAttribute(CURRENT_USER_LOGGED_IN_PARAMETER_NAME, userService.isUserLoggedIn());
+        if (userService.isUserLoggedIn() && userService.isUserAdmin()) {
+            request.setAttribute(CURRENT_USER_ADMIN_PARAMETER_NAME, userService.isUserAdmin());
+        } else {
+            request.setAttribute(CURRENT_USER_ADMIN_PARAMETER_NAME, null);
+        }
         chain.doFilter(request, response);
     }
 
