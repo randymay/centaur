@@ -2,6 +2,8 @@ package com.blaazinsoftware.centaur.data.entity;
 
 import com.googlecode.objectify.annotation.Index;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * Convenience class for using Centaur.  This class contains fields for
  * short and long description which are needed to store and retrieve
@@ -12,6 +14,7 @@ import com.googlecode.objectify.annotation.Index;
  */
 public abstract class AbstractDescribedNamedEntity extends AbstractEntity {
 
+    @NotNull
     @Index
     private String shortDescription;
     private String longDescription;
