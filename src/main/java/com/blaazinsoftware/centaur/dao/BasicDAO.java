@@ -59,8 +59,20 @@ public class BasicDAO {
         return ofy().load().key(key).now();
     }
 
+    public <T> T loadEntity(Key<T> key) {
+        return ofy().load().key(key).now();
+    }
+
     private <T> Key<T> getKey(String keyString) {
         return Key.create(keyString);
+    }
+
+    public <T> Key<T> getKey(Class<T> entityClass, long id) {
+        return Key.create(entityClass, id);
+    }
+
+    public <T> Key<T> getKey(Class<T> entityClass, String name) {
+        return Key.create(entityClass, name);
     }
 
     public <T> void cacheEntity(String key, T entity) {

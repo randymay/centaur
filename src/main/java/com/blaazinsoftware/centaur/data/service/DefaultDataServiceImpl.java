@@ -54,6 +54,16 @@ public class DefaultDataServiceImpl implements DataService {
     }
 
     @Override
+    public <T> Key<T> getKey(long id, Class<T> expectedReturnType) {
+        return dao.getKey(expectedReturnType, id);
+    }
+
+    @Override
+    public <T> Key<T> getKey(String name, Class<T> expectedReturnType) {
+        return dao.getKey(expectedReturnType, name);
+    }
+
+    @Override
     public <T> T getEntity(String keyString) {
         return dao.loadEntity(keyString);
     }

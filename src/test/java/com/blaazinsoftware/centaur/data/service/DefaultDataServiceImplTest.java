@@ -34,6 +34,7 @@ public class DefaultDataServiceImplTest {
         session = ObjectifyService.begin();
 
         ObjectifyService.register(SimpleEntity.class);
+        ObjectifyService.register(SimpleEntityWithStringId.class);
         ObjectifyService.register(ParentEntity.class);
         ObjectifyService.register(ChildEntity.class);
         ObjectifyService.register(EntityWithDateField.class);
@@ -78,6 +79,32 @@ public class DefaultDataServiceImplTest {
 
         service.deleteEntity(id, SimpleEntity.class);
         assertNull(service.getEntity(id, SimpleEntity.class));
+    }
+
+    @Test
+    public void testSimpleCRUDUsingStringID() throws Exception {
+        SimpleEntityWithStringId simpleEntity = new SimpleEntityWithStringId();
+
+        String description = "description";
+        simpleEntity.setId(SimpleEntityWithStringId.class.getCanonicalName());
+        simpleEntity.setShortDescription(description);
+
+        String keyString = service.saveForKey(simpleEntity);
+        assertNotNull(keyString);
+
+        simpleEntity = service.getEntity(keyString);
+        assertNotNull(simpleEntity);
+        assertEquals(description, simpleEntity.getShortDescription());
+
+        description = "new description";
+        simpleEntity.setShortDescription(description);
+        service.saveForId(simpleEntity);
+        simpleEntity = service.getEntity(keyString);
+        assertNotNull(simpleEntity);
+        assertEquals(description, simpleEntity.getShortDescription());
+
+        service.deleteEntity(keyString);
+        assertNull(service.getEntity(keyString));
     }
 
     @Test

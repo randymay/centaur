@@ -50,11 +50,11 @@ public interface DataService {
      * Retrieves an entity using the String representation of its Google App Engine Key.
      *
      * @param id                 - entity identifier
-     * @param expectedReturnType - Return type of the result
+     * @param entityClass - Return type of the result
      * @param <T>                - Type Parameter
      * @return - The requested entity
      */
-    <T> T getEntity(Long id, Class<T> expectedReturnType);
+    <T> T getEntity(Long id, Class<T> entityClass);
 
     /**
      * Retrieves an entity using the String representation of its Google App Engine Key.
@@ -69,32 +69,32 @@ public interface DataService {
      * Retrieves an entity using the String representation of its Google App Engine Key.
      *
      * @param ids                - entity identifiers
-     * @param expectedReturnType - Return type of the result
+     * @param entityClass - Return type of the result
      * @param <T>                - Type Parameter
      * @return - The requested entity
      */
-    <T> Map<Long, T> getEntitiesByIds(List<Long> ids, Class<T> expectedReturnType);
+    <T> Map<Long, T> getEntitiesByIds(List<Long> ids, Class<T> entityClass);
 
     /**
      * Retrieves an entity using the String representation of its Google App Engine Key.
      *
      * @param keyStrings         - Google App Engine Key String
-     * @param expectedReturnType - Return type of the result
+     * @param entityClass - Return type of the result
      * @param <T>                - Type Parameter
      * @return - The requested entity
      */
-    <T> Map<String, T> getEntitiesByKeys(List<String> keyStrings, Class<T> expectedReturnType);
+    <T> Map<String, T> getEntitiesByKeys(List<String> keyStrings, Class<T> entityClass);
 
     /**
      * Find an entity by <code>String</code> property name and <code>entity</code> value.
      *
      * @param propertyName       - Name of the property to search on
      * @param value              - Value of the property to match
-     * @param expectedReturnType - Return type of the result
+     * @param entityClass - Return type of the result
      * @param <T>                - Type Parameter
      * @return - The requested entity
      */
-    <T> T findEntityByProperty(String propertyName, Object value, Class<T> expectedReturnType);
+    <T> T findEntityByProperty(String propertyName, Object value, Class<T> entityClass);
 
     /**
      * Delete the provided entity
@@ -126,12 +126,12 @@ public interface DataService {
      * Returns all children of the provided kind for the given parent.
      *
      * @param parent             - Parent entity
-     * @param expectedReturnType - Return type of the result
+     * @param entityClass - Return type of the result
      * @param <T>                - Type Parameter
      * @param <X>                - Type Parameter
      * @return - The <code>List</code> of children
      */
-    <T, X> List<T> getAllChildren(X parent, Class<T> expectedReturnType);
+    <T, X> List<T> getAllChildren(X parent, Class<T> entityClass);
 
     /**
      * Finds an entity by the provided <code>QuerySearchOptions</code>
@@ -147,11 +147,11 @@ public interface DataService {
      *
      * @param propertyName       - Name of the property to search on
      * @param value              - Value of the property to match
-     * @param expectedReturnType - Return type of the result
+     * @param entityClass - Return type of the result
      * @param <T>                - Type Parameter
      * @return - The <code>ListResults</code> of found entitys
      */
-    <T> T findEntity(String propertyName, Object value, Class<T> expectedReturnType);
+    <T> T findEntity(String propertyName, Object value, Class<T> entityClass);
 
     /**
      * Returns a <code>ResultList</code> of entitys for the provided
@@ -159,11 +159,11 @@ public interface DataService {
      *
      * @param propertyName       - Name of the property to search on
      * @param value              - Value of the property to match
-     * @param expectedReturnType - Return type of the result
+     * @param entityClass - Return type of the result
      * @param <T>                - Type Parameter
      * @return - The <code>ListResults</code> of found entitys
      */
-    <T> QueryResults<T> findEntities(String propertyName, Object value, Class<T> expectedReturnType);
+    <T> QueryResults<T> findEntities(String propertyName, Object value, Class<T> entityClass);
 
     /**
      * Returns a sorted <code>ResultList</code> of entitys for the provided
@@ -171,45 +171,45 @@ public interface DataService {
      *
      * @param propertyName       - Name of the property to search on
      * @param value              - Value of the property to match
-     * @param expectedReturnType - Return type of the result
+     * @param entityClass - Return type of the result
      * @param sortField          - Name of the property to be sorted on
      * @param <T>                - Entity type
      * @return - The <code>ListResults</code> of found entities
      */
-    <T> QueryResults<T> findEntities(String propertyName, Object value, Class<T> expectedReturnType, String sortField);
+    <T> QueryResults<T> findEntities(String propertyName, Object value, Class<T> entityClass, String sortField);
 
     /**
      * Returns a <code>ResultList</code> of entitys for the provided
      * <code>propertyName</code>, <code>value</code>
      *
      * @param filter             - filter to apply to the query
-     * @param expectedReturnType - Return type of the result
+     * @param entityClass - Return type of the result
      * @param <T>                - Type Parameter
      * @return - The <code>ListResults</code> of found entitys
      */
-    <T> QueryResults<T> findEntities(Query.Filter filter, Class<T> expectedReturnType);
+    <T> QueryResults<T> findEntities(Query.Filter filter, Class<T> entityClass);
 
     /**
-     * Returns a <code>ResultList</code> of entitys for the provided <code>expectedReturnType</code>
+     * Returns a <code>ResultList</code> of entitys for the provided <code>entityClass</code>
      *
-     * @param expectedReturnType - Return type of the result
+     * @param entityClass - Return type of the result
      * @param <T>                - Type Parameter
      * @return - The <code>ListResults</code> of found entitys
      */
-    <T> QueryResults<T> findEntities(Class<T> expectedReturnType);
+    <T> QueryResults<T> findEntities(Class<T> entityClass);
 
     /**
      * Returns a list of Entities that match the given String representations of their
      * Google App Engine Key
      *
      * @param keyStrings         - String representation of a Google App Engine Key
-     * @param expectedReturnType - Return type of the result
+     * @param entityClass - Return type of the result
      * @param <T>                - Entity type
      *
      * @return - The <code>Map</code> of found entities where the key is the Web-safe
      * key for the entity, and the value is the entity itself.
      */
-    <T> Map<String, T> getEntities(List<String> keyStrings, Class<T> expectedReturnType);
+    <T> Map<String, T> getEntities(List<String> keyStrings, Class<T> entityClass);
 
     /**
      * Returns the given <code>AbstractEntity</code>'s Web-Safe Key String
@@ -220,4 +220,20 @@ public interface DataService {
      * @return - The Web-Safe Key String of the provided Entity
      */
     <T extends AbstractEntity> String getWebSafeString(T entity);
+
+    /**
+     * Returns the Key for the given name and Class
+     * @param id                - Identifier of the Entity
+     * @param entityClass       - Class of Entity
+     * @return  - The <code>Key</code> for the Entity
+     */
+    <T> Key<T> getKey(long id, Class<T> entityClass);
+
+    /**
+     * Returns the Key for the given name and Class
+     * @param name              - Name of the Entity
+     * @param entityClass       - Class of Entity
+     * @return  - The <code>Key</code> for the Entity
+     */
+    <T> Key<T> getKey(String name, Class<T> entityClass);
 }
