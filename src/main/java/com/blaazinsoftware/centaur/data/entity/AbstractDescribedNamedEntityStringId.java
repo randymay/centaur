@@ -1,7 +1,5 @@
 package com.blaazinsoftware.centaur.data.entity;
 
-import com.googlecode.objectify.annotation.Index;
-
 import javax.validation.constraints.NotNull;
 
 /**
@@ -15,7 +13,6 @@ import javax.validation.constraints.NotNull;
 public abstract class AbstractDescribedNamedEntityStringId extends AbstractEntityStringId {
 
     @NotNull
-    @Index
     private String shortDescription;
     private String longDescription;
 
