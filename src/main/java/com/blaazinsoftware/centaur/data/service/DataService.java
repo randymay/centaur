@@ -59,11 +59,20 @@ public interface DataService {
     /**
      * Retrieves an entity using the String representation of its Google App Engine Key.
      *
-     * @param keyString - Google App Engine Web Safe Key String
+     * @param keyString - Google App Engine Key String
      * @param <T>       - Type Parameter
      * @return - The requested entity
      */
     <T> T getEntity(String keyString);
+
+    /**
+     * Retrieves an entity using the String representation of its Google App Engine Key.
+     *
+     * @param webSafeKeyString - Google App Engine Web Safe Key String
+     * @param <T>       - Type Parameter
+     * @return - The requested entity
+     */
+    <T> T getEntityByWebSafeKey(String webSafeKeyString);
 
     /**
      * Retrieves an entity using the String representation of its Google App Engine Key.

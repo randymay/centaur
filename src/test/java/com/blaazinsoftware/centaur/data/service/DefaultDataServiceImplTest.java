@@ -2,6 +2,7 @@ package com.blaazinsoftware.centaur.data.service;
 
 import com.blaazinsoftware.centaur.data.QueryResults;
 import com.blaazinsoftware.centaur.data.QuerySearchOptions;
+import com.blaazinsoftware.centaur.data.entity.AbstractEntity;
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
@@ -554,47 +555,48 @@ public class DefaultDataServiceImplTest {
         assertNotNull(userEntity);
     }
 
-    /*@Test
-    public void testSaveChildrenWithNoNameWithTransaction() throws Exception {
-        Transaction transaction = service.beginTransaction();
-        try {
-            String parentName = "parentName";
-            Text parentDescription = new Text("parentDescription");
+    @Test
+    public void testGetWebSafeKey() throws Exception {
+        String parentName = "parentName";
+        String parentDescription = "parentDescription";
 
-            ParentEntity parentEntity = new ParentEntity();
-            parentEntity.setName(parentName);
-            parentEntity.setShortDescription(parentDescription);
+        ParentEntity parentEntity = new ParentEntity();
+        parentEntity.setLongDescription(parentName);
+        parentEntity.setShortDescription(parentDescription);
 
-            String parentKey = service.saveForKey(parentEntity, transaction);
-            service.commit(transaction);
-            assertNotNull(parentKey);
+        String parentKey = service.saveForKey(parentEntity);
+        assertNotNull(parentKey);
+        final ParentEntity loadedEntityByKey = service.getEntity(parentEntity.getId(), ParentEntity.class);
+        assertNotNull(loadedEntityByKey);
+        assertEquals(parentEntity, loadedEntityByKey);
+        final ParentEntity loadedEntityByWebSafeKey = service.getEntityByWebSafeKey(parentEntity.getWebSafeKey());
+        assertNotNull(loadedEntityByWebSafeKey);
+        assertEquals(parentEntity, loadedEntityByWebSafeKey);
+        assertEquals(parentEntity.getWebSafeKey(), loadedEntityByWebSafeKey.getWebSafeKey());
 
-            transaction = service.beginTransaction();
+        String childDescription = "description";
 
-            String childDescription = "description";
-
-            for (int i = 0; i < 10; i++) {
-                SimpleEntity simpleEntity = new SimpleEntity();
-                simpleEntity.setShortDescription(new Text(childDescription + i));
-                String key = service.saveChild(parentEntity, simpleEntity, transaction);
-                assertNotNull(key);
-                assertNotNull(simpleEntity.getAppEngineKey());
-            }
-            service.commit(transaction);
-
-            List<SimpleEntity> simpleEntities = service.getAllChildren(SimpleEntity.class.getSimpleName(), parentEntity, SimpleEntity.class);
-
-            assertEquals(10, simpleEntities.size());
-            for (int i = 0; i < simpleEntities.size(); i++) {
-                SimpleEntity listEntity = simpleEntities.get(i);
-
-                assertEquals(childDescription + i, listEntity.getShortDescription().getValue());
-            }
-        } catch (Exception e) {
-            service.rollback(transaction);
-            fail(e.getMessage());
+        for (int i = 0; i < 10; i++) {
+            ChildEntity childEntity = new ChildEntity();
+            childEntity.setShortDescription(childDescription + i);
+            childEntity.setParentEntity(parentEntity);
+            String key = service.saveForKey(childEntity);
+            assertNotNull(key);
+            assertNotNull(childEntity.getWebSafeKey());
+            //assertEquals(key, childEntity.getWebSafeKey());
+            assertEquals(childEntity, service.getEntityByWebSafeKey(childEntity.getWebSafeKey()));
+            assertEquals(childEntity.getWebSafeKey(), ((AbstractEntity)service.getEntity(key)).getWebSafeKey());
         }
-    }*/
+
+        List<ChildEntity> childEntities = service.getAllChildren(parentEntity, ChildEntity.class);
+
+        assertEquals(10, childEntities.size());
+        for (int i = 0; i < childEntities.size(); i++) {
+            ChildEntity listEntity = childEntities.get(i);
+
+            assertEquals(childDescription + i, listEntity.getShortDescription());
+        }
+    }
 
     @Test
     public void testSimpleDeleteByString() throws Exception {

@@ -69,6 +69,13 @@ public class DefaultDataServiceImpl implements DataService {
     }
 
     @Override
+    public <T> T getEntityByWebSafeKey(String webSafeKeyString) {
+        com.google.appengine.api.datastore.Key key = KeyFactory.stringToKey(webSafeKeyString);
+
+        return (T)dao.loadEntity(Key.create(webSafeKeyString));
+    }
+
+    @Override
     public <T> T findEntityByProperty(String propertyName, Object value, Class<T> expectedReturnType) {
         return this.findEntity(propertyName, value, expectedReturnType);
     }
