@@ -54,9 +54,8 @@ public class BasicDAO {
         return ofy().load().type(entityClass).id(id).now();
     }
 
-    public <T> T loadEntity(String keyString) {
-        Key<T> key = getKey(keyString);
-        return ofy().load().key(key).now();
+    public <T> T loadEntity(String id, Class<T> entityClass) {
+        return ofy().load().type(entityClass).id(id).now();
     }
 
     public <T> T loadEntity(Key<T> key) {
@@ -113,6 +112,10 @@ public class BasicDAO {
     }
 
     public <T, P> T loadChild(long id, Class<T> entityClass, P parentClass) {
+        return ofy().load().type(entityClass).parent(parentClass).id(id).now();
+    }
+
+    public <T, P> T loadChild(String id, Class<T> entityClass, P parentClass) {
         return ofy().load().type(entityClass).parent(parentClass).id(id).now();
     }
 

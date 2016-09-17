@@ -35,7 +35,7 @@ public interface DataService {
      * This is the key that can be passed as the <code>keyString</code> parameter
      * in the future
      */
-    <T> String saveForKey(T entity);
+    <T> String saveForWebSafeKey(T entity);
 
     /**
      * Saves the Collection of entities into Google App Engine's DataStore
@@ -47,7 +47,7 @@ public interface DataService {
     <T> Map<Key<T>, T> saveAll(Collection<T> entities);
 
     /**
-     * Retrieves an entity using the String representation of its Google App Engine Key.
+     * Retrieves an entity by the <code>long</code> ID.
      *
      * @param id                 - entity identifier
      * @param entityClass - Return type of the result
@@ -57,13 +57,13 @@ public interface DataService {
     <T> T getEntity(Long id, Class<T> entityClass);
 
     /**
-     * Retrieves an entity using the String representation of its Google App Engine Key.
+     * Retrieves an entity by the <code>String</code> ID.
      *
      * @param keyString - Google App Engine Key String
      * @param <T>       - Type Parameter
      * @return - The requested entity
      */
-    <T> T getEntity(String keyString);
+    <T> T getEntity(String keyString, Class<T> expectedReturnType);
 
     /**
      * Retrieves an entity using the String representation of its Google App Engine Key.
@@ -135,12 +135,34 @@ public interface DataService {
      * Returns all children of the provided kind for the given parent.
      *
      * @param parent             - Parent entity
-     * @param entityClass - Return type of the result
-     * @param <T>                - Type Parameter
-     * @param <X>                - Type Parameter
+     * @param childClass         - Return type of the result
+     * @param <T>                - Child Type Parameter
+     * @param <X>                - Parent Type Parameter
      * @return - The <code>List</code> of children
      */
-    <T, X> List<T> getAllChildren(X parent, Class<T> entityClass);
+    <T, X> List<T> getAllChildren(X parent, Class<T> childClass);
+
+    /**
+     * Return the child of the provided class with the given id
+     * @param id                 - ID of child
+     * @param parent             - Parent entity
+     * @param childClass         - Return type of the result
+     * @param <T>                - Child Type Parameter
+     * @param <X>                - Parent Type Parameter
+     * @return
+     */
+    <T, X> T getChild(long id, X parent, Class<T> childClass);
+
+    /**
+     * Return the child of the provided class with the given id
+     * @param id                 - ID of child
+     * @param parent             - Parent entity
+     * @param childClass         - Return type of the result
+     * @param <T>                - Child Type Parameter
+     * @param <X>                - Parent Type Parameter
+     * @return
+     */
+    <T, X> T getChild(String id, X parent, Class<T> childClass);
 
     /**
      * Finds an entity by the provided <code>QuerySearchOptions</code>

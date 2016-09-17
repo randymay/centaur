@@ -2,7 +2,6 @@ package com.blaazinsoftware.centaur.data.service;
 
 import com.blaazinsoftware.centaur.data.QueryResults;
 import com.blaazinsoftware.centaur.data.QuerySearchOptions;
-import com.blaazinsoftware.centaur.data.entity.AbstractEntity;
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
@@ -90,22 +89,22 @@ public class DefaultDataServiceImplTest {
         simpleEntity.setId(SimpleEntityWithStringId.class.getCanonicalName());
         simpleEntity.setShortDescription(description);
 
-        String keyString = service.saveForKey(simpleEntity);
+        String keyString = service.saveForWebSafeKey(simpleEntity);
         assertNotNull(keyString);
 
-        simpleEntity = service.getEntity(keyString);
+        simpleEntity = service.getEntityByWebSafeKey(keyString);
         assertNotNull(simpleEntity);
         assertEquals(description, simpleEntity.getShortDescription());
 
         description = "new description";
         simpleEntity.setShortDescription(description);
         service.saveForId(simpleEntity);
-        simpleEntity = service.getEntity(keyString);
+        simpleEntity = service.getEntityByWebSafeKey(keyString);
         assertNotNull(simpleEntity);
         assertEquals(description, simpleEntity.getShortDescription());
 
         service.deleteEntity(keyString);
-        assertNull(service.getEntity(keyString));
+        assertNull(service.getEntity(keyString, SimpleEntityWithStringId.class));
     }
 
     @Test
@@ -116,22 +115,22 @@ public class DefaultDataServiceImplTest {
 
         simpleEntity.setShortDescription(description);
 
-        String key = service.saveForKey(simpleEntity);
+        String key = service.saveForWebSafeKey(simpleEntity);
         assertNotNull(key);
 
-        simpleEntity = service.getEntity(key);
+        simpleEntity = service.getEntityByWebSafeKey(key);
         assertNotNull(simpleEntity);
         assertEquals(description, simpleEntity.getShortDescription());
 
         description = "new description";
         simpleEntity.setShortDescription(description);
         service.saveForId(simpleEntity);
-        simpleEntity = service.getEntity(key);
+        simpleEntity = service.getEntityByWebSafeKey(key);
         assertNotNull(simpleEntity);
         assertEquals(description, simpleEntity.getShortDescription());
 
         service.deleteEntity(key);
-        assertNull(service.getEntity(key));
+        assertNull(service.getEntity(key, SimpleEntity.class));
     }
 
     @Test
@@ -142,14 +141,14 @@ public class DefaultDataServiceImplTest {
 
         simpleEntity.setShortDescription(description);
 
-        String key = service.saveForKey(simpleEntity);
+        String key = service.saveForWebSafeKey(simpleEntity);
         Long id = simpleEntity.getId();
         assertNotNull(key);
         final String webSafeKey = service.getWebSafeString(simpleEntity);
         assertNotNull(webSafeKey);
         assertEquals(key, webSafeKey);
 
-        simpleEntity = service.getEntity(key);
+        simpleEntity = service.getEntityByWebSafeKey(key);
         assertNotNull(simpleEntity);
         assertEquals(description, simpleEntity.getShortDescription());
         assertEquals(id, simpleEntity.getId());
@@ -167,7 +166,7 @@ public class DefaultDataServiceImplTest {
         simpleEntity.setShortDescription(description);
         simpleEntity.setLongDescription(new Text(longDescription));
 
-        String key = service.saveForKey(simpleEntity);
+        String key = service.saveForWebSafeKey(simpleEntity);
         assertNotNull(key);
 
         com.google.appengine.api.search.Query.Builder queryBuilder = com.google.appengine.api.search.Query.newBuilder();
@@ -276,7 +275,7 @@ public class DefaultDataServiceImplTest {
 
         String parentDescription = "parentDescription";
 
-        String parentKey = service.saveForKey(parentEntity);
+        String parentKey = service.saveForWebSafeKey(parentEntity);
         assertNotNull(parentKey);
 
         parentEntity.setShortDescription(parentDescription);
@@ -287,7 +286,7 @@ public class DefaultDataServiceImplTest {
             ChildEntity childEntity = new ChildEntity();
             childEntity.setParentEntity(parentEntity);
             childEntity.setShortDescription(childDescription + i);
-            String key = service.saveForKey(childEntity);
+            String key = service.saveForWebSafeKey(childEntity);
             assertNotNull(key);
             assertNotNull(childEntity.getId());
         }
@@ -334,9 +333,9 @@ public class DefaultDataServiceImplTest {
         entity.setDoubleField(doubleValue);
         entity.setDoubleWrapperField(doubleWrapperValue);
 
-        String key = service.saveForKey(entity);
+        String key = service.saveForWebSafeKey(entity);
 
-        entity = service.getEntity(key);
+        entity = service.getEntityByWebSafeKey(key);
         assertNotNull(entity);
         assertEquals(intValue, entity.getIntField());
         assertEquals(integerWrapperValue, entity.getIntegerWrapperField());
@@ -360,9 +359,9 @@ public class DefaultDataServiceImplTest {
         userIds.add(0L);
         object.setUserIds(userIds);
 
-        String key = service.saveForKey(object);
+        String key = service.saveForWebSafeKey(object);
 
-        object = service.getEntity(key);
+        object = service.getEntityByWebSafeKey(key);
         assertNotNull(object);
         assertNotNull(object.getUserIds());
         assertEquals(8, object.getUserIds().size());
@@ -386,9 +385,9 @@ public class DefaultDataServiceImplTest {
         userIds.add(0);
         object.setUserIds(userIds);
 
-        String key = service.saveForKey(object);
+        String key = service.saveForWebSafeKey(object);
 
-        object = service.getEntity(key);
+        object = service.getEntityByWebSafeKey(key);
         assertNotNull(object);
         assertNotNull(object.getUserIds());
         assertEquals(8, object.getUserIds().size());
@@ -404,10 +403,10 @@ public class DefaultDataServiceImplTest {
         object.setBooleanValue1(true);
         object.setBooleanValue2(false);
 
-        String key = service.saveForKey(object);
+        String key = service.saveForWebSafeKey(object);
         assertNotNull(key);
 
-        object = service.getEntity(key);
+        object = service.getEntityByWebSafeKey(key);
         assertNotNull(object);
         assertTrue(object.isBooleanValue1());
         assertFalse(object.getBooleanValue2());
@@ -415,9 +414,9 @@ public class DefaultDataServiceImplTest {
         object.setBooleanValue1(false);
         object.setBooleanValue2(true);
 
-        key = service.saveForKey(object);
+        key = service.saveForWebSafeKey(object);
 
-        object = service.getEntity(key);
+        object = service.getEntityByWebSafeKey(key);
         assertNotNull(object);
         assertFalse(object.isBooleanValue1());
         assertTrue(object.getBooleanValue2());
@@ -453,7 +452,7 @@ public class DefaultDataServiceImplTest {
                 simpleEntity.setIntValue(i);
             }
             simpleEntity.setStringValue(childDescription);
-            service.saveForKey(simpleEntity);
+            service.saveForWebSafeKey(simpleEntity);
         }
 
         Query.Filter intFilter = new Query.FilterPredicate("intValue", Query.FilterOperator.EQUAL, 0);
@@ -477,10 +476,10 @@ public class DefaultDataServiceImplTest {
         SimpleEntity expected = new SimpleEntity();
         expected.setLongDescription(description);
 
-        String key = service.saveForKey(expected);
+        String key = service.saveForWebSafeKey(expected);
         assertNotNull(key);
 
-        SimpleEntity actual = service.getEntity(key);
+        SimpleEntity actual = service.getEntityByWebSafeKey(key);
         assertNotNull(actual);
         assertEquals(description, actual.getLongDescriptionValue());
     }
@@ -494,7 +493,7 @@ public class DefaultDataServiceImplTest {
         SimpleEntity expected = new SimpleEntity();
         expected.setLongDescription(new Text(description));
 
-        String key = service.saveForKey(expected, transaction);
+        String key = service.saveForWebSafeKey(expected, transaction);
 
         assertNotNull(key);
 
@@ -517,7 +516,7 @@ public class DefaultDataServiceImplTest {
             assertTrue(e.getCause() instanceof EntityNotFoundException);
         }
 
-        service.saveForKey(expected, transaction);
+        service.saveForWebSafeKey(expected, transaction);
         service.commit(transaction);
 
         assertNotNull(key);
@@ -531,27 +530,27 @@ public class DefaultDataServiceImplTest {
     public void testUserCRUD() throws Exception {
         UserEntity userEntity = new UserEntity();
 
-        String userKey = service.saveForKey(userEntity);
+        String userKey = service.saveForWebSafeKey(userEntity);
 
         assertNotNull(userKey);
-        assertNotNull(service.getEntity(userKey));
+        assertNotNull(service.getEntityByWebSafeKey(userKey));
         assertNull(userEntity.getFirstName());
 
         userEntity.setFirstName("name");
-        service.saveForKey(userEntity);
-        userEntity = service.getEntity(userKey);
+        service.saveForWebSafeKey(userEntity);
+        userEntity = service.getEntityByWebSafeKey(userKey);
         assertEquals("name", userEntity.getFirstName());
 
         service.deleteEntity(userEntity);
 
-        assertNull(service.getEntity(userKey));
+        assertNull(service.getEntity(userKey, UserEntity.class));
 
         userEntity = new UserEntity();
 
-        userKey = service.saveForKey(userEntity);
+        userKey = service.saveForWebSafeKey(userEntity);
 
         assertNotNull(userKey);
-        userEntity = service.getEntity(userKey);
+        userEntity = service.getEntityByWebSafeKey(userKey);
         assertNotNull(userEntity);
     }
 
@@ -564,7 +563,7 @@ public class DefaultDataServiceImplTest {
         parentEntity.setLongDescription(parentName);
         parentEntity.setShortDescription(parentDescription);
 
-        String parentKey = service.saveForKey(parentEntity);
+        String parentKey = service.saveForWebSafeKey(parentEntity);
         assertNotNull(parentKey);
         final ParentEntity loadedEntityByKey = service.getEntity(parentEntity.getId(), ParentEntity.class);
         assertNotNull(loadedEntityByKey);
@@ -580,12 +579,11 @@ public class DefaultDataServiceImplTest {
             ChildEntity childEntity = new ChildEntity();
             childEntity.setShortDescription(childDescription + i);
             childEntity.setParentEntity(parentEntity);
-            String key = service.saveForKey(childEntity);
+            String key = service.saveForWebSafeKey(childEntity);
             assertNotNull(key);
             assertNotNull(childEntity.getWebSafeKey());
-            //assertEquals(key, childEntity.getWebSafeKey());
             assertEquals(childEntity, service.getEntityByWebSafeKey(childEntity.getWebSafeKey()));
-            assertEquals(childEntity.getWebSafeKey(), ((AbstractEntity)service.getEntity(key)).getWebSafeKey());
+            assertEquals(childEntity.getWebSafeKey(), (service.getChild(childEntity.getId(), parentEntity, ChildEntity.class)).getWebSafeKey());
         }
 
         List<ChildEntity> childEntities = service.getAllChildren(parentEntity, ChildEntity.class);
@@ -606,12 +604,12 @@ public class DefaultDataServiceImplTest {
 
         simpleEntity.setShortDescription(description);
 
-        String keyString = service.saveForKey(simpleEntity);
+        String keyString = service.saveForWebSafeKey(simpleEntity);
         assertNotNull(keyString);
         assertNotNull(simpleEntity.getId());
 
         service.deleteEntity(keyString);
-        assertNull(service.getEntity(keyString));
+        assertNull(service.getEntity(keyString, SimpleEntity.class));
     }
 
     @Test
@@ -641,7 +639,7 @@ public class DefaultDataServiceImplTest {
                 childDescription += i;
             }
             simpleEntity.setLongDescription(childDescription);
-            service.saveForKey(simpleEntity);
+            service.saveForWebSafeKey(simpleEntity);
         }
 
         QuerySearchOptions<SimpleEntity> searchOptions = new QuerySearchOptions<>(SimpleEntity.class);
@@ -667,7 +665,7 @@ public class DefaultDataServiceImplTest {
                 simpleEntity.setStringValue(childDescription + i);
                 simpleEntity.setIntValue(i);
             }
-            service.saveForKey(simpleEntity);
+            service.saveForWebSafeKey(simpleEntity);
         }
 
         QuerySearchOptions<EntityWithStringAndIntegerField> searchOptions
@@ -764,7 +762,7 @@ public class DefaultDataServiceImplTest {
 
         String parentDescription = "parentDescription";
 
-        String parentKey = service.saveForKey(parentEntity);
+        String parentKey = service.saveForWebSafeKey(parentEntity);
         assertNotNull(parentKey);
 
         parentEntity.setShortDescription(parentDescription);
@@ -774,13 +772,13 @@ public class DefaultDataServiceImplTest {
         for (int i = 0; i < 10; i++) {
             SimpleEntity childEntity = new SimpleEntity();
             childEntity.setShortDescription(childDescription + i);
-            String key = service.saveForKey(childEntity);
+            String key = service.saveForWebSafeKey(childEntity);
             assertNotNull(key);
             assertNotNull(childEntity.getId());
             parentEntity.getChildEntities().add(childEntity);
         }
 
-        HierarchicalEntity loadedEntity = service.getEntity(parentKey);
+        HierarchicalEntity loadedEntity = service.getEntityByWebSafeKey(parentKey);
 
         List<SimpleEntity> childEntities = loadedEntity.getChildEntities().deRef();
         assertEquals(10, childEntities.size());

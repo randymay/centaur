@@ -34,7 +34,7 @@ public class DefaultDataServiceImpl implements DataService {
     }
 
     @Override
-    public <T> String saveForKey(T object) {
+    public <T> String saveForWebSafeKey(T object) {
         return dao.saveForKey(object);
     }
 
@@ -64,14 +64,12 @@ public class DefaultDataServiceImpl implements DataService {
     }
 
     @Override
-    public <T> T getEntity(String keyString) {
-        return dao.loadEntity(keyString);
+    public <T> T getEntity(String id, Class<T> expectedReturnType) {
+        return dao.loadEntity(id, expectedReturnType);
     }
 
     @Override
     public <T> T getEntityByWebSafeKey(String webSafeKeyString) {
-        com.google.appengine.api.datastore.Key key = KeyFactory.stringToKey(webSafeKeyString);
-
         return (T)dao.loadEntity(Key.create(webSafeKeyString));
     }
 
@@ -128,8 +126,18 @@ public class DefaultDataServiceImpl implements DataService {
     }
 
     @Override
-    public <T, X> List<T> getAllChildren(X parent, Class<T> expectedReturnType) {
-        return dao.loadChildren(expectedReturnType, parent);
+    public <T, X> List<T> getAllChildren(X parent, Class<T> childClass) {
+        return dao.loadChildren(childClass, parent);
+    }
+
+    @Override
+    public <T, X> T getChild(long id, X parent, Class<T> childClass) {
+        return dao.loadChild(id, childClass, parent);
+    }
+
+    @Override
+    public <T, X> T getChild(String id, X parent, Class<T> childClass) {
+        return dao.loadChild(id, childClass, parent);
     }
 
     public <T, P> List<T> findChildrenByFilter(Class<T> childClass, P parentClass, String fieldName, Object filterObject) {
