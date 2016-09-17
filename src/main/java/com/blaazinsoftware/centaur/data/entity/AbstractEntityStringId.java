@@ -1,6 +1,7 @@
 package com.blaazinsoftware.centaur.data.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 
@@ -48,5 +49,9 @@ public abstract class AbstractEntityStringId implements Serializable {
             return 0;
         }
         return id.hashCode();
+    }
+
+    public String getWebSafeKey() {
+        return Key.create(this).toWebSafeString();
     }
 }

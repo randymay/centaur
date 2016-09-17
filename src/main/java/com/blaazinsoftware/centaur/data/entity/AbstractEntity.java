@@ -52,9 +52,6 @@ public abstract class AbstractEntity implements Serializable {
     }
 
     public String getWebSafeKey() {
-        if (null == id) {
-            return null;
-        }
         return Key.create(this).toWebSafeString();
     }
 }
