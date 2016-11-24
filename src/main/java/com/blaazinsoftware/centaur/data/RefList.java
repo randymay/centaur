@@ -14,6 +14,15 @@ import java.util.List;
  */
 public class RefList<T extends AbstractEntity> extends ArrayList<Ref<T>> {
 
+    public static <T extends AbstractEntity> RefList<T> fromList (List<T> args) {
+        RefList<T> refList = new RefList<>();
+        for (T arg : args) {
+            refList.add(arg);
+        }
+
+        return refList;
+    }
+
     public boolean add(T object) {
         return super.add(Ref.create(object));
     }
