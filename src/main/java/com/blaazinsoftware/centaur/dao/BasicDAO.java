@@ -123,6 +123,10 @@ public class BasicDAO {
         return ofy().load().type(entityClass).ancestor(parent).list();
     }
 
+    public <T> T findFirstEntity(Class<T> entityClass, String propertyName, Object o) {
+        return ofy().load().type(entityClass).filter(propertyName, o).first().now();
+    }
+
     public <T, P> List<T> findChildrenByFilter(Class<T> childClass, P parentClass, String fieldName, Object filterObject) {
         Map<String, Object> filterMap = new HashMap<>();
         filterMap.put(fieldName, filterObject);

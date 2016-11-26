@@ -95,6 +95,11 @@ public class DefaultDataServiceImpl implements DataService {
     }
 
     @Override
+    public <T> T findSingleEntity(String propertyName, Object value, Class<T> expectedReturnType) {
+        return dao.findFirstEntity(expectedReturnType, propertyName, value);
+    }
+
+    @Override
     public <T> QueryResults<T> findEntities(Class<T> expectedReturnType) {
         QuerySearchOptions<T> searchOptions = new QuerySearchOptions<>(expectedReturnType);
         return dao.getPagedList(searchOptions);

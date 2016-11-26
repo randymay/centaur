@@ -46,6 +46,7 @@ public class DefaultDataServiceImplTest {
         ObjectifyService.register(EntityWithListOfLongField.class);
         ObjectifyService.register(UserEntity.class);
         ObjectifyService.register(HierarchicalEntity.class);
+        ObjectifyService.register(EntityWithRef.class);
     }
 
     @After
@@ -787,5 +788,18 @@ public class DefaultDataServiceImplTest {
 
             assertEquals(childDescription + i, listEntity.getShortDescription());
         }
+    }
+
+    @Test
+    public void testFindEntityByRef() throws Exception {
+        UserEntity userEntity = new UserEntity();
+        service.saveForId(userEntity);
+
+        EntityWithRef withRef = new EntityWithRef();
+        withRef.setUserEntity(userEntity);
+        service.saveForId(withRef);
+
+        EntityWithRef loadedEntity = service.findSingleEntity("userEntity", userEntity, EntityWithRef.class);
+        assertNotNull(loadedEntity);
     }
 }
