@@ -3,7 +3,6 @@ package com.blaazinsoftware.centaur.data.service;
 import com.blaazinsoftware.centaur.data.QueryResults;
 import com.blaazinsoftware.centaur.data.QuerySearchOptions;
 import com.blaazinsoftware.centaur.data.entity.AbstractEntity;
-import com.google.appengine.api.datastore.Query;
 import com.googlecode.objectify.Key;
 
 import java.util.Collection;
@@ -214,11 +213,11 @@ public interface DataService {
      * <code>propertyName</code>, <code>value</code>
      *
      * @param filter             - filter to apply to the query
-     * @param entityClass - Return type of the result
+     * @param entityClass        - Return type of the result
      * @param <T>                - Type Parameter
      * @return - The <code>ListResults</code> of found entitys
      */
-    <T> QueryResults<T> findEntities(Query.Filter filter, Class<T> entityClass);
+    <T> QueryResults<T> findEntities(Map<String, Object> filter, Class<T> entityClass);
 
     /**
      * Returns a <code>ResultList</code> of entitys for the provided <code>entityClass</code>

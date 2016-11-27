@@ -3,7 +3,6 @@ package com.blaazinsoftware.centaur.data.service;
 import com.blaazinsoftware.centaur.data.QueryResults;
 import com.blaazinsoftware.centaur.data.QuerySearchOptions;
 import com.google.appengine.api.datastore.Cursor;
-import com.google.appengine.api.datastore.Query;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.googlecode.objectify.Key;
@@ -456,9 +455,9 @@ public class DefaultDataServiceImplTest {
             service.saveForWebSafeKey(simpleEntity);
         }
 
-        Query.Filter intFilter = new Query.FilterPredicate("intValue", Query.FilterOperator.EQUAL, 0);
-        Query.Filter stringFilter = new Query.FilterPredicate("stringValue", Query.FilterOperator.EQUAL, childDescription);
-        Query.Filter filter = new Query.CompositeFilter(Query.CompositeFilterOperator.AND, Arrays.asList(intFilter, stringFilter));
+        Map<String, Object> filter = new LinkedHashMap<>();
+        filter.put("intValue", 0);
+        filter.put("stringValue", childDescription);
 
         QueryResults<EntityWithStringAndIntegerField> results =
                 service.findEntities(
@@ -644,7 +643,8 @@ public class DefaultDataServiceImplTest {
         }
 
         QuerySearchOptions<SimpleEntity> searchOptions = new QuerySearchOptions<>(SimpleEntity.class);
-        Query.Filter filter = new Query.FilterPredicate("shortDescription", Query.FilterOperator.EQUAL, "name5");
+        Map<String, Object> filter = new LinkedHashMap<>();
+        filter.put("shortDescription", "name5");
         searchOptions.filter(filter);
 
         QueryResults<SimpleEntity> results = service.findEntities(searchOptions);
@@ -671,7 +671,8 @@ public class DefaultDataServiceImplTest {
 
         QuerySearchOptions<EntityWithStringAndIntegerField> searchOptions
                 = new QuerySearchOptions<>(EntityWithStringAndIntegerField.class);
-        Query.Filter filter = new Query.FilterPredicate("intValue", Query.FilterOperator.GREATER_THAN, 5);
+        Map<String, Object> filter = new LinkedHashMap<>();
+        filter.put("intValue >", 5);
         searchOptions.filter(filter);
         searchOptions.orderByField("intValue");
         searchOptions.descending(false);
@@ -704,7 +705,8 @@ public class DefaultDataServiceImplTest {
 
         QuerySearchOptions<EntityWithDateField> searchOptions
                 = new QuerySearchOptions<>(EntityWithDateField.class);
-        Query.Filter filter = new Query.FilterPredicate("date", Query.FilterOperator.GREATER_THAN, date);
+        Map<String, Object> filter = new LinkedHashMap<>();
+        filter.put("date >", date);
         searchOptions.filter(filter);
         searchOptions.orderByField("date");
         searchOptions.limit(pageSize);

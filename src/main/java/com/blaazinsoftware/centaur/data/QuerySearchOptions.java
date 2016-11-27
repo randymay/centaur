@@ -1,6 +1,7 @@
 package com.blaazinsoftware.centaur.data;
 
-import com.google.appengine.api.datastore.Query;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * @author Randy May
@@ -11,7 +12,7 @@ public class QuerySearchOptions<T> extends QueryOptions {
     private int limit = 0;
     private String orderByField;
     private boolean descending = true;
-    private Query.Filter filter = null;
+    private Map<String, Object> filters = new LinkedHashMap<>();
     private Class<T> returnType;
 
     public QuerySearchOptions(Class<T> returnType) {
@@ -54,12 +55,17 @@ public class QuerySearchOptions<T> extends QueryOptions {
         return this;
     }
 
-    public Query.Filter getFilter() {
-        return filter;
+    public Map<String, Object> getFilter() {
+        return filters;
     }
 
-    public QuerySearchOptions filter(Query.Filter filter) {
-        this.filter = filter;
+    public QuerySearchOptions filter(Map<String, Object> filter) {
+        this.filters = filter;
+        return this;
+    }
+
+    public QuerySearchOptions filter(String propertyName, Object value) {
+        this.filters.put(propertyName, value);
         return this;
     }
 

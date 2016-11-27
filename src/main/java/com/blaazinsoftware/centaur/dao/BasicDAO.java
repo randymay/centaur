@@ -160,8 +160,10 @@ public class BasicDAO {
         Query<T> query = ofy().load().type(searchOptions.getReturnType());
 
         // Apply Filter
-        if (null != searchOptions.getFilter()) {
-            query = query.filter(searchOptions.getFilter());
+        if (null != searchOptions.getFilter() && searchOptions.getFilter().size() > 0) {
+            for (Map.Entry<String, Object> entry : searchOptions.getFilter().entrySet()) {
+                query = query.filter(entry.getKey(), entry.getValue());
+            }
         }
 
         // Set Order By Field
@@ -204,8 +206,10 @@ public class BasicDAO {
 
         // Execute a second query to determine the total number of records in this query
         Query<T> countQuery = ofy().load().type(searchOptions.getReturnType());
-        if (null != searchOptions.getFilter()) {
-            countQuery = countQuery.filter(searchOptions.getFilter());
+        if (null != searchOptions.getFilter() && searchOptions.getFilter().size() > 0) {
+            for (Map.Entry<String, Object> entry : searchOptions.getFilter().entrySet()) {
+                countQuery = countQuery.filter(entry.getKey(), entry.getValue());
+            }
         }
         results.setCountFound(countQuery.count());
 

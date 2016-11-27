@@ -5,10 +5,10 @@ import com.blaazinsoftware.centaur.data.QueryResults;
 import com.blaazinsoftware.centaur.data.QuerySearchOptions;
 import com.blaazinsoftware.centaur.data.entity.AbstractEntity;
 import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.api.datastore.Query;
 import com.googlecode.objectify.Key;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -123,13 +123,14 @@ public class DefaultDataServiceImpl implements DataService {
 
     @Override
     public <T> QueryResults<T> findEntities(String propertyName, Object value, Class<T> expectedReturnType) {
-        Query.Filter filter = new Query.FilterPredicate(propertyName, Query.FilterOperator.EQUAL, value);
+        Map<String, Object> filter = new LinkedHashMap<>();
+        filter.put(propertyName, value);
 
         return findEntities(filter, expectedReturnType);
     }
 
     @Override
-    public <T> QueryResults<T> findEntities(Query.Filter filter, Class<T> expectedReturnType) {
+    public <T> QueryResults<T> findEntities(Map<String, Object> filter, Class<T> expectedReturnType) {
         QuerySearchOptions<T> searchOptions = new QuerySearchOptions<>(expectedReturnType);
         searchOptions
                 .returnType(expectedReturnType)
@@ -147,8 +148,7 @@ public class DefaultDataServiceImpl implements DataService {
     public <T> QueryResults<T> findEntities(String propertyName, Object value, Class<T> expectedReturnType, String sortField) {
         QuerySearchOptions<T> searchOptions = new QuerySearchOptions<>(expectedReturnType);
 
-        Query.Filter filter = new Query.FilterPredicate(propertyName, Query.FilterOperator.EQUAL, value);
-        searchOptions.filter(filter);
+        searchOptions.filter(propertyName, value);
 
         return findEntities(searchOptions);
     }
