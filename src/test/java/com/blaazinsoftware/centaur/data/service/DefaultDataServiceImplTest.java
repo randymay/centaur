@@ -799,7 +799,7 @@ public class DefaultDataServiceImplTest {
         withRef.setUserEntity(userEntity);
         service.saveForId(withRef);
 
-        EntityWithRef loadedEntity = service.findSingleEntity("userEntity", userEntity, EntityWithRef.class);
+        EntityWithRef loadedEntity = service.findEntity("userEntity", userEntity, EntityWithRef.class);
         assertNotNull(loadedEntity);
     }
 }

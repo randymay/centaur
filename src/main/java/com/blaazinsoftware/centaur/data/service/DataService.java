@@ -185,17 +185,6 @@ public interface DataService {
     <T> T findEntity(String propertyName, Object value, Class<T> entityClass);
 
     /**
-     * Finds an entity by the provided <code>property</code>, <code>value</code>
-     *
-     * @param propertyName       - Name of the property to search on
-     * @param value              - Value of the property to match
-     * @param entityClass - Return type of the result
-     * @param <T>                - Type Parameter
-     * @return - The <code>ListResults</code> of found entitys
-     */
-    <T> T findSingleEntity(String propertyName, Object value, Class<T> entityClass);
-
-    /**
      * Returns a <code>ResultList</code> of entitys for the provided
      * <code>propertyName</code>, <code>value</code>
      *

@@ -7,14 +7,10 @@ import com.blaazinsoftware.centaur.data.entity.AbstractEntity;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Query;
 import com.googlecode.objectify.Key;
-import com.googlecode.objectify.Work;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static com.googlecode.objectify.ObjectifyService.ofy;
 
 /**
  * Default Implementation of <code>CentaurService</code>
@@ -43,11 +39,6 @@ public class DefaultDataServiceImpl implements DataService {
         return dao.saveAll(entities);
     }
 
-    //@Override
-    public <T> T executeInTransaction(Work<T> work) {
-        return dao.executeWorkInTransaction(work);
-    }
-
     @Override
     public <T> T getEntity(Long id, Class<T> expectedReturnType) {
         return dao.loadEntity(id, expectedReturnType);
@@ -70,7 +61,8 @@ public class DefaultDataServiceImpl implements DataService {
 
     @Override
     public <T> T getEntityByWebSafeKey(String webSafeKeyString) {
-        return (T)dao.loadEntity(Key.create(webSafeKeyString));
+        Key<T> key = Key.create(webSafeKeyString);
+        return dao.loadEntity(key);
     }
 
     @Override
@@ -80,22 +72,6 @@ public class DefaultDataServiceImpl implements DataService {
 
     @Override
     public <T> T findEntity(String propertyName, Object value, Class<T> expectedReturnType) {
-        QuerySearchOptions<T> searchOptions = new QuerySearchOptions<>(expectedReturnType);
-        Query.Filter filter = new Query.FilterPredicate(propertyName, Query.FilterOperator.EQUAL, value);
-        searchOptions
-                .returnType(expectedReturnType)
-                .filter(filter);
-
-        QueryResults<T> results = dao.getPagedList(searchOptions);
-        if (results.getCountFound() < 1) {
-            return null;
-        }
-
-        return results.getResults().get(0);
-    }
-
-    @Override
-    public <T> T findSingleEntity(String propertyName, Object value, Class<T> expectedReturnType) {
         return dao.findFirstEntity(expectedReturnType, propertyName, value);
     }
 
@@ -143,20 +119,6 @@ public class DefaultDataServiceImpl implements DataService {
     @Override
     public <T, X> T getChild(String id, X parent, Class<T> childClass) {
         return dao.loadChild(id, childClass, parent);
-    }
-
-    public <T, P> List<T> findChildrenByFilter(Class<T> childClass, P parentClass, String fieldName, Object filterObject) {
-        Map<String, Object> filterMap = new HashMap<>();
-        filterMap.put(fieldName, filterObject);
-        return findChildrenByFilter(childClass, parentClass, filterMap);
-    }
-
-    public <T, P> List<T> findChildrenByFilter(Class<T> childClass, P parentClass, Map<String, Object> filterMap) {
-        com.googlecode.objectify.cmd.Query<T> query = ofy().load().type(childClass).ancestor(parentClass);
-        for (Map.Entry<String, Object> entry : filterMap.entrySet()) {
-            query = query.filter(entry.getKey(), entry.getValue());
-        }
-        return query.list();
     }
 
     @Override
