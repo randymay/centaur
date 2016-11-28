@@ -10,7 +10,7 @@ import java.util.Map;
 public class QuerySearchOptions<T> extends QueryOptions {
     private int offset = 0;
     private int limit = 0;
-    private String orderByField;
+    private String orderBy;
     private boolean descending = true;
     private Map<String, Object> filters = new LinkedHashMap<>();
     private Class<T> returnType;
@@ -37,12 +37,12 @@ public class QuerySearchOptions<T> extends QueryOptions {
         return this;
     }
 
-    public String getOrderByField() {
-        return orderByField;
+    public String getOrderBy() {
+        return orderBy;
     }
 
-    public QuerySearchOptions orderByField(String orderByField) {
-        this.orderByField = orderByField;
+    public QuerySearchOptions orderBy(String orderByField) {
+        this.orderBy = orderByField;
         return this;
     }
 

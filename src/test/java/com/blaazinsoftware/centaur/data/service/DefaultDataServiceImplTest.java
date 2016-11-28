@@ -674,7 +674,7 @@ public class DefaultDataServiceImplTest {
         Map<String, Object> filter = new LinkedHashMap<>();
         filter.put("intValue >", 5);
         searchOptions.filter(filter);
-        searchOptions.orderByField("intValue");
+        searchOptions.orderBy("intValue");
         searchOptions.descending(false);
 
         QueryResults<EntityWithStringAndIntegerField> results = service.findEntities(searchOptions);
@@ -708,7 +708,7 @@ public class DefaultDataServiceImplTest {
         Map<String, Object> filter = new LinkedHashMap<>();
         filter.put("date >", date);
         searchOptions.filter(filter);
-        searchOptions.orderByField("date");
+        searchOptions.orderBy("date");
         searchOptions.limit(pageSize);
 
         Cursor cursor = null;

@@ -167,8 +167,8 @@ public class BasicDAO {
         }
 
         // Set Order By Field
-        if (StringUtils.isNotEmpty(searchOptions.getOrderByField())) {
-            String order = searchOptions.getOrderByField();
+        if (StringUtils.isNotEmpty(searchOptions.getOrderBy())) {
+            String order = searchOptions.getOrderBy();
             if (!searchOptions.isDescending()) {
                 order = "-" + order;
             }
