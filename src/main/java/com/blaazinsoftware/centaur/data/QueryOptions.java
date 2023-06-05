@@ -1,6 +1,6 @@
 package com.blaazinsoftware.centaur.data;
 
-import com.google.appengine.api.datastore.Cursor;
+import com.google.cloud.datastore.Cursor;
 
 /**
  * @author Randy May

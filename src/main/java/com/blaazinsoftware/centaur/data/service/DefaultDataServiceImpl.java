@@ -4,7 +4,9 @@ import com.blaazinsoftware.centaur.dao.BasicDAO;
 import com.blaazinsoftware.centaur.data.QueryResults;
 import com.blaazinsoftware.centaur.data.QuerySearchOptions;
 import com.blaazinsoftware.centaur.data.entity.AbstractEntity;
-import com.google.appengine.api.datastore.KeyFactory;
+import com.google.cloud.datastore.Datastore;
+import com.google.cloud.datastore.DatastoreOptions;
+import com.google.cloud.datastore.KeyFactory;
 import com.googlecode.objectify.Key;
 
 import java.util.Collection;
@@ -25,7 +27,7 @@ public class DefaultDataServiceImpl implements DataService {
     }
 
     @Override
-    public <T> long saveForId(T entity) {
+    public <T> Long saveForId(T entity) {
         return dao.saveForId(entity);
     }
 
@@ -160,6 +162,6 @@ public class DefaultDataServiceImpl implements DataService {
 
     @Override
     public <T extends AbstractEntity> String getWebSafeString(T entity) {
-        return KeyFactory.keyToString(KeyFactory.createKey(entity.getClass().getSimpleName(), entity.getId()));
+        return Key.create(entity.getClass(), entity.getId()).toLegacyUrlSafe();
     }
 }

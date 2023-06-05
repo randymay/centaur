@@ -23,7 +23,7 @@ public interface DataService {
      * This Identifier (along with the entity's class) can be used to retrieve this entity
      * in the future.
      */
-    <T> long saveForId(T entity);
+    <T> Long saveForId(T entity);
 
     /**
      * Saves the provided entity into Google App Engine's DataStore.

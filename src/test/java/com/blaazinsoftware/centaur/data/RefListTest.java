@@ -3,8 +3,8 @@ package com.blaazinsoftware.centaur.data;
 import com.blaazinsoftware.centaur.data.service.DataService;
 import com.blaazinsoftware.centaur.data.service.DataServiceFactory;
 import com.blaazinsoftware.centaur.data.service.SimpleEntity;
-import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
-import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
+//import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
+//import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.util.Closeable;
 import org.junit.After;
@@ -22,8 +22,8 @@ import static org.junit.Assert.assertNotNull;
  */
 public class RefListTest {
 
-    private final LocalServiceTestHelper helper =
-            new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
+//    private final LocalServiceTestHelper helper =
+//            new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
 
     private DataService service = DataServiceFactory.getInstance();
 
@@ -31,7 +31,7 @@ public class RefListTest {
 
     @Before
     public void setUp() {
-        helper.setUp();
+//        helper.setUp();
 
         session = ObjectifyService.begin();
 
@@ -40,7 +40,7 @@ public class RefListTest {
 
     @After
     public void tearDown() {
-        helper.tearDown();
+//        helper.tearDown();
 
         session.close();
     }

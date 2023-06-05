@@ -2,10 +2,10 @@ package com.blaazinsoftware.centaur.data.service;
 
 import com.blaazinsoftware.centaur.data.QueryResults;
 import com.blaazinsoftware.centaur.data.QuerySearchOptions;
-import com.google.appengine.api.datastore.Cursor;
-import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
-import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
+import com.google.cloud.datastore.Cursor;
+import com.google.cloud.datastore.DatastoreOptions;
 import com.googlecode.objectify.Key;
+import com.googlecode.objectify.ObjectifyFactory;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.util.Closeable;
 import org.apache.commons.lang3.time.DateUtils;
@@ -15,12 +15,10 @@ import org.junit.Test;
 
 import java.util.*;
 
+import static com.googlecode.objectify.ObjectifyService.ofy;
 import static org.junit.Assert.*;
 
 public class DefaultDataServiceImplTest {
-
-    private final LocalServiceTestHelper helper =
-            new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
 
     private DataService service = DataServiceFactory.getInstance();
 
@@ -28,9 +26,13 @@ public class DefaultDataServiceImplTest {
 
     @Before
     public void setUp() {
-        helper.setUp();
-
-        session = ObjectifyService.begin();
+        ObjectifyService.init(new ObjectifyFactory(
+                DatastoreOptions.newBuilder()
+                        .setHost("http://localhost:8081")
+                        .setProjectId("project-test")
+                        .setNamespace("project-test-namespace")
+                        .build()
+                        .getService()));
 
         ObjectifyService.register(SimpleEntity.class);
         ObjectifyService.register(SimpleEntityWithStringId.class);
@@ -46,24 +48,42 @@ public class DefaultDataServiceImplTest {
         ObjectifyService.register(UserEntity.class);
         ObjectifyService.register(HierarchicalEntity.class);
         ObjectifyService.register(EntityWithRef.class);
+
+//        helper.start();
+        session = ObjectifyService.begin();
     }
 
     @After
     public void tearDown() {
-        helper.tearDown();
+//        helper.tearDown();
+
+        // Ensure data is deleted
+        ofy().delete().keys(ofy().load().type(SimpleEntity.class).keys()).now();
+        ofy().delete().keys(ofy().load().type(SimpleEntityWithStringId.class).keys()).now();
+        ofy().delete().keys(ofy().load().type(ChildEntity.class).keys()).now();
+        ofy().delete().keys(ofy().load().type(ParentEntity.class).keys()).now();
+        ofy().delete().keys(ofy().load().type(EntityWithIntegerField.class).keys()).now();
+        ofy().delete().keys(ofy().load().type(EntityWithStringAndIntegerField.class).keys()).now();
+        ofy().delete().keys(ofy().load().type(EntityWithAllFields.class).keys()).now();
+        ofy().delete().keys(ofy().load().type(EntityWithListOfLongField.class).keys()).now();
+        ofy().delete().keys(ofy().load().type(EntityWithListOfIntegerField.class).keys()).now();
+        ofy().delete().keys(ofy().load().type(UserEntity.class).keys()).now();
+        ofy().delete().keys(ofy().load().type(HierarchicalEntity.class).keys()).now();
+        ofy().delete().keys(ofy().load().type(EntityWithRef.class).keys()).now();
+        ofy().delete().keys(ofy().load().type(EntityWithDateField.class).keys()).now();
 
         session.close();
     }
 
     @Test
-    public void testSimpleCRUDUsingID() throws Exception {
+    public void testSimpleCRUDUsingID() {
         SimpleEntity simpleEntity = new SimpleEntity();
 
         String description = "description";
 
         simpleEntity.setShortDescription(description);
 
-        long id = service.saveForId(simpleEntity);
+        Long id = service.saveForId(simpleEntity);
         assertNotNull(id);
 
         simpleEntity = service.getEntity(id, SimpleEntity.class);
@@ -82,7 +102,7 @@ public class DefaultDataServiceImplTest {
     }
 
     @Test
-    public void testSimpleCRUDUsingStringID() throws Exception {
+    public void testSimpleCRUDUsingStringID() {
         SimpleEntityWithStringId simpleEntity = new SimpleEntityWithStringId();
 
         String description = "description";
@@ -108,7 +128,7 @@ public class DefaultDataServiceImplTest {
     }
 
     @Test
-    public void testSimpleCRUDUsingKey() throws Exception {
+    public void testSimpleCRUDUsingKey() {
         SimpleEntity simpleEntity = new SimpleEntity();
 
         String description = "description";
@@ -134,7 +154,7 @@ public class DefaultDataServiceImplTest {
     }
 
     @Test
-    public void testSimpleCRUDUsingWebSafeKey() throws Exception {
+    public void testSimpleCRUDUsingWebSafeKey() {
         SimpleEntity simpleEntity = new SimpleEntity();
 
         String description = "description";
@@ -155,7 +175,7 @@ public class DefaultDataServiceImplTest {
     }
 
     /*@Test
-    public void testSimpleCRUDWithSearch() throws Exception {
+    public void testSimpleCRUDWithSearch() {
         SimpleEntity simpleEntity = new SimpleEntity();
 
         String name = "name";
@@ -207,12 +227,12 @@ public class DefaultDataServiceImplTest {
     }*/
 
     @Test
-    public void testHierarchicalCRUD() throws Exception {
+    public void testHierarchicalCRUD() {
         ParentEntity parentEntity = new ParentEntity();
 
         String parentDescription = "parentDescription";
 
-        long parentKey = service.saveForId(parentEntity);
+        Long parentKey = service.saveForId(parentEntity);
         assertNotNull(parentKey);
 
         parentEntity.setShortDescription(parentDescription);
@@ -270,7 +290,7 @@ public class DefaultDataServiceImplTest {
     }
 
     @Test
-    public void testHeirarchicalCRUDNoNames() throws Exception {
+    public void testHeirarchicalCRUDNoNames() {
         ParentEntity parentEntity = new ParentEntity();
 
         String parentDescription = "parentDescription";
@@ -302,7 +322,7 @@ public class DefaultDataServiceImplTest {
     }
 
     @Test
-    public void testToAndFromEntityWithIntegerProperty() throws Exception {
+    public void testToAndFromEntityWithIntegerProperty() {
         final int userId = 1;
 
         EntityWithIntegerField entityWithIntegerField = new EntityWithIntegerField();
@@ -317,7 +337,7 @@ public class DefaultDataServiceImplTest {
     }
 
     @Test
-    public void testToAndFromEntityWithAllPropertyTypes() throws Exception {
+    public void testToAndFromEntityWithAllPropertyTypes() {
         final int intValue = 1;
         final Integer integerWrapperValue = 2;
         final float floatValue = 3f;
@@ -339,14 +359,14 @@ public class DefaultDataServiceImplTest {
         assertNotNull(entity);
         assertEquals(intValue, entity.getIntField());
         assertEquals(integerWrapperValue, entity.getIntegerWrapperField());
-        assertTrue(floatValue == entity.getFloatField());
+        assertEquals(floatValue, entity.getFloatField(), 0.0);
         assertEquals(floatWrapperValue, entity.getFloatWrapperField());
-        assertTrue(doubleValue == entity.getDoubleField());
+        assertEquals(doubleValue, entity.getDoubleField(), 0.0);
         assertEquals(doubleWrapperValue, entity.getDoubleWrapperField());
     }
 
     @Test
-    public void testToAndFromEntityWithListOfLongsProperty() throws Exception {
+    public void testToAndFromEntityWithListOfLongsProperty() {
         EntityWithListOfLongField object = new EntityWithListOfLongField();
         List<Long> userIds = new ArrayList<>();
         userIds.add(7L);
@@ -372,7 +392,7 @@ public class DefaultDataServiceImplTest {
     }
 
     @Test
-    public void testToAndFromEntityWithListOfIntegersProperty() throws Exception {
+    public void testToAndFromEntityWithListOfIntegersProperty() {
         EntityWithListOfIntegerField object = new EntityWithListOfIntegerField();
         List<Integer> userIds = new ArrayList<>();
         userIds.add(7);
@@ -398,7 +418,7 @@ public class DefaultDataServiceImplTest {
     }
 
     @Test
-    public void testToAndFromEntityWithBooleanProperties() throws Exception {
+    public void testToAndFromEntityWithBooleanProperties() {
         EntityWithBooleanFields object = new EntityWithBooleanFields();
         object.setBooleanValue1(true);
         object.setBooleanValue2(false);
@@ -423,7 +443,7 @@ public class DefaultDataServiceImplTest {
     }
 
     @Test
-    public void testGetEntitiesByPropertyValue() throws Exception {
+    public void testGetEntitiesByPropertyValue() {
         final String childDescription = "description";
 
         final int childrenToCreate = 20;
@@ -441,7 +461,7 @@ public class DefaultDataServiceImplTest {
     }
 
     @Test
-    public void testGetEntitiesByPropertyValues() throws Exception {
+    public void testGetEntitiesByPropertyValues() {
         String childDescription = "description";
 
         for (int i = 0; i < 20; i++) {
@@ -470,7 +490,7 @@ public class DefaultDataServiceImplTest {
     }
 
     @Test
-    public void testGetObject() throws Exception {
+    public void testGetObject() {
         String description = "Description for testGetObject";
 
         SimpleEntity expected = new SimpleEntity();
@@ -485,7 +505,7 @@ public class DefaultDataServiceImplTest {
     }
 
     /*@Test
-    public void testTransaction() throws Exception {
+    public void testTransaction() {
         Transaction transaction = service.beginTransaction();
 
         String description = "Description for testGetObject";
@@ -527,7 +547,7 @@ public class DefaultDataServiceImplTest {
     }*/
 
     @Test
-    public void testUserCRUD() throws Exception {
+    public void testUserCRUD() {
         UserEntity userEntity = new UserEntity();
 
         String userKey = service.saveForWebSafeKey(userEntity);
@@ -555,7 +575,7 @@ public class DefaultDataServiceImplTest {
     }
 
     @Test
-    public void testGetWebSafeKey() throws Exception {
+    public void testGetWebSafeKey() {
         String parentName = "parentName";
         String parentDescription = "parentDescription";
 
@@ -597,7 +617,7 @@ public class DefaultDataServiceImplTest {
     }
 
     @Test
-    public void testSimpleDeleteByString() throws Exception {
+    public void testSimpleDeleteByString() {
         SimpleEntity simpleEntity = new SimpleEntity();
 
         String description = "description";
@@ -613,7 +633,7 @@ public class DefaultDataServiceImplTest {
     }
 
     @Test
-    public void testGetAllEntities() throws Exception {
+    public void testGetAllEntities() {
         String childDescription = "description";
 
         final int childrenToCreate = 20;
@@ -628,7 +648,7 @@ public class DefaultDataServiceImplTest {
     }
 
     @Test
-    public void testGetEntitiesByFilter() throws Exception {
+    public void testGetEntitiesByFilter() {
         String childName = "name";
         String childDescription = "description";
 
@@ -656,7 +676,7 @@ public class DefaultDataServiceImplTest {
     }
 
     @Test
-    public void testGetEntitiesByFilterSorted() throws Exception {
+    public void testGetEntitiesByFilterSorted() {
         String childDescription = "description";
 
         for (int i = 0; i < 20; i++) {
@@ -692,13 +712,16 @@ public class DefaultDataServiceImplTest {
     }
 
     @Test
-    public void testGetEntitiesByFilterSortedPaged() throws Exception {
+    public void testGetEntitiesByFilterSortedPaged() {
         Date date = new Date();
+        date = DateUtils.setMilliseconds(date, 0);
+        date = DateUtils.setSeconds(date, 0);
 
         int pageSize = 10;
 
         for (int i = 0; i < 100; i++) {
             EntityWithDateField simpleEntity = new EntityWithDateField();
+            simpleEntity.setId(Integer.valueOf(i).longValue() + 1);
             simpleEntity.setDate(DateUtils.addMinutes(date, (i + 1) * 5));
             service.saveForId(simpleEntity);
         }
@@ -738,7 +761,7 @@ public class DefaultDataServiceImplTest {
     }
 
     @Test
-    public void testGetByKeys() throws Exception {
+    public void testGetByKeys() {
         List<Long> ids = new ArrayList<>();
 
         for (int i = 0; i < 10; i++) {
@@ -760,7 +783,7 @@ public class DefaultDataServiceImplTest {
     }
 
     @Test
-    public void testInheritedCRUDWithRefList() throws Exception {
+    public void testInheritedCRUDWithRefList() {
         HierarchicalEntity parentEntity = new HierarchicalEntity();
 
         String parentDescription = "parentDescription";
@@ -793,7 +816,7 @@ public class DefaultDataServiceImplTest {
     }
 
     @Test
-    public void testFindEntityByRef() throws Exception {
+    public void testFindEntityByRef() {
         UserEntity userEntity = new UserEntity();
         service.saveForId(userEntity);
 

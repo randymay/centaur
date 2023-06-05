@@ -2,11 +2,11 @@ package com.blaazinsoftware.centaur.dao;
 
 import com.blaazinsoftware.centaur.data.QueryResults;
 import com.blaazinsoftware.centaur.data.QuerySearchOptions;
-import com.google.appengine.api.datastore.Cursor;
-import com.google.appengine.api.datastore.QueryResultIterator;
+/*import com.google.appengine.api.datastore.QueryResultIterator;
 import com.google.appengine.api.memcache.ErrorHandlers;
 import com.google.appengine.api.memcache.MemcacheService;
-import com.google.appengine.api.memcache.MemcacheServiceFactory;
+import com.google.appengine.api.memcache.MemcacheServiceFactory;*/
+import com.google.cloud.datastore.Cursor;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.Work;
 import com.googlecode.objectify.cmd.Query;
@@ -25,12 +25,12 @@ import static com.googlecode.objectify.ObjectifyService.ofy;
  *         Date: 15-09-28
  */
 public class BasicDAO {
-    public <T> long saveForId(T entity) {
+    public <T> Long saveForId(T entity) {
         return ofy().save().entity(entity).now().getId();
     }
 
     public <T> String saveForKey(T entity) {
-        return ofy().save().entity(entity).now().toWebSafeString();
+        return ofy().save().entity(entity).now().toLegacyUrlSafe();
     }
 
     public <T> Map<Key<T>, T> saveAll(Collection<T> entities) {
@@ -74,7 +74,7 @@ public class BasicDAO {
         return Key.create(entityClass, name);
     }
 
-    public <T> void cacheEntity(String key, T entity) {
+    /*public <T> void cacheEntity(String key, T entity) {
         MemcacheService syncCache = getMemcacheService();
         syncCache.put(key, entity); // Populate cache.
     }
@@ -97,7 +97,7 @@ public class BasicDAO {
         Object result = syncCache.get(keyString); // Populate cache.
 
         return (T) result;
-    }
+    }*/
 
     public <T> Map<Long, T> loadByIds(List<Long> ids, Class<T> entityClass) {
         return ofy().load().type(entityClass).ids(ids);
@@ -192,7 +192,7 @@ public class BasicDAO {
 
         QueryResults<T> results = new QueryResults<>();
 
-        QueryResultIterator<T> iterator = query.iterator();
+        com.google.cloud.datastore.QueryResults<T> iterator = query.iterator();
 
         while (iterator.hasNext()) {
             results.getResults().add(iterator.next());
@@ -201,7 +201,7 @@ public class BasicDAO {
         results.setCountReturned(results.getResults().size());
         if (results.getCountReturned() >= searchOptions.getLimit()) {
             // Only return the cursor if more records are available
-            results.setCursor(iterator.getCursor());
+            results.setCursor(query.iterator().getCursorAfter());
         }
 
         // Execute a second query to determine the total number of records in this query
