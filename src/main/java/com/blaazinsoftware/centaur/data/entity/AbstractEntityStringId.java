@@ -10,7 +10,6 @@ import java.io.Serializable;
 /**
  * Convenient base class for using Centaur.
  */
-@Entity
 public abstract class AbstractEntityStringId implements Serializable {
 
     @Id

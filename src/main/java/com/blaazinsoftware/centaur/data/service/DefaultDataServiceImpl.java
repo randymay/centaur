@@ -23,7 +23,7 @@ public class DefaultDataServiceImpl implements DataService {
 
     private BasicDAO dao = new BasicDAO();
 
-    protected DefaultDataServiceImpl() {
+    public DefaultDataServiceImpl() {
     }
 
     @Override
