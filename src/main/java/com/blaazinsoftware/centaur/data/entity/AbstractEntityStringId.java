@@ -51,6 +51,6 @@ public abstract class AbstractEntityStringId implements Serializable {
     }
 
     public String getWebSafeKey() {
-        return Key.create(this).toUrlSafe();
+        return Key.create(this).toLegacyUrlSafe();
     }
 }
